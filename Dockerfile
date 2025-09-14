@@ -14,7 +14,10 @@ WORKDIR /src
 COPY ["src/Resolv.Web/Resolv.Web.csproj", "src/Resolv.Web/"]
 RUN dotnet restore "./src/Resolv.Web/Resolv.Web.csproj"
 COPY . .
+RUN dotnet tool install -g Microsoft.Web.LibraryManager.Cli
+ENV PATH="${PATH}:/root/.dotnet/tools"
 WORKDIR "/src/src/Resolv.Web"
+RUN libman restore
 RUN dotnet build "./Resolv.Web.csproj" -c $BUILD_CONFIGURATION -o /app/build
 
 # This stage is used to publish the service project to be copied to the final stage
