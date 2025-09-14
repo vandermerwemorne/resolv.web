@@ -18,6 +18,7 @@ namespace Resolv.Web.Controllers
             return View();
         }
 
+        [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
         public IActionResult Privacy()
         {
             return View();
