@@ -1,0 +1,75 @@
+name: UAT Build and Deploy
+run-name: UAT CI/CD ${{ github.event_name }} by @${{ github.actor }}
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-and-push-image:
+    runs-on: ubuntu-22.04
+    outputs:
+      short_sha: ${{ steps.vars.outputs.short_sha }}
+
+    steps:
+    - name: Checkout repository
+      id: github
+      uses: actions/Checkout@v3
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '9.0.x'
+
+    - name: Configure Azure Container Registry (ACR)
+      uses: azure/docker-login@v2
+      with:
+        login-server: ${{ vars.UAT_ACR_SERVER }}
+        username: ${{ secrets.UAT_ACR_USER }}
+        password: ${{ secrets.UAT_ACR_PASSWORD }}
+
+    - name: Get commit SHA
+      id: vars
+      run: |
+        getSha=$(git rev-parse --short ${{ github.sha }})
+        echo "::set-output name=short_sha::$getSha"
+
+    - name: Build and push image to Azure Container Registry (ACR)
+      working-directory: ./
+      env:
+        ACR_REGISTRY: ${{ vars.UAT_ACR_SERVER }}
+        ACR_USER: ${{ secrets.UAT_ACR_USER }}
+        IMAGE_TAG: ${{ steps.vars.outputs.short_sha }}
+      run: |
+        docker build -f Dockerfile -t $ACR_REGISTRY/$ACR_USER:$IMAGE_TAG .
+        docker push $ACR_REGISTRY/$ACR_USER --all-tags
+
+  deploy-image-to-container-service:
+    runs-on: ubuntu-22.04
+    needs: build-and-push-image
+
+    steps:
+      - name: Login to Azure
+        uses: azure/login/@v1
+        with:
+          creds: ${{ secrets.UAT_AZ_CREDENTIALS }}
+
+      - name: Deploy to Azure Container Apps (ACA)
+        uses: azure/container-apps-deploy-action@v1
+        env:
+          IMAGE_TAG: ${{ needs.build-and-push-image.outputs.short_sha }}
+          ACR_SERVER: ${{ vars.UAT_ACR_SERVER }}
+          ACR_USER: ${{ secrets.UAT_ACR_USER }}
+          DB_CONN: ${{ secrets.UAT_AZ_PGSQL_DB_CONN }}
+        with:
+          registryUrl: ${{ vars.UAT_ACR_SERVER }}
+          imageToDeploy: $ACR_SERVER/$ACR_USER:$IMAGE_TAG
+          targetPort: 8080
+          ingress: external
+          containerAppName: resolv-uat
+          containerAppEnvironment: resolv-uat
+          resourceGroup: resolv-uat-rg
+          environmentVariables: |
+            Database__ResolvDb__ConnectionString=$DB_CONN
