@@ -1,6 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
-using Resolv.Web;
 
 namespace Resolv.Web.Controllers
 {
@@ -31,7 +30,7 @@ namespace Resolv.Web.Controllers
                 var identity = new System.Security.Claims.ClaimsIdentity(claims, AuthConstants.CookieAuthScheme);
                 var principal = new System.Security.Claims.ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(AuthConstants.CookieAuthScheme, principal);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "Capture");
             }
 
             TempData["LoginError"] = "Invalid username or password.";
