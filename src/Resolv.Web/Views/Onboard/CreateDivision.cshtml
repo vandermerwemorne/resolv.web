@@ -1,0 +1,35 @@
+@model Resolv.Web.Models.Division
+@{
+    ViewData["Title"] = "Create Division";
+}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">Create Holding Company</li>
+        <li class="breadcrumb-item active" aria-current="page">Create Division</li>
+        <li class="breadcrumb-item">Create Assessment Site</li>
+        <li class="breadcrumb-item">Complete</li>
+    </ol>
+</nav>
+<h2 class="mb-4">Create Division</h2>
+<form asp-action="CreateDivision" method="post" class="needs-validation" novalidate>
+    <input type="hidden" asp-for="HoldingCompanyId" value="@ViewBag.HoldingCompanyId" />
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Holding Company</label>
+        <div class="col-md-10 pt-2">
+            @ViewBag.HoldingName
+        </div>
+    </div>
+    <div class="form-group row mb-3">
+        <label for="Name" class="col-md-2 col-form-label">Division Name</label>
+        <div class="col-md-10">
+            <input asp-for="Name" class="form-control" />
+            <span asp-validation-for="Name" class="text-danger"></span>
+        </div>
+    </div>
+    <div class="form-group row">
+        <div class="offset-md-2 col-md-10 d-flex gap-2">
+            <a href="/Onboard/CreateHoldingCompany" class="btn btn-secondary">Back</a>
+            <button type="submit" class="btn btn-primary">Next</button>
+        </div>
+    </div>
+</form>

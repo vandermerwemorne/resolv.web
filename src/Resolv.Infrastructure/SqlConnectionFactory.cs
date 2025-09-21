@@ -7,6 +7,7 @@ public class SqlConnectionFactory(string connectionString)
 {
     public IDbConnection CreateNpgsqlConnection()
     {
+        Dapper.DefaultTypeMap.MatchNamesWithUnderscores = true;
         return new NpgsqlConnection(connectionString);
     }
 }

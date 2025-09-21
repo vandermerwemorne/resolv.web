@@ -19,6 +19,7 @@ namespace Resolv.Web.Controllers
                 var claims = new List<System.Security.Claims.Claim>
                 {
                     new(System.Security.Claims.ClaimTypes.Name, username),
+                    new(System.Security.Claims.ClaimTypes.NameIdentifier, user.Id.ToString()),
                     new(System.Security.Claims.ClaimTypes.Role, Roles.Admin)
                 };
                 var identity = new System.Security.Claims.ClaimsIdentity(claims, AuthConstants.CookieAuthScheme);

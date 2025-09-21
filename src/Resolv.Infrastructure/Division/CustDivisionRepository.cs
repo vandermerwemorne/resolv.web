@@ -1,0 +1,24 @@
+﻿using Dapper;
+using Resolv.Domain.Division;
+
+namespace Resolv.Infrastructure.Division;
+
+public class CustDivisionRepository(SqlConnectionFactory factory) : ICustDivisionRepository
+{
+    public async Task<(int, Guid)> AddAsync(CustDivision obj, string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var uid = Guid.NewGuid();
+        var sql = $@"
+INSERT INTO {schema}.division (added_by_user_id, name)
+VALUES (@AddedByUserId, @Name)
+RETURNING id, uid;";
+
+        var result = await connection.QuerySingleAsync<(int, Guid)>(sql, new
+        {
+            obj.AddedByUserId,
+            obj.Name
+        });
+        return result;
+    }
+}

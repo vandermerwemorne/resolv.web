@@ -1,6 +1,12 @@
+using Resolv.Domain.Division;
+using Resolv.Domain.HoldingCompany;
+using Resolv.Domain.Onboarding;
 using Resolv.Domain.Services;
 using Resolv.Domain.Users;
 using Resolv.Infrastructure;
+using Resolv.Infrastructure.Division;
+using Resolv.Infrastructure.HoldingCompany;
+using Resolv.Infrastructure.Onboarding;
 using Resolv.Infrastructure.Users;
 using Resolv.Services;
 using Resolv.Web;
@@ -33,6 +39,9 @@ builder.Services.AddSingleton(sp =>
 });
 
 builder.Services.AddScoped<ICommonUserRepository, CommonUserRepository>();
+builder.Services.AddScoped<IHoldingCompanyRepository, HoldingCompanyRepository>();
+builder.Services.AddScoped<ICommonOnboardingRepository, CommonOnboardingRepository>();
+builder.Services.AddScoped<ICustDivisionRepository, CustDivisionRepository>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 var app = builder.Build();
