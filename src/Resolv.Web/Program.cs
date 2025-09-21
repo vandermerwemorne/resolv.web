@@ -1,4 +1,8 @@
-
+using Resolv.Domain.Services;
+using Resolv.Domain.Users;
+using Resolv.Infrastructure;
+using Resolv.Infrastructure.Users;
+using Resolv.Services;
 using Resolv.Web;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -21,6 +25,16 @@ builder.Services.AddAuthorization(options =>
     options.AddPolicy("UserOnly", policy => policy.RequireRole("User"));
 });
 
+builder.Services.Configure<DatabaseOptions>(builder.Configuration.GetSection(DatabaseOptions.Key));
+builder.Services.AddSingleton(sp =>
+{
+    var options = sp.GetRequiredService<Microsoft.Extensions.Options.IOptions<DatabaseOptions>>();
+    return new SqlConnectionFactory(options.Value.ConnectionString);
+});
+
+builder.Services.AddScoped<ICommonUserRepository, CommonUserRepository>();
+builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -33,7 +47,6 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseRouting();
-
 
 app.UseAuthentication();
 app.UseAuthorization();

@@ -13,4 +13,10 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="..\Resolv.Domain\Resolv.Domain.csproj" />
+    <ProjectReference Include="..\Resolv.Infrastructure\Resolv.Infrastructure.csproj" />
+    <ProjectReference Include="..\Resolv.Services\Resolv.Services.csproj" />
+  </ItemGroup>
+
 </Project>

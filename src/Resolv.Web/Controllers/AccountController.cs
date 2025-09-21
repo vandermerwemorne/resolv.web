@@ -1,37 +1,33 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
+using Resolv.Domain.Users;
+using Resolv.Domain.Services;
 
 namespace Resolv.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController(ICommonUserRepository commonUserRepository, IEncryptionService encryptionService) : Controller
     {
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)
         {
-            // Simple authentication logic for demonstration
-            // In production, use a user store/database
-            string? role = null;
-            if (username == "admin" && password == "password")
-            {
-                role = "Admin";
-            }
-            else if (username == "user" && password == "password")
-            {
-                role = "User";
-            }
+            var hash = encryptionService.Hash(password, username);
 
-            if (role != null)
+            // Common software admin users
+            var user = await commonUserRepository.GetUserByCredentialsAsync(username, hash);
+            if (user.Id > 0)
             {
                 var claims = new List<System.Security.Claims.Claim>
                 {
                     new(System.Security.Claims.ClaimTypes.Name, username),
-                    new(System.Security.Claims.ClaimTypes.Role, role)
+                    new(System.Security.Claims.ClaimTypes.Role, Roles.Admin)
                 };
                 var identity = new System.Security.Claims.ClaimsIdentity(claims, AuthConstants.CookieAuthScheme);
                 var principal = new System.Security.Claims.ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(AuthConstants.CookieAuthScheme, principal);
                 return RedirectToAction("Index", "Capture");
             }
+
+            // TODO customer users
 
             TempData["LoginError"] = "Invalid username or password.";
             return RedirectToAction("Index", "Home");

@@ -16,8 +16,9 @@
     <header>
         <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light box-shadow mb-3">
             <div class="container-fluid">
-                <button class="navbar-toggler nav-element" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse"
-                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <button class="navbar-toggler nav-element" type="button" data-bs-toggle="collapse"
+                    data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent" aria-expanded="false"
+                    aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon nav-element"></span>
                 </button>
                 <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
@@ -36,11 +37,11 @@
                             <form asp-controller="Account" asp-action="Login" method="post">
                                 <ul class="navbar-nav flex-row">
                                     <li class="nav-item me-2">
-                                        <input class="form-control" type="text" name="username" placeholder="Username"
+                                        <input class="form-control" type="text" name="username" placeholder="User ID"
                                             required />
                                     </li>
                                     <li class="nav-item me-2">
-                                        <input class="form-control" type="password" name="password" placeholder="Password"
+                                        <input class="form-control" type="password" name="password" placeholder="Security Key"
                                             required />
                                     </li>
                                     <li class="nav-item">
@@ -96,10 +97,10 @@
             color: #00e6ef !important;
         }
 
-            /* Color the hamburger icon only */
-            .navbar-toggler-icon {
-                filter: invert(62%) sepia(99%) saturate(747%) hue-rotate(142deg) brightness(102%) contrast(101%);
-            }
+        /* Color the hamburger icon only */
+        .navbar-toggler-icon {
+            filter: invert(62%) sepia(99%) saturate(747%) hue-rotate(142deg) brightness(102%) contrast(101%);
+        }
     </style>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
