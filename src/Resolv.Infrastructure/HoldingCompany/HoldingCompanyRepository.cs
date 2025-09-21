@@ -10,14 +10,15 @@ public class HoldingCompanyRepository(SqlConnectionFactory factory) : IHoldingCo
         using var connection = factory.CreateNpgsqlConnection();
         var uid = Guid.NewGuid();
         const string sql = @"
-INSERT INTO common.holding_company (added_by_user_id, name)
-VALUES (@AddedByUserId, @Name)
+INSERT INTO common.holding_company (added_by_user_id, name, schema_name)
+VALUES (@AddedByUserId, @Name, @SchemaName)
 RETURNING id, uid;";
 
         var result = await connection.QuerySingleAsync<(int, Guid)>(sql, new
         {
             obj.AddedByUserId,
-            obj.Name
+            obj.Name,
+            obj.SchemaName
         });
         return result;
     }

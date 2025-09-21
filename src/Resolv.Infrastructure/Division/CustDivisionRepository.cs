@@ -21,4 +21,16 @@ RETURNING id, uid;";
         });
         return result;
     }
+
+    public async Task<List<CustDivision>> GetAsync(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.division
+ORDER BY name;";
+
+        var result = await connection.QueryAsync<CustDivision>(sql);
+        return [.. result];
+    }
 }

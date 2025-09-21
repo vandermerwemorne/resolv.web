@@ -7,7 +7,6 @@
         <li class="breadcrumb-item active" aria-current="page">Create Holding Company</li>
         <li class="breadcrumb-item">Create Division</li>
         <li class="breadcrumb-item">Create Assessment Site</li>
-        <li class="breadcrumb-item">Complete</li>
     </ol>
 </nav>
 <h2 class="mb-4">Create Holding Company</h2>
@@ -35,6 +34,7 @@
             <tr>
                 <th>Name</th>
                 <th>Insert Date</th>
+                <th></th>
             </tr>
         </thead>
         <tbody>
@@ -43,6 +43,10 @@
                 <tr>
                     <td>@company.Name</td>
                     <td>@company.InsertDate.ToString("dd/MM/yyyy")</td>
+                    <td>
+                        <a asp-controller="Onboard" asp-action="CreateDivision" asp-route-holdingcompanyid="@company.Uid"
+                            class="btn btn-secondary py-0">Divisions</a>
+                    </td>
                 </tr>
             }
         </tbody>

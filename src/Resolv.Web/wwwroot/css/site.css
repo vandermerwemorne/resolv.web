@@ -25,11 +25,7 @@ body {
   margin-bottom: 60px;
 }
 
-/* Make active breadcrumb more visible */
-.breadcrumb-item.active {
-  font-weight: bold;
-  color: #258cfb !important;
-}
+
 
 .form-floating>.form-control-plaintext::placeholder,
 .form-floating>.form-control::placeholder {
@@ -40,4 +36,20 @@ body {
 .form-floating>.form-control-plaintext:focus::placeholder,
 .form-floating>.form-control:focus::placeholder {
   text-align: start;
+}
+
+/*Resolve*/
+
+.btn-primary {
+  background-color: #1e3e64 !important;
+  border-color: #1e3e64 !important;
+}
+
+.breadcrumb-item {
+  color: #e2d4d4;
+}
+
+.breadcrumb-item.active {
+  font-weight: bold;
+  color: #1e3e64 !important;
 }
