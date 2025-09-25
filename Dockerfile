@@ -29,4 +29,9 @@ RUN dotnet publish "./Resolv.Web.csproj" -c $BUILD_CONFIGURATION -o /app/publish
 FROM base AS final
 WORKDIR /app
 COPY --from=publish /app/publish .
+
+# Set environment variables for debugging (can be overridden at runtime)
+ENV ASPNETCORE_LOGGING__LOGLEVEL__DEFAULT=Information
+ENV ASPNETCORE_LOGGING__LOGLEVEL__MICROSOFT_ASPNETCORE=Warning
+
 ENTRYPOINT ["dotnet", "Resolv.Web.dll"]
