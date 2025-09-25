@@ -75,4 +75,6 @@ jobs:
             Database__ResolvDb__ConnectionString=$DB_CONN
             ASPNETCORE_ENVIRONMENT=UAT
             ASPNETCORE_DETAILEDERRORS=true
+            DetailedErrors=true
             Logging__LogLevel__Default=Debug
+            ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=""

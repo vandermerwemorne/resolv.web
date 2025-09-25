@@ -50,7 +50,15 @@ builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || app.Environment.EnvironmentName == "UAT")
+var isUatEnvironment = app.Environment.EnvironmentName.Equals("UAT", StringComparison.OrdinalIgnoreCase) ||
+                      Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("UAT", StringComparison.OrdinalIgnoreCase) == true;
+
+var enableDetailedErrors = app.Environment.IsDevelopment() ||
+                          isUatEnvironment ||
+                          app.Configuration.GetValue<bool>("DetailedErrors") ||
+                          Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
+
+if (enableDetailedErrors)
 {
     // Show detailed errors for Development and UAT environments
     app.UseDeveloperExceptionPage();
