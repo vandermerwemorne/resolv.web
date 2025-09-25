@@ -74,8 +74,5 @@ jobs:
           environmentVariables: |
             Database__ResolvDb__ConnectionString=${{ secrets.UAT_AZ_PGSQL_DB_CONN }}
             ASPNETCORE_ENVIRONMENT=UAT
-            ASPNETCORE_DETAILEDERRORS=true
             DetailedErrors=true
             EnableDeveloperExceptionPage=true
-            ForceUATEnvironment=true
-            Logging__LogLevel__Default=Debug
