@@ -1,6 +1,7 @@
 using System.Security.Claims;
-using System.Xml.Linq;
+using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
+using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
@@ -11,6 +12,7 @@ namespace Resolv.Web.Controllers
     public class OnboardController(
         ICustDivisionRepository custDivisionRepository,
         IHoldingCompanyRepository holdingCompanyRepository,
+        IAssessmentSiteRepository assessmentSiteRepository,
         ICommonOnboardingRepository onboardingRepository) : Controller
     {
         [HttpGet]
@@ -54,6 +56,7 @@ namespace Resolv.Web.Controllers
 
                 await onboardingRepository.AddCustomerSchema(schema);
                 await onboardingRepository.AddTableDivision(schema);
+                await onboardingRepository.AddTableAssessmentSite(schema);
 
                 return RedirectToAction("CreateDivision", new { holdingCompanyId = uid });
             }
@@ -100,16 +103,20 @@ namespace Resolv.Web.Controllers
 
         // Step 3: Create Assessment Site
         [HttpGet]
-        public IActionResult CreateAssessmentSite(Guid divisionId, Guid holdingCompanyId)
+        public async Task<IActionResult> CreateAssessmentSite(Guid divisionId, Guid holdingCompanyId)
         {
+            await SetViewBagAssessmentSite(divisionId, holdingCompanyId);
+
             ViewBag.DivisionId = divisionId;
             ViewBag.HoldingCompanyUid = holdingCompanyId;
             return View();
         }
 
         [HttpPost]
-        public IActionResult CreateAssessmentSite(AssessmentSite model)
+        public async Task<IActionResult> CreateAssessmentSite(AssessmentSite model)
         {
+            await SetViewBagAssessmentSite(model.DivisionId, model.HoldingCompanyId);
+
             if (ModelState.IsValid)
             {
                 
@@ -138,6 +145,23 @@ namespace Resolv.Web.Controllers
                 d.InsertDate,
                 d.Uid,
                 HoldingCompanyUid = holdingCompanyId
+            }).ToList();
+        }
+
+        private async Task SetViewBagAssessmentSite(Guid divisionId, Guid holdingCompanyId)
+        {
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
+            var division = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, divisionId);
+            var assessmentSites = await assessmentSiteRepository.GetByDivisionIdAsync(holdingCompany.SchemaName, division.Id);
+
+            ViewBag.HoldingName = holdingCompany.Name;
+            ViewBag.Division = division.Name;
+            ViewBag.AssessmentSites = assessmentSites.Select(d => new
+            {
+                d.SiteName,
+                d.InsertDate,
+                d.Uid,
+                DivisionIdUid = divisionId
             }).ToList();
         }
     }

@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Resolv.Domain.Division;
+using Resolv.Domain.HoldingCompany;
 
 namespace Resolv.Infrastructure.Division;
 
@@ -32,5 +33,17 @@ ORDER BY name;";
 
         var result = await connection.QueryAsync<CustDivision>(sql);
         return [.. result];
+    }
+
+    public async Task<CustDivision> GetAsync(string schema, Guid uid)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.division
+WHERE uid = @Uid;";
+
+        var result = await connection.QuerySingleOrDefaultAsync<CustDivision>(sql, new { Uid = uid });
+        return result ?? new CustDivision { Id = 0 };
     }
 }
