@@ -25,8 +25,13 @@ namespace Resolv.Web.Controllers
                 Environment = env.EnvironmentName,
                 IsDevelopment = env.IsDevelopment(),
                 DetailedErrorsConfig = config.GetValue<bool>("DetailedErrors"),
+                ForceUATEnvironment = config.GetValue<bool>("ForceUATEnvironment"),
                 AspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
-                AspNetCoreDetailedErrors = Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS")
+                AspNetCoreDetailedErrors = Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS"),
+                AllEnvironmentVariables = Environment.GetEnvironmentVariables()
+                    .Cast<System.Collections.DictionaryEntry>()
+                    .Where(e => e.Key?.ToString()?.StartsWith("ASPNETCORE_") == true || e.Key?.ToString()?.Contains("Detailed") == true)
+                    .ToDictionary(e => e.Key?.ToString() ?? "Unknown", e => e.Value?.ToString() ?? "")
             };
 
             return Json(info);

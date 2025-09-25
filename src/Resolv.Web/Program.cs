@@ -51,11 +51,13 @@ var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 var isUatEnvironment = app.Environment.EnvironmentName.Equals("UAT", StringComparison.OrdinalIgnoreCase) ||
-                      Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("UAT", StringComparison.OrdinalIgnoreCase) == true;
+                      Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("UAT", StringComparison.OrdinalIgnoreCase) == true ||
+                      app.Configuration.GetValue<bool>("ForceUATEnvironment");
 
 var enableDetailedErrors = app.Environment.IsDevelopment() ||
                           isUatEnvironment ||
                           app.Configuration.GetValue<bool>("DetailedErrors") ||
+                          app.Configuration.GetValue<bool>("EnableDeveloperExceptionPage") ||
                           Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
 
 if (enableDetailedErrors)
