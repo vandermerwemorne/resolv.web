@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Resolv.Domain.Division;
-using Resolv.Domain.HoldingCompany;
 
 namespace Resolv.Infrastructure.Division;
 

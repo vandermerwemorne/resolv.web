@@ -1,5 +1,4 @@
 using System.Security.Claims;
-using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
@@ -21,7 +20,6 @@ namespace Resolv.Web.Controllers
             return RedirectToAction("CreateHoldingCompany");
         }
 
-        // Step 1: Create Holding Company
         [HttpGet]
         public async Task<IActionResult> CreateHoldingCompany()
         {
@@ -32,9 +30,9 @@ namespace Resolv.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateHoldingCompanyAsync(HoldingCompany model)
         {
-            var existing = await holdingCompanyRepository.GetAsync(model.Name);
             await SetViewBagHoldingCompanies();
 
+            var existing = await holdingCompanyRepository.GetAsync(model.Name);
             if (existing.Id > 0)
             {
                 ModelState.AddModelError("Name", $"A holding company with the name '{model.Name}' already exists.");
@@ -58,31 +56,34 @@ namespace Resolv.Web.Controllers
                 await onboardingRepository.AddTableDivision(schema);
                 await onboardingRepository.AddTableAssessmentSite(schema);
 
-                return RedirectToAction("CreateDivision", new { holdingCompanyId = uid });
+                return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
             }
+
             return View(model);
         }
 
-        // Step 2: Create Division
         [HttpGet]
-        public async Task<IActionResult> CreateDivision(Guid holdingCompanyId)
+        public async Task<IActionResult> CreateDivision(Guid holdingCompanyUid)
         {
-            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
-            ViewBag.HoldingCompanyId = holdingCompanyId;
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyUid);
+            ViewBag.HoldingCompanyUid = holdingCompanyUid;
             ViewBag.HoldingName = holdingCompany.Name;
 
             await SetViewBagDivisions(holdingCompany.SchemaName, holdingCompany.Uid);
 
-            return View();
+            var model = new Division
+            {
+                HoldingCompanyUid = holdingCompanyUid
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateDivision(Division model)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
-            await SetViewBagDivisions(holdingCompany.SchemaName, holdingCompany.Uid);
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyUid);
 
             if (ModelState.IsValid)
             {
@@ -93,35 +94,61 @@ namespace Resolv.Web.Controllers
                     HoldingCompanyId = holdingCompany.Id
                 };
                 await custDivisionRepository.AddAsync(division, holdingCompany.SchemaName);
-
-                await SetViewBagDivisions(holdingCompany.SchemaName, holdingCompany.Uid);
-                return View(model);
+                return RedirectToAction("CreateDivision", new { holdingCompanyUid = model.HoldingCompanyUid });
             }
-            ViewBag.HoldingCompanyId = model.HoldingCompanyId;
+
+            // Ensure ViewBag values are set for validation failure scenario
+            await SetViewBagDivisions(holdingCompany.SchemaName, holdingCompany.Uid);
+            ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
+            ViewBag.HoldingName = holdingCompany.Name;
             return View(model);
         }
 
-        // Step 3: Create Assessment Site
         [HttpGet]
-        public async Task<IActionResult> CreateAssessmentSite(Guid divisionId, Guid holdingCompanyId)
+        public async Task<IActionResult> CreateAssessmentSite(Guid divisionUid, Guid holdingCompanyUid)
         {
-            await SetViewBagAssessmentSite(divisionId, holdingCompanyId);
+            await SetViewBagAssessmentSite(divisionUid, holdingCompanyUid);
+            ViewBag.DivisionUid = divisionUid;
+            ViewBag.HoldingCompanyUid = holdingCompanyUid;
 
-            ViewBag.DivisionId = divisionId;
-            ViewBag.HoldingCompanyUid = holdingCompanyId;
-            return View();
+            var model = new AssessmentSite
+            {
+                DivisionUid = divisionUid,
+                HoldingCompanyUid = holdingCompanyUid
+            };
+
+            return View(model);
         }
 
         [HttpPost]
         public async Task<IActionResult> CreateAssessmentSite(AssessmentSite model)
         {
-            await SetViewBagAssessmentSite(model.DivisionId, model.HoldingCompanyId);
+            ViewBag.DivisionUid = model.DivisionUid;
+            ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
+            await SetViewBagAssessmentSite(model.DivisionUid, model.HoldingCompanyUid);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyUid);
+            var division = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, model.DivisionUid);
 
             if (ModelState.IsValid)
             {
-                
+                var assessmentSite = new CustAssessmentSite
+                {
+                    AddedByUserId = int.Parse(userId ?? "0"),
+                    Address = model.Address,
+                    DivisionId = division.Id,
+                    IdentityCode = model.IdentityCode,
+                    ProvinceId = model.ProvinceId,
+                    RefCode = model.RefCode,
+                    SiteName = model.SiteName,
+                    TownId = model.TownId
+                };
+
+                await assessmentSiteRepository.AddAsync(assessmentSite, holdingCompany.SchemaName);
+                return View();
             }
-            ViewBag.DivisionId = model.DivisionId;
+
             return View(model);
         }
 
@@ -147,7 +174,6 @@ namespace Resolv.Web.Controllers
                 HoldingCompanyUid = holdingCompanyId
             }).ToList();
         }
-
         private async Task SetViewBagAssessmentSite(Guid divisionId, Guid holdingCompanyId)
         {
             var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
