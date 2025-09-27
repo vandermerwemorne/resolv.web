@@ -70,7 +70,7 @@ namespace Resolv.Web.Controllers
                     }
 
                     var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                    var schema = model.Name.Trim().ToLower();
+                    var schema = System.Text.RegularExpressions.Regex.Replace(model.Name.Trim().ToLower(), @"[^a-z0-9]", "");
 
                     var commonHoldingCompany = new ComHoldingCompany
                     {
