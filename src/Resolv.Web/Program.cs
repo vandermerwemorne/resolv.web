@@ -52,10 +52,10 @@ builder.Services.AddScoped<ITownRepository, TownRepository>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 var app = builder.Build();
-var resolveDebugEnabled = builder.Configuration.GetSection("Logging:ResolvDebug:Enabled").Get<bool>();
+var resolveDebugEnabled = builder.Configuration.GetSection("Logging:ResolvDebug:Enabled").Get<string>() ?? "";
 
 // Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment() || resolveDebugEnabled)
+if (app.Environment.IsDevelopment() || resolveDebugEnabled.Equals("true"))
 {
     // Show detailed errors for Development and UAT environments
     app.UseDeveloperExceptionPage();
