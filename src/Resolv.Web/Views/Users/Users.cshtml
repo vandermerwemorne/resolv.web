@@ -11,7 +11,7 @@
 
     <div class="form-group row mb-4">
         <label for="SelectedHoldingCompanyUid" class="col-md-3 col-form-label">Company Name</label>
-        <div class="col-md-6">
+        <div class="col-md-9">
             <select asp-for="SelectedHoldingCompanyUid" class="form-select" id="holdingCompanySelect">
                 <option value="">Select a holding company</option>
                 @if (ViewBag.HoldingCompanies != null)
@@ -24,9 +24,6 @@
             </select>
             <span asp-validation-for="SelectedHoldingCompanyUid" class="text-danger"></span>
         </div>
-        <div class="col-md-3">
-            <button type="submit" class="btn btn-primary" id="selectCompanyBtn" disabled>Continue</button>
-        </div>
     </div>
 </form>
 
@@ -34,17 +31,15 @@
     <script>
         $(document).ready(function () {
             const $holdingCompanySelect = $('#holdingCompanySelect');
-            const $selectCompanyBtn = $('#selectCompanyBtn');
+            const $form = $holdingCompanySelect.closest('form');
 
-            // Enable/disable continue button based on selection
+            // Auto-submit form when selection changes
             $holdingCompanySelect.on('change', function () {
                 const selectedValue = $(this).val();
-                $selectCompanyBtn.prop('disabled', !selectedValue);
+                if (selectedValue) {
+                    $form.submit();
+                }
             });
-
-            // Set initial state
-            const initialValue = $holdingCompanySelect.val();
-            $selectCompanyBtn.prop('disabled', !initialValue);
         });
     </script>
 }

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Users;
+using Resolv.Domain.Services;
 using Resolv.Web.Models;
 using System.Security.Claims;
 
@@ -8,7 +9,8 @@ namespace Resolv.Web.Controllers
 {
     public class UsersController(
         IHoldingCompanyRepository holdingCompanyRepository,
-        ICustUserRepository custUserRepository) : Controller
+        ICustUserRepository custUserRepository,
+        IEncryptionService encryptionService) : Controller
     {
         [HttpGet]
         public async Task<IActionResult> Users()
@@ -73,8 +75,15 @@ namespace Resolv.Web.Controllers
                     var existingUser = await custUserRepository.GetUserAsync(holdingCompany.SchemaName, model.Id.Value);
                     if (existingUser.Id > 0)
                     {
-                        existingUser.Password = model.Password;
+                        // Only update password if ResetPassword is checked
+                        if (model.ResetPassword)
+                        {
+                            var hashedPassword = encryptionService.Hash("Password1", existingUser.Email ?? string.Empty);
+                            existingUser.Password = hashedPassword;
+                        }
+
                         existingUser.FullName = model.FullName;
+                        existingUser.Email = model.Email;
                         existingUser.HasAccess = model.HasAccess;
                         existingUser.Roles = model.Roles;
                         existingUser.KnownName = model.KnownName;
@@ -84,11 +93,14 @@ namespace Resolv.Web.Controllers
                 }
                 else
                 {
-                    // Create new user
+                    // Create new user - always set default password
+                    var hashedPassword = encryptionService.Hash("Password1", model.Email);
+
                     var commonUser = new CustUser
                     {
-                        Password = model.Password,
+                        Password = hashedPassword,
                         FullName = model.FullName,
+                        Email = model.Email,
                         HasAccess = model.HasAccess,
                         AddedByUserId = int.Parse(userId ?? "0"),
                         Roles = model.Roles,
@@ -132,6 +144,7 @@ namespace Resolv.Web.Controllers
             {
                 u.Uid,
                 u.FullName,
+                u.Email,
                 u.KnownName,
                 u.Roles,
                 u.HasAccess,

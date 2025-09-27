@@ -9,7 +9,7 @@ public class CustUserRepository(SqlConnectionFactory factory) : ICustUserReposit
     {
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
-SELECT id, uid, password, full_name, insert_date, has_access, added_by_user_id, roles, known_name
+SELECT *
 FROM {schemaName}.user
 ORDER BY insert_date DESC";
 
@@ -21,8 +21,10 @@ ORDER BY insert_date DESC";
     {
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
-INSERT INTO {schemaName}.user (uid, password, full_name, insert_date, has_access, added_by_user_id, roles, known_name)
-VALUES (@Uid, @Password, @FullName, @InsertDate, @HasAccess, @AddedByUserId, @Roles, @KnownName)
+INSERT INTO {schemaName}.user 
+(uid, email, password, full_name, insert_date, has_access, added_by_user_id, roles, known_name)
+VALUES 
+(@Uid, @Email, @Password, @FullName, @InsertDate, @HasAccess, @AddedByUserId, @Roles, @KnownName)
 RETURNING id, uid";
 
         user.Uid = Guid.NewGuid();
@@ -37,7 +39,8 @@ RETURNING id, uid";
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 UPDATE {schemaName}.user 
-SET password = @Password, 
+SET email = @Email,
+    password = @Password, 
     full_name = @FullName, 
     has_access = @HasAccess, 
     roles = @Roles, 
@@ -53,7 +56,7 @@ WHERE uid = @Uid";
     {
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
-SELECT id, uid, password, full_name, insert_date, has_access, added_by_user_id, roles, known_name
+SELECT *
 FROM {schemaName}.user
 WHERE uid = @Uid";
 

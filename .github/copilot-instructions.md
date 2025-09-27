@@ -38,17 +38,54 @@
 - Use event delegation and proper event handling
 - Include `event.stopPropagation()` when needed to prevent event bubbling
 
+### Form Validation
+- **Always use ASP.NET MVC validation** instead of custom jQuery validation
+- Add `[Required]`, `[EmailAddress]`, `[StringLength]` and other data annotations to models
+- Include `<partial name="_ValidationScriptsPartial" />` for client-side validation
+- **NEVER use `alert()` boxes** - they are blocked by modern browsers
+- Remove `novalidate` attribute from forms to enable HTML5 validation
+- Use `<span asp-validation-for="PropertyName">` for field-level error display
+- Use `<div asp-validation-summary="All">` for form-level error summary
+
+#### Validation Pattern:
+```csharp
+// Model with validation attributes
+public class User
+{
+    [Required(ErrorMessage = "Name is required")]
+    [StringLength(50, ErrorMessage = "Name cannot exceed 50 characters")]
+    public string Name { get; set; }
+    
+    [Required(ErrorMessage = "Email is required")]
+    [EmailAddress(ErrorMessage = "Invalid email format")]
+    public string Email { get; set; }
+}
+```
+
+```razor
+<!-- View with validation -->
+<form asp-action="Create" method="post">
+    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    
+    <input asp-for="Name" class="form-control" />
+    <span asp-validation-for="Name" class="text-danger"></span>
+    
+    <partial name="_ValidationScriptsPartial" />
+</form>
+```
+
 ### Form Interactions
 - When implementing edit functionality:
   - Store original form state on page load
   - Toggle between create/update modes
   - Show/hide buttons appropriately (`Cancel` button hidden by default)
-  - Reset forms to original state when canceling
+  - Reset forms using `form[0].reset()` instead of manual field clearing
 
 ### AJAX Patterns
 - Use jQuery's `$.ajax()` method for server communication
 - Handle loading, success, and error states
 - Disable form elements during AJAX operations
+- Display server errors in validation summary, not alert boxes
 
 ### CSS Classes
 - Use hover effects for clickable elements
