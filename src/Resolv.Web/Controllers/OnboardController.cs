@@ -38,15 +38,15 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.Id != Guid.Empty)
+                if (model.Id.HasValue && model.Id.Value != Guid.Empty)
                 {
                     // Update existing holding company
-                    var existingCompany = await holdingCompanyRepository.GetAsync(model.Id);
+                    var existingCompany = await holdingCompanyRepository.GetAsync(model.Id.Value);
                     if (existingCompany.Id > 0)
                     {
                         // Check if another company already has this name (excluding current one)
                         var duplicateCheck = await holdingCompanyRepository.GetAsync(model.Name);
-                        if (duplicateCheck.Id > 0 && duplicateCheck.Uid != model.Id)
+                        if (duplicateCheck.Id > 0 && duplicateCheck.Uid != model.Id.Value)
                         {
                             ModelState.AddModelError("Name", $"A holding company with the name '{model.Name}' already exists.");
                             return View(model);
@@ -116,10 +116,10 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.Id != Guid.Empty)
+                if (model.Id.HasValue && model.Id.Value != Guid.Empty)
                 {
                     // Update existing division
-                    var existingDivision = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, model.Id);
+                    var existingDivision = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, model.Id.Value);
                     if (existingDivision.Id > 0)
                     {
                         existingDivision.Name = model.Name;
@@ -173,10 +173,10 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                if (model.Id != Guid.Empty)
+                if (model.Id.HasValue && model.Id.Value != Guid.Empty)
                 {
                     // Update existing assessment site
-                    var existingAssessmentSite = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, model.Id);
+                    var existingAssessmentSite = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, model.Id.Value);
                     if (existingAssessmentSite.Id > 0)
                     {
                         existingAssessmentSite.Address = model.Address;

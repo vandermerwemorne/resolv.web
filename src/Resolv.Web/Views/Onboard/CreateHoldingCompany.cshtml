@@ -27,10 +27,11 @@
 </nav>
 <h2 class="mb-4">Create Holding Company</h2>
 <form asp-action="CreateHoldingCompany" method="post" class="needs-validation" novalidate autocomplete="off">
+    <div asp-validation-summary="All" class="alert alert-danger" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
     <div class="form-group row mb-3">
         <label for="Name" class="col-md-2 col-form-label">Company Name</label>
         <div class="col-md-10">
-            <input asp-for="Name" class="form-control" autocomplete="off" />
+            <input asp-for="Name" class="form-control" autocomplete="off" name="Name" />
             <span asp-validation-for="Name" class="text-danger"></span>
         </div>
     </div>
@@ -40,7 +41,7 @@
             <button type="submit" id="submitButton" class="btn btn-primary">Save</button>
         </div>
     </div>
-    <input type="hidden" asp-for="Id" id="companyId" />
+    <input type="hidden" asp-for="Id" id="companyId" name="Id" />
 </form>
 
 <hr />
@@ -121,6 +122,14 @@
 
                 // Remove selected class from all rows
                 $('.company-row').removeClass('selected');
+            });
+
+            // Debug form submission
+            $('form').on('submit', function(e) {
+                console.log('Form submitting with values:');
+                console.log('Name input value:', $nameInput.val());
+                console.log('Company ID value:', $companyIdInput.val());
+                console.log('Form data:', $(this).serialize());
             });
         });
     </script>
