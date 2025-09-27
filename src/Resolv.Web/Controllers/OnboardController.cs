@@ -90,13 +90,28 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var division = new CustDivision
+                if (model.Id != Guid.Empty)
                 {
-                    Name = model.Name,
-                    AddedByUserId = int.Parse(userId ?? "0"),
-                    HoldingCompanyId = holdingCompany.Id
-                };
-                await custDivisionRepository.AddAsync(division, holdingCompany.SchemaName);
+                    // Update existing division
+                    var existingDivision = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, model.Id);
+                    if (existingDivision.Id > 0)
+                    {
+                        existingDivision.Name = model.Name;
+                        existingDivision.InsertDate = DateTime.UtcNow;
+                        await custDivisionRepository.UpdateAsync(existingDivision, holdingCompany.SchemaName);
+                    }
+                }
+                else
+                {
+                    // Create new division
+                    var division = new CustDivision
+                    {
+                        Name = model.Name,
+                        AddedByUserId = int.Parse(userId ?? "0"),
+                        HoldingCompanyId = holdingCompany.Id
+                    };
+                    await custDivisionRepository.AddAsync(division, holdingCompany.SchemaName);
+                }
                 return RedirectToAction("CreateDivision", new { holdingCompanyUid = model.HoldingCompanyUid });
             }
 

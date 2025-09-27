@@ -2,6 +2,22 @@
 @{
     ViewData["Title"] = "Create Division";
 }
+
+<style>
+    .division-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .division-row.selected {
+        background-color: #e3f2fd;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item">Create Holding Company</li>
@@ -10,7 +26,7 @@
     </ol>
 </nav>
 <h2 class="mb-4">Create Division</h2>
-<form asp-action="CreateDivision" method="post" class="needs-validation" novalidate>   
+<form asp-action="CreateDivision" method="post" class="needs-validation" novalidate>
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Holding Company</label>
         <div class="col-md-10 pt-2">
@@ -26,14 +42,15 @@
     </div>
     <div class="form-group row">
         <div class="offset-md-2 col-md-10 d-flex gap-2">
-            <a asp-controller="Onboard" asp-action="CreateHoldingCompany"
-               asp-route-divisionuid="@ViewBag.DivisionUid"
-               class="btn btn-secondary">Back</a>
+            <a asp-controller="Onboard" asp-action="CreateHoldingCompany" asp-route-divisionuid="@ViewBag.DivisionUid"
+                class="btn btn-secondary">Back</a>
 
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="submitButton" class="btn btn-primary">Save</button>
         </div>
     </div>
     <input type="hidden" asp-for="HoldingCompanyUid" value="@ViewBag.HoldingCompanyUid" />
+    <input type="hidden" asp-for="Id" id="divisionId" />
 </form>
 
 <hr />
@@ -51,17 +68,71 @@
         <tbody>
             @foreach (var division in ViewBag.Divisions)
             {
-                <tr>
+                <tr class="division-row" data-division-id="@division.Uid" data-division-name="@division.Name">
                     <td>@division.Name</td>
                     <td>@division.InsertDate.ToString("dd/MM/yyyy")</td>
                     <td>
-                        <a asp-controller="Onboard" asp-action="CreateAssessmentSite"
-                           asp-route-divisionuid="@division.Uid"
-                           asp-route-holdingcompanyuid="@division.HoldingCompanyUid"
-                           class="btn btn-secondary py-0">Assessment Sites</a>
+                        <a asp-controller="Onboard" asp-action="CreateAssessmentSite" asp-route-divisionuid="@division.Uid"
+                            asp-route-holdingcompanyuid="@division.HoldingCompanyUid" class="btn btn-secondary py-0"
+                            onclick="event.stopPropagation();">Assessment Sites</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const $nameInput = $('#Name');
+            const $divisionIdInput = $('#divisionId');
+            const $submitButton = $('#submitButton');
+            const $cancelButton = $('#cancelButton');
+
+            // Store original form state
+            const originalState = {
+                name: $nameInput.val(),
+                id: $divisionIdInput.val(),
+                submitText: $submitButton.text()
+            };
+
+            // Handle row click
+            $('.division-row').on('click', function (e) {
+                // Don't trigger if clicking on the Assessment Sites button
+                if ($(e.target).closest('a').length) {
+                    return;
+                }
+
+                // Remove selected class from all rows
+                $('.division-row').removeClass('selected');
+
+                // Add selected class to clicked row
+                $(this).addClass('selected');
+
+                // Populate form with division data
+                const divisionId = $(this).data('division-id');
+                const divisionName = $(this).data('division-name');
+
+                $nameInput.val(divisionName);
+                $divisionIdInput.val(divisionId);
+
+                // Switch to update mode
+                $submitButton.text('Update');
+                $cancelButton.show();
+            });
+
+            // Handle cancel button
+            $cancelButton.on('click', function () {
+                // Reset form to original state
+                $nameInput.val(originalState.name);
+                $divisionIdInput.val(originalState.id);
+                $submitButton.text(originalState.submitText);
+                $cancelButton.hide();
+
+                // Remove selected class from all rows
+                $('.division-row').removeClass('selected');
+            });
+        });
+    </script>
 }

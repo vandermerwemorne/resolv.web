@@ -5,4 +5,5 @@ public interface ICustDivisionRepository
     Task<(int, Guid)> AddAsync(CustDivision obj, string schema);
     Task<List<CustDivision>> GetAsync(string schema);
     Task<CustDivision> GetAsync(string schema, Guid uid);
+    Task UpdateAsync(CustDivision obj, string schema);
 }

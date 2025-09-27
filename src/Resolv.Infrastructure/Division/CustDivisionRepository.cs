@@ -45,4 +45,21 @@ WHERE uid = @Uid;";
         var result = await connection.QuerySingleOrDefaultAsync<CustDivision>(sql, new { Uid = uid });
         return result ?? new CustDivision { Id = 0 };
     }
+
+    public async Task UpdateAsync(CustDivision obj, string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+UPDATE {schema}.division 
+SET name = @Name, 
+    insert_date = @InsertDate
+WHERE uid = @Uid;";
+
+        await connection.ExecuteAsync(sql, new
+        {
+            obj.Name,
+            obj.InsertDate,
+            obj.Uid
+        });
+    }
 }
