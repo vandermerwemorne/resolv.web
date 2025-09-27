@@ -1,6 +1,6 @@
 @model Resolv.Web.Models.HoldingCompany
 @{
-    ViewData["Title"] = "Create Holding Company";
+    ViewData["Title"] = "Holding Company";
 }
 
 <style>
@@ -20,12 +20,12 @@
 
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
-        <li class="breadcrumb-item active" aria-current="page">Create Holding Company</li>
-        <li class="breadcrumb-item">Create Division</li>
-        <li class="breadcrumb-item">Create Assessment Site</li>
+        <li class="breadcrumb-item active" aria-current="page">Holding Company</li>
+        <li class="breadcrumb-item">Division</li>
+        <li class="breadcrumb-item">Assessment Site</li>
     </ol>
 </nav>
-<h2 class="mb-4">Create Holding Company</h2>
+<h2 class="mb-4">Holding Company</h2>
 <form asp-action="CreateHoldingCompany" method="post" class="needs-validation" novalidate autocomplete="off">
     <div asp-validation-summary="All" class="alert alert-danger"
         style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
