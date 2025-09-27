@@ -3,13 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Users;
+using Resolv.Domain.Services;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
 {
     public class UserController(
         IHoldingCompanyRepository holdingCompanyRepository,
-        ICustUserRepository custUserRepository) : Controller
+        ICustUserRepository custUserRepository,
+        IEncryptionService encryptionService) : Controller
     {
         [HttpGet]
         public async Task<IActionResult> Index(Guid? selectedHoldingCompanyUid = null)
@@ -112,14 +114,21 @@ namespace Resolv.Web.Controllers
                         existingUser.KnownName = model.KnownName;
                         existingUser.HasAccess = model.HasAccess;
                         existingUser.Roles = model.Roles;
-                        existingUser.Password = model.Password; // In real app, you'd hash this
+
+                        // Reset password if checkbox is checked
+                        if (model.ResetPassword)
+                        {
+                            var hashedPassword = encryptionService.Hash("password1", model.Email);
+                            existingUser.Password = hashedPassword;
+                        }
 
                         await custUserRepository.UpdateUserAsync(existingUser, holdingCompany.SchemaName);
                     }
                 }
                 else
                 {
-                    // Create new user
+                    // Create new user with default password "password1"
+                    var hashedPassword = encryptionService.Hash("password1", model.Email);
                     var custUser = new CustUser
                     {
                         Email = model.Email,
@@ -127,7 +136,7 @@ namespace Resolv.Web.Controllers
                         KnownName = model.KnownName,
                         HasAccess = model.HasAccess,
                         Roles = model.Roles,
-                        Password = model.Password, // In real app, you'd hash this
+                        Password = hashedPassword,
                         AddedByUserId = int.Parse(userId ?? "0")
                     };
 
