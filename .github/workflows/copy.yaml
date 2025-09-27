@@ -3,9 +3,6 @@ run-name: COPY UAT CI/CD ${{ github.event_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
 
 jobs:
   build-and-push-image:
