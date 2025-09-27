@@ -83,6 +83,7 @@ namespace Resolv.Web.Controllers
                     await onboardingRepository.AddCustomerSchema(schema);
                     await onboardingRepository.AddTableDivision(schema);
                     await onboardingRepository.AddTableAssessmentSite(schema);
+                    await onboardingRepository.AddTableUser(schema);
 
                     return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
                 }

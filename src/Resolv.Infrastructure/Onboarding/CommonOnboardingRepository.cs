@@ -64,4 +64,26 @@ ALTER TABLE IF EXISTS {schema}.division
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }
+
+    public async Task AddTableUser(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.user 
+(
+id SERIAL PRIMARY KEY,
+uid UUID DEFAULT gen_random_uuid(),
+password VARCHAR(100),
+full_name VARCHAR(45),
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+has_access BOOLEAN,
+added_by_user_id INTEGER,
+roles VARCHAR(500),
+known_name VARCHAR(45)
+);
+
+ALTER TABLE IF EXISTS {schema}.user
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
 }
