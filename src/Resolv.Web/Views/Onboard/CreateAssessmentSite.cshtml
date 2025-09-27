@@ -10,7 +10,7 @@
     </ol>
 </nav>
 <h2 class="mb-4">Create Assessment Site</h2>
-<form asp-action="CreateAssessmentSite" method="post" class="needs-validation" novalidate>    
+<form asp-action="CreateAssessmentSite" method="post" class="needs-validation" novalidate>
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Holding Company</label>
         <div class="col-md-10 pt-2">
@@ -54,7 +54,8 @@
     <div class="form-group row mb-3">
         <label for="ProvinceId" class="col-md-2 col-form-label">Province</label>
         <div class="col-md-10">
-            <input asp-for="ProvinceId" class="form-control" type="number" />
+            <select asp-for="ProvinceId" asp-items="ViewBag.Province" class="form-control">
+            </select>
             <span asp-validation-for="ProvinceId" class="text-danger"></span>
         </div>
     </div>

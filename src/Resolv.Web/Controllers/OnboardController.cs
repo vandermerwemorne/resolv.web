@@ -2,6 +2,7 @@ using System.Security.Claims;
 using Microsoft.AspNetCore.Mvc;
 using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
+using Resolv.Domain.Geographical;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
 using Resolv.Web.Models;
@@ -12,6 +13,8 @@ namespace Resolv.Web.Controllers
         ICustDivisionRepository custDivisionRepository,
         IHoldingCompanyRepository holdingCompanyRepository,
         IAssessmentSiteRepository assessmentSiteRepository,
+        IProvinceRepository provinceRepository,
+        ITownRepository townRepository,
         ICommonOnboardingRepository onboardingRepository) : Controller
     {
         [HttpGet]
@@ -123,10 +126,6 @@ namespace Resolv.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateAssessmentSite(AssessmentSite model)
         {
-            ViewBag.DivisionUid = model.DivisionUid;
-            ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
-            await SetViewBagAssessmentSite(model.DivisionUid, model.HoldingCompanyUid);
-
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyUid);
             var division = await custDivisionRepository.GetAsync(holdingCompany.SchemaName, model.DivisionUid);
@@ -146,9 +145,13 @@ namespace Resolv.Web.Controllers
                 };
 
                 await assessmentSiteRepository.AddAsync(assessmentSite, holdingCompany.SchemaName);
-                return View();
+                return RedirectToAction("CreateAssessmentSite", new { divisionUid = model.DivisionUid, holdingCompanyUid = model.HoldingCompanyUid });
             }
 
+            // Ensure ViewBag values are set for validation failure scenario
+            ViewBag.DivisionUid = model.DivisionUid;
+            ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
+            await SetViewBagAssessmentSite(model.DivisionUid, model.HoldingCompanyUid);
             return View(model);
         }
 
@@ -189,6 +192,14 @@ namespace Resolv.Web.Controllers
                 d.Uid,
                 DivisionIdUid = divisionId
             }).ToList();
+
+            var provinces = await provinceRepository.GetAsync();
+            ViewBag.Province = provinces.Prepend(new Province { Id = 0, Name = "Please select" })
+                .Select(p => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Name
+                }).ToList();
         }
     }
 }

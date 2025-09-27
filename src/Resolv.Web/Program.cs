@@ -1,5 +1,6 @@
 using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
+using Resolv.Domain.Geographical;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
 using Resolv.Domain.Services;
@@ -7,6 +8,7 @@ using Resolv.Domain.Users;
 using Resolv.Infrastructure;
 using Resolv.Infrastructure.AssessmentSite;
 using Resolv.Infrastructure.Division;
+using Resolv.Infrastructure.Geographical;
 using Resolv.Infrastructure.HoldingCompany;
 using Resolv.Infrastructure.Onboarding;
 using Resolv.Infrastructure.Users;
@@ -45,6 +47,8 @@ builder.Services.AddScoped<ICommonOnboardingRepository, CommonOnboardingReposito
 builder.Services.AddScoped<IHoldingCompanyRepository, HoldingCompanyRepository>();
 builder.Services.AddScoped<ICustDivisionRepository, CustDivisionRepository>();
 builder.Services.AddScoped<IAssessmentSiteRepository, AssessmentSiteRepository>();
+builder.Services.AddScoped<IProvinceRepository, ProvinceRepository>();
+builder.Services.AddScoped<ITownRepository, TownRepository>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 var app = builder.Build();
