@@ -25,6 +25,7 @@ namespace Resolv.Web.Controllers
                 Environment = env.EnvironmentName,
                 IsDevelopment = env.IsDevelopment(),
                 DetailedErrorsConfig = config.GetValue<bool>("DetailedErrors"),
+                ResolvDebug = config.GetValue<bool>("Logging:ResolvDebug:Enabled"),
                 ForceUATEnvironment = config.GetValue<bool>("ForceUATEnvironment"),
                 AspNetCoreEnvironment = Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT"),
                 AspNetCoreDetailedErrors = Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS"),

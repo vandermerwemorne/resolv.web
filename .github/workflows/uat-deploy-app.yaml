@@ -73,6 +73,4 @@ jobs:
           resourceGroup: resolv-uat-rg
           environmentVariables: |
             Database__ResolvDb__ConnectionString=$DB_CONN
-            ASPNETCORE_ENVIRONMENT=UAT
-            DetailedErrors=true
-            EnableDeveloperExceptionPage=true
+            Logging__ResolvDebug__Enabled=true

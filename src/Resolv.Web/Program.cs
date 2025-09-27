@@ -52,19 +52,10 @@ builder.Services.AddScoped<ITownRepository, TownRepository>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 var app = builder.Build();
+var resolveDebugEnabled = builder.Configuration.GetSection("Logging:ResolvDebug:Enabled").Get<bool>();
 
 // Configure the HTTP request pipeline.
-var isUatEnvironment = app.Environment.EnvironmentName.Equals("UAT", StringComparison.OrdinalIgnoreCase) ||
-                      Environment.GetEnvironmentVariable("ASPNETCORE_ENVIRONMENT")?.Equals("UAT", StringComparison.OrdinalIgnoreCase) == true ||
-                      app.Configuration.GetValue<bool>("ForceUATEnvironment");
-
-var enableDetailedErrors = app.Environment.IsDevelopment() ||
-                          isUatEnvironment ||
-                          app.Configuration.GetValue<bool>("DetailedErrors") ||
-                          app.Configuration.GetValue<bool>("EnableDeveloperExceptionPage") ||
-                          Environment.GetEnvironmentVariable("ASPNETCORE_DETAILEDERRORS")?.Equals("true", StringComparison.OrdinalIgnoreCase) == true;
-
-if (enableDetailedErrors)
+if (app.Environment.IsDevelopment() || resolveDebugEnabled)
 {
     // Show detailed errors for Development and UAT environments
     app.UseDeveloperExceptionPage();
