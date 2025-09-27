@@ -1,0 +1,112 @@
+@model Resolv.Web.Models.UserManagement
+@{
+    ViewData["Title"] = "User Management";
+}
+
+<style>
+    .user-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .user-row.selected {
+        background-color: #e3f2fd;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
+<h2 class="mb-4">User Management</h2>
+
+<form asp-action="Index" method="post" class="needs-validation" novalidate>
+    <div class="form-group row mb-3">
+        <label for="SelectedHoldingCompanyUid" class="col-md-2 col-form-label">Holding Company</label>
+        <div class="col-md-10">
+            <select asp-for="SelectedHoldingCompanyUid" asp-items="@ViewBag.HoldingCompanies" class="form-select">
+            </select>
+            <span asp-validation-for="SelectedHoldingCompanyUid" class="text-danger"></span>
+        </div>
+    </div>
+</form>
+
+@if (ViewBag.SelectedHoldingCompanyUid != null)
+{
+    <hr />
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h3>Users for @ViewBag.SelectedHoldingCompanyName</h3>
+        <a asp-controller="User" asp-action="CreateUser" asp-route-holdingcompanyuid="@ViewBag.SelectedHoldingCompanyUid"
+            class="btn btn-primary">Add</a>
+    </div>
+
+    @if (ViewBag.Users != null)
+    {
+        <table class="table table-bordered">
+            <thead>
+                <tr>
+                    <th>Full Name</th>
+                    <th>Known Name</th>
+                    <th>Email</th>
+                    <th>Has Access</th>
+                    <th>Roles</th>
+                    <th>Insert Date</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in ViewBag.Users)
+                {
+                    <tr class="user-row" data-user-id="@user.Uid" data-holdingcompany-uid="@user.HoldingCompanyUid">
+                        <td>@user.FullName</td>
+                        <td>@user.KnownName</td>
+                        <td>@user.Email</td>
+                        <td>
+                            @if (user.HasAccess)
+                            {
+                                <span class="badge bg-success">Yes</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-danger">No</span>
+                            }
+                        </td>
+                        <td>@user.Roles</td>
+                        <td>@user.InsertDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    }
+    else
+    {
+        <div class="alert alert-info">
+            <i class="fas fa-info-circle"></i> No users found for this holding company.
+        </div>
+    }
+}
+
+<partial name="_ValidationScriptsPartial" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle holding company selection change
+            $('#SelectedHoldingCompanyUid').on('change', function () {
+                if ($(this).val()) {
+                    $(this).closest('form').submit();
+                }
+            });
+
+            // Handle user row click to navigate to manage user
+            $('.user-row').on('click', function (e) {
+                var $row = $(this);
+                var userId = $row.data('user-id');
+                var holdingCompanyUid = $row.data('holdingcompany-uid');
+
+                // Navigate to the CreateUser action with user ID for editing
+                var manageUrl = '@Url.Action("CreateUser", "User")?holdingcompanyuid=' + holdingCompanyUid + '&userId=' + userId;
+                window.location.href = manageUrl;
+            });
+        });
+    </script>
+}

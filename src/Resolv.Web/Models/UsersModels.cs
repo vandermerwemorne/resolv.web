@@ -2,10 +2,15 @@
 
 namespace Resolv.Web.Models;
 
+public class UserManagement
+{
+    public Guid? SelectedHoldingCompanyUid { get; set; }
+}
+
 public class User
 {
     public Guid? Id { get; set; }
-    public Guid? SelectedHoldingCompanyUid { get; set; }
+    public Guid HoldingCompanyUid { get; set; }
     public string Password { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Full Name is required")]
