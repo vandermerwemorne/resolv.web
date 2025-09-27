@@ -1,5 +1,5 @@
-name: UAT Build and Deploy
-run-name: UAT CI/CD ${{ github.event_name }} by @${{ github.actor }}
+name: COPY UAT Deploy App
+run-name: COPY UAT CI/CD ${{ github.event_name }} by @${{ github.actor }}
 
 on:
   workflow_dispatch:
@@ -71,8 +71,10 @@ jobs:
           containerAppName: resolv-uat
           containerAppEnvironment: resolv-uat
           resourceGroup: resolv-uat-rg
-          environmentVariables: >-
-            Database__ResolvDb__ConnectionString=${{ secrets.UAT_AZ_PGSQL_DB_CONN }}
+          environmentVariables: |
+            Database__ResolvDb__ConnectionString=$DB_CONN
             ASPNETCORE_ENVIRONMENT=UAT
+            ASPNETCORE_DETAILEDERRORS=true
             DetailedErrors=true
-            EnableDeveloperExceptionPage=true
+            Logging__LogLevel__Default=Debug
+            ASPNETCORE_HOSTINGSTARTUPASSEMBLIES=""
