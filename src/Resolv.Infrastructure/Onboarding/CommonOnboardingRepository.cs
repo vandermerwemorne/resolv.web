@@ -78,6 +78,7 @@ full_name VARCHAR(45),
 email VARCHAR(45),
 insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 has_access BOOLEAN,
+assessment_site_access VARCHAR(200),
 added_by_user_id INTEGER,
 roles VARCHAR(500),
 known_name VARCHAR(45)

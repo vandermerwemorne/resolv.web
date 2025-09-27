@@ -26,6 +26,10 @@ public class User
     [Display(Name = "User has system access")]
     public bool HasAccess { get; set; } = true;
 
+    [Display(Name = "Assessment Site Access")]
+    [StringLength(200, ErrorMessage = "Assessment Site Access cannot exceed 200 characters")]
+    public string AssessmentSiteAccess { get; set; } = string.Empty;
+
     [Display(Name = "Reset Password")]
     public bool ResetPassword { get; set; } = false;
 

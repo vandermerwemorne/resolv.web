@@ -13,6 +13,7 @@ public class CustUser
     public string? FullName { get; set; }
     public DateTime InsertDate { get; set; }
     public bool HasAccess { get; set; }
+    public string? AssessmentSiteAccess { get; set; }
     public int AddedByUserId { get; set; }
     public string? Roles { get; set; }
     public string? KnownName { get; set; }

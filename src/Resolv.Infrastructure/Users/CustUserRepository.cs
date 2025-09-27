@@ -22,9 +22,9 @@ ORDER BY insert_date DESC";
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 INSERT INTO {schemaName}.user 
-(uid, email, password, full_name, insert_date, has_access, added_by_user_id, roles, known_name)
+(uid, email, password, full_name, insert_date, has_access, assessment_site_access, added_by_user_id, roles, known_name)
 VALUES 
-(@Uid, @Email, @Password, @FullName, @InsertDate, @HasAccess, @AddedByUserId, @Roles, @KnownName)
+(@Uid, @Email, @Password, @FullName, @InsertDate, @HasAccess, @AssessmentSiteAccess, @AddedByUserId, @Roles, @KnownName)
 RETURNING id, uid";
 
         user.Uid = Guid.NewGuid();
@@ -43,6 +43,7 @@ SET email = @Email,
     password = @Password, 
     full_name = @FullName, 
     has_access = @HasAccess, 
+    assessment_site_access = @AssessmentSiteAccess,
     roles = @Roles, 
     known_name = @KnownName,
     insert_date = @InsertDate

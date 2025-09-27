@@ -76,6 +76,7 @@ namespace Resolv.Web.Controllers
                         KnownName = existingUser.KnownName ?? "",
                         Email = existingUser.Email ?? "",
                         HasAccess = existingUser.HasAccess,
+                        AssessmentSiteAccess = existingUser.AssessmentSiteAccess ?? "",
                         Roles = existingUser.Roles ?? "",
                         // Don't populate password for security
                         Password = ""
@@ -113,6 +114,7 @@ namespace Resolv.Web.Controllers
                         existingUser.FullName = model.FullName;
                         existingUser.KnownName = model.KnownName;
                         existingUser.HasAccess = model.HasAccess;
+                        existingUser.AssessmentSiteAccess = model.AssessmentSiteAccess;
                         existingUser.Roles = model.Roles;
 
                         // Reset password if checkbox is checked
@@ -135,6 +137,7 @@ namespace Resolv.Web.Controllers
                         FullName = model.FullName,
                         KnownName = model.KnownName,
                         HasAccess = model.HasAccess,
+                        AssessmentSiteAccess = model.AssessmentSiteAccess,
                         Roles = model.Roles,
                         Password = hashedPassword,
                         AddedByUserId = int.Parse(userId ?? "0")
@@ -163,7 +166,7 @@ namespace Resolv.Web.Controllers
             }).Prepend(new SelectListItem
             {
                 Value = "",
-                Text = "Please select a holding company"
+                Text = "-- Please select --"
             }).ToList();
         }
 
@@ -177,6 +180,7 @@ namespace Resolv.Web.Controllers
                 u.FullName,
                 u.KnownName,
                 u.HasAccess,
+                u.AssessmentSiteAccess,
                 u.Roles,
                 u.InsertDate,
                 HoldingCompanyUid = holdingCompanyId
