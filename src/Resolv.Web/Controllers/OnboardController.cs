@@ -31,35 +31,61 @@ namespace Resolv.Web.Controllers
         }
 
         [HttpPost]
+        [ActionName("CreateHoldingCompany")]
         public async Task<IActionResult> CreateHoldingCompanyAsync(HoldingCompany model)
         {
             await SetViewBagHoldingCompanies();
 
-            var existing = await holdingCompanyRepository.GetAsync(model.Name);
-            if (existing.Id > 0)
-            {
-                ModelState.AddModelError("Name", $"A holding company with the name '{model.Name}' already exists.");
-                return View(model);
-            }
-
             if (ModelState.IsValid)
             {
-                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                var schema = model.Name.Trim().ToLower();
-
-                var commonHoldingCompany = new ComHoldingCompany
+                if (model.Id != Guid.Empty)
                 {
-                    Name = model.Name,
-                    AddedByUserId = int.Parse(userId ?? "0"),
-                    SchemaName = schema
-                };
-                var (_, uid) = await holdingCompanyRepository.AddAsync(commonHoldingCompany);
+                    // Update existing holding company
+                    var existingCompany = await holdingCompanyRepository.GetAsync(model.Id);
+                    if (existingCompany.Id > 0)
+                    {
+                        // Check if another company already has this name (excluding current one)
+                        var duplicateCheck = await holdingCompanyRepository.GetAsync(model.Name);
+                        if (duplicateCheck.Id > 0 && duplicateCheck.Uid != model.Id)
+                        {
+                            ModelState.AddModelError("Name", $"A holding company with the name '{model.Name}' already exists.");
+                            return View(model);
+                        }
 
-                await onboardingRepository.AddCustomerSchema(schema);
-                await onboardingRepository.AddTableDivision(schema);
-                await onboardingRepository.AddTableAssessmentSite(schema);
+                        existingCompany.Name = model.Name;
+                        existingCompany.InsertDate = DateTime.UtcNow;
+                        await holdingCompanyRepository.UpdateAsync(existingCompany);
 
-                return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
+                        return RedirectToAction("CreateHoldingCompany");
+                    }
+                }
+                else
+                {
+                    // Create new holding company
+                    var existing = await holdingCompanyRepository.GetAsync(model.Name);
+                    if (existing.Id > 0)
+                    {
+                        ModelState.AddModelError("Name", $"A holding company with the name '{model.Name}' already exists.");
+                        return View(model);
+                    }
+
+                    var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                    var schema = model.Name.Trim().ToLower();
+
+                    var commonHoldingCompany = new ComHoldingCompany
+                    {
+                        Name = model.Name,
+                        AddedByUserId = int.Parse(userId ?? "0"),
+                        SchemaName = schema
+                    };
+                    var (_, uid) = await holdingCompanyRepository.AddAsync(commonHoldingCompany);
+
+                    await onboardingRepository.AddCustomerSchema(schema);
+                    await onboardingRepository.AddTableDivision(schema);
+                    await onboardingRepository.AddTableAssessmentSite(schema);
+
+                    return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
+                }
             }
 
             return View(model);
@@ -147,19 +173,41 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
-                var assessmentSite = new CustAssessmentSite
+                if (model.Id != Guid.Empty)
                 {
-                    AddedByUserId = int.Parse(userId ?? "0"),
-                    Address = model.Address,
-                    DivisionId = division.Id,
-                    IdentityCode = model.IdentityCode,
-                    ProvinceId = model.ProvinceId,
-                    RefCode = model.RefCode,
-                    SiteName = model.SiteName,
-                    TownId = model.TownId
-                };
+                    // Update existing assessment site
+                    var existingAssessmentSite = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, model.Id);
+                    if (existingAssessmentSite.Id > 0)
+                    {
+                        existingAssessmentSite.Address = model.Address;
+                        existingAssessmentSite.IdentityCode = model.IdentityCode;
+                        existingAssessmentSite.ProvinceId = model.ProvinceId;
+                        existingAssessmentSite.RefCode = model.RefCode;
+                        existingAssessmentSite.SiteName = model.SiteName;
+                        existingAssessmentSite.TownId = model.TownId;
+                        existingAssessmentSite.InsertDate = DateTime.UtcNow;
 
-                await assessmentSiteRepository.AddAsync(assessmentSite, holdingCompany.SchemaName);
+                        await assessmentSiteRepository.UpdateAsync(existingAssessmentSite, holdingCompany.SchemaName);
+                    }
+                }
+                else
+                {
+                    // Create new assessment site
+                    var assessmentSite = new CustAssessmentSite
+                    {
+                        AddedByUserId = int.Parse(userId ?? "0"),
+                        Address = model.Address,
+                        DivisionId = division.Id,
+                        IdentityCode = model.IdentityCode,
+                        ProvinceId = model.ProvinceId,
+                        RefCode = model.RefCode,
+                        SiteName = model.SiteName,
+                        TownId = model.TownId
+                    };
+
+                    await assessmentSiteRepository.AddAsync(assessmentSite, holdingCompany.SchemaName);
+                }
+
                 return RedirectToAction("CreateAssessmentSite", new { divisionUid = model.DivisionUid, holdingCompanyUid = model.HoldingCompanyUid });
             }
 
@@ -214,9 +262,14 @@ namespace Resolv.Web.Controllers
             ViewBag.Division = division.Name;
             ViewBag.AssessmentSites = assessmentSites.Select(d => new
             {
-                d.SiteName,
-                d.InsertDate,
                 d.Uid,
+                d.SiteName,
+                d.IdentityCode,
+                d.RefCode,
+                d.Address,
+                d.ProvinceId,
+                d.TownId,
+                d.InsertDate,
                 DivisionIdUid = divisionId
             }).ToList();
 

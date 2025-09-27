@@ -2,6 +2,22 @@
 @{
     ViewData["Title"] = "Create Holding Company";
 }
+
+<style>
+    .company-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .company-row.selected {
+        background-color: #e3f2fd;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
 <nav aria-label="breadcrumb">
     <ol class="breadcrumb">
         <li class="breadcrumb-item active" aria-current="page">Create Holding Company</li>
@@ -19,10 +35,12 @@
         </div>
     </div>
     <div class="form-group row">
-        <div class="offset-md-2 col-md-10">
-            <button type="submit" class="btn btn-primary">Save</button>
+        <div class="offset-md-2 col-md-10 d-flex gap-2">
+            <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="submitButton" class="btn btn-primary">Save</button>
         </div>
     </div>
+    <input type="hidden" asp-for="Id" id="companyId" />
 </form>
 
 <hr />
@@ -40,15 +58,70 @@
         <tbody>
             @foreach (var company in ViewBag.HoldingCompanies)
             {
-                <tr>
+                <tr class="company-row" data-company-id="@company.Uid" data-company-name="@company.Name">
                     <td>@company.Name</td>
                     <td>@company.InsertDate.ToString("dd/MM/yyyy")</td>
                     <td>
                         <a asp-controller="Onboard" asp-action="CreateDivision" asp-route-holdingcompanyuid="@company.Uid"
-                            class="btn btn-secondary py-0">Divisions</a>
+                            class="btn btn-secondary py-0" onclick="event.stopPropagation();">Divisions</a>
                     </td>
                 </tr>
             }
         </tbody>
     </table>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const $nameInput = $('#Name');
+            const $companyIdInput = $('#companyId');
+            const $submitButton = $('#submitButton');
+            const $cancelButton = $('#cancelButton');
+
+            // Store original form state
+            const originalState = {
+                name: $nameInput.val(),
+                id: $companyIdInput.val(),
+                submitText: $submitButton.text()
+            };
+
+            // Handle row click
+            $('.company-row').on('click', function (e) {
+                // Don't trigger if clicking on the Divisions button
+                if ($(e.target).closest('a').length) {
+                    return;
+                }
+
+                // Remove selected class from all rows
+                $('.company-row').removeClass('selected');
+
+                // Add selected class to clicked row
+                $(this).addClass('selected');
+
+                // Populate form with company data
+                const companyId = $(this).data('company-id');
+                const companyName = $(this).data('company-name');
+
+                $nameInput.val(companyName);
+                $companyIdInput.val(companyId);
+
+                // Switch to update mode
+                $submitButton.text('Update');
+                $cancelButton.show();
+            });
+
+            // Handle cancel button
+            $cancelButton.on('click', function () {
+                // Reset form to original state
+                $nameInput.val(originalState.name);
+                $companyIdInput.val(originalState.id);
+                $submitButton.text(originalState.submitText);
+                $cancelButton.hide();
+
+                // Remove selected class from all rows
+                $('.company-row').removeClass('selected');
+            });
+        });
+    </script>
 }

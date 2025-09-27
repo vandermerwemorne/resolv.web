@@ -6,4 +6,5 @@ public interface IHoldingCompanyRepository
     Task<ComHoldingCompany> GetAsync(Guid uid);
     Task<List<ComHoldingCompany>> GetAsync();
     Task<ComHoldingCompany> GetAsync(string name);
+    Task UpdateAsync(ComHoldingCompany obj);
 }

@@ -54,4 +54,21 @@ WHERE name = @name;";
         var result = await connection.QuerySingleOrDefaultAsync<ComHoldingCompany>(sql, new { name });
         return result ?? new ComHoldingCompany { Id = 0 };
     }
+
+    public async Task UpdateAsync(ComHoldingCompany obj)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        const string sql = @"
+UPDATE common.holding_company 
+SET name = @Name, 
+    insert_date = @InsertDate
+WHERE uid = @Uid;";
+
+        await connection.ExecuteAsync(sql, new
+        {
+            obj.Name,
+            obj.InsertDate,
+            obj.Uid
+        });
+    }
 }

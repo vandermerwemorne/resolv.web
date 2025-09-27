@@ -49,4 +49,41 @@ ORDER BY site_name;";
         });
         return [.. result];
     }
+
+    public async Task<CustAssessmentSite> GetByUidAsync(string schema, Guid uid)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.client
+WHERE uid = @Uid;";
+        var result = await connection.QuerySingleOrDefaultAsync<CustAssessmentSite>(sql, new { Uid = uid });
+        return result ?? new CustAssessmentSite { Id = 0 };
+    }
+
+    public async Task UpdateAsync(CustAssessmentSite obj, string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+UPDATE {schema}.client
+SET site_name = @SiteName,
+    ref_code = @RefCode,
+    province_id = @ProvinceId,
+    address = @Address,
+    town_id = @TownId,
+    identity_code = @IdentityCode,
+    insert_date = @InsertDate
+WHERE uid = @Uid;";
+        await connection.ExecuteAsync(sql, new
+        {
+            obj.SiteName,
+            obj.RefCode,
+            obj.ProvinceId,
+            obj.Address,
+            obj.TownId,
+            obj.IdentityCode,
+            obj.InsertDate,
+            obj.Uid
+        });
+    }
 }

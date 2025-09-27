@@ -10,6 +10,21 @@
     </ol>
 </nav>
 <h2 class="mb-4">Create Assessment Site</h2>
+<style>
+    .site-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .site-row.selected {
+        background-color: #e3f2fd;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
 <form asp-action="CreateAssessmentSite" method="post" class="needs-validation" novalidate>
     <div class="form-group row mb-3">
         <label class="col-md-2 col-form-label">Holding Company</label>
@@ -68,16 +83,18 @@
             <span asp-validation-for="TownId" class="text-danger"></span>
         </div>
     </div>
+
     <div class="form-group row">
         <div class="offset-md-2 col-md-10 d-flex gap-2">
             <a asp-controller="Onboard" asp-action="CreateDivision"
                 asp-route-holdingcompanyuid="@ViewBag.HoldingCompanyUid" class="btn btn-secondary">Back</a>
-
-            <button type="submit" class="btn btn-primary">Save</button>
+            <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+            <button type="submit" id="submitButton" class="btn btn-primary">Save</button>
         </div>
     </div>
     <input type="hidden" asp-for="DivisionUid" value="@ViewBag.DivisionUid" />
     <input type="hidden" asp-for="HoldingCompanyUid" value="@ViewBag.HoldingCompanyUid" />
+    <input type="hidden" asp-for="Id" id="siteId" />
 </form>
 
 <hr />
@@ -92,11 +109,18 @@
             </tr>
         </thead>
         <tbody>
-            @foreach (var division in ViewBag.AssessmentSites)
+            @foreach (var site in ViewBag.AssessmentSites)
             {
-                <tr>
-                    <td>@division.SiteName</td>
-                    <td>@division.InsertDate.ToString("dd/MM/yyyy")</td>
+                <tr class="site-row" 
+                    data-site-id="@site.Uid" 
+                    data-site-name="@site.SiteName"
+                    data-identity-code="@site.IdentityCode" 
+                    data-ref-code="@site.RefCode" 
+                    data-address="@site.Address"
+                    data-province-id="@site.ProvinceId" 
+                    data-town-id="@site.TownId">
+                    <td>@site.SiteName</td>
+                    <td>@site.InsertDate.ToString("dd/MM/yyyy")</td>
                 </tr>
             }
         </tbody>
@@ -108,7 +132,24 @@
         $(document).ready(function () {
             var $provinceSelect = $('select[name="ProvinceId"]');
             var $townSelect = $('select[name="TownId"]');
-            var initialTownId = $townSelect.val(); // Store initial TownId for validation error scenarios
+            var $siteName = $('#SiteName');
+            var $identityCode = $('#IdentityCode');
+            var $refCode = $('#RefCode');
+            var $address = $('#Address');
+            var $siteId = $('#siteId');
+            var $submitButton = $('#submitButton');
+            var $cancelButton = $('#cancelButton');
+
+            var originalState = {
+                siteName: $siteName.val(),
+                identityCode: $identityCode.val(),
+                refCode: $refCode.val(),
+                address: $address.val(),
+                provinceId: $provinceSelect.val(),
+                townId: $townSelect.val(),
+                id: $siteId.val(),
+                submitText: $submitButton.text()
+            };
 
             // Function to load towns for a given province
             function loadTowns(provinceId, selectedTownId) {
@@ -116,23 +157,14 @@
                     $townSelect.html('<option value="">Please select a province first</option>').prop('disabled', true);
                     return;
                 }
-
-                // Show loading state
                 $townSelect.html('<option value="">Loading towns...</option>').prop('disabled', true);
-
-                // Make AJAX call to GetTown endpoint
                 $.ajax({
                     url: '/Onboard/GetTown',
                     type: 'GET',
                     data: { provinceId: provinceId },
                     success: function (towns) {
-                        // Clear existing options
                         $townSelect.empty();
-
-                        // Add default option
                         $townSelect.append('<option value="">Please select</option>');
-
-                        // Add town options
                         $.each(towns, function (index, town) {
                             var option = $('<option value="' + town.id + '">' + town.name + '</option>');
                             if (selectedTownId && selectedTownId == town.id) {
@@ -140,7 +172,6 @@
                             }
                             $townSelect.append(option);
                         });
-
                         $townSelect.prop('disabled', false);
                     },
                     error: function () {
@@ -152,23 +183,59 @@
 
             // Initialize on page load
             var initialProvinceId = $provinceSelect.val();
+            var initialTownId = $townSelect.val();
             if (initialProvinceId && initialProvinceId !== '0') {
-                // If we already have towns from server (validation error scenario), enable the dropdown
                 if ($townSelect.find('option').length > 1) {
                     $townSelect.prop('disabled', false);
                 } else {
-                    // Otherwise load them via AJAX
                     loadTowns(initialProvinceId, initialTownId);
                 }
             } else {
-                // No province selected, disable town select
                 $townSelect.html('<option value="">Please select a province first</option>').prop('disabled', true);
             }
 
-            // Handle province change
             $provinceSelect.on('change', function () {
                 var provinceId = $(this).val();
                 loadTowns(provinceId);
+            });
+
+            // Handle row click for editing
+            $('.site-row').on('click', function () {
+                $('.site-row').removeClass('selected');
+                $(this).addClass('selected');
+
+                var siteId = $(this).data('site-id');
+                var siteName = $(this).data('site-name');
+                var identityCode = $(this).data('identity-code');
+                var refCode = $(this).data('ref-code');
+                var address = $(this).data('address');
+                var provinceId = $(this).data('province-id');
+                var townId = $(this).data('town-id');
+
+                $siteId.val(siteId);
+                $siteName.val(siteName);
+                $identityCode.val(identityCode);
+                $refCode.val(refCode);
+                $address.val(address);
+                $provinceSelect.val(provinceId);
+                loadTowns(provinceId, townId);
+
+                $submitButton.text('Update');
+                $cancelButton.show();
+            });
+
+            // Handle cancel button
+            $cancelButton.on('click', function () {
+                $siteId.val(originalState.id);
+                $siteName.val(originalState.siteName);
+                $identityCode.val(originalState.identityCode);
+                $refCode.val(originalState.refCode);
+                $address.val(originalState.address);
+                $provinceSelect.val(originalState.provinceId);
+                loadTowns(originalState.provinceId, originalState.townId);
+                $submitButton.text(originalState.submitText);
+                $cancelButton.hide();
+                $('.site-row').removeClass('selected');
             });
         });
     </script>
