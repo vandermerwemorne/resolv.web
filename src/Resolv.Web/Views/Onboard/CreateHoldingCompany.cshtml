@@ -27,7 +27,8 @@
 </nav>
 <h2 class="mb-4">Create Holding Company</h2>
 <form asp-action="CreateHoldingCompany" method="post" class="needs-validation" novalidate autocomplete="off">
-    <div asp-validation-summary="All" class="alert alert-danger" style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+    <div asp-validation-summary="All" class="alert alert-danger"
+        style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
     <div class="form-group row mb-3">
         <label for="Name" class="col-md-2 col-form-label">Company Name</label>
         <div class="col-md-10">
@@ -125,7 +126,7 @@
             });
 
             // Debug form submission
-            $('form').on('submit', function(e) {
+            $('form').on('submit', function (e) {
                 console.log('Form submitting with values:');
                 console.log('Name input value:', $nameInput.val());
                 console.log('Company ID value:', $companyIdInput.val());
