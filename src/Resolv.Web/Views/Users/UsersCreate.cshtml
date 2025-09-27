@@ -1,0 +1,242 @@
+@model Resolv.Web.Models.User
+@{
+    ViewData["Title"] = "Manage Users";
+}
+
+<style>
+    .user-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .user-row.selected {
+        background-color: #e3f2fd;
+    }
+
+    #cancelButton {
+        display: none;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Manage Users for @ViewBag.SelectedHoldingCompanyName</h2>
+    <a asp-action="Users" class="btn btn-outline-secondary">← Back to Company Selection</a>
+</div>
+
+<div class="row">
+    <!-- User Form Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0" id="formTitle">Add New User</h5>
+            </div>
+            <div class="card-body">
+                <form asp-action="UsersCreate" method="post" class="needs-validation" novalidate autocomplete="off">
+                    <div asp-validation-summary="All" class="alert alert-danger"
+                        style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+                    <div class="form-group mb-3">
+                        <label for="FullName" class="form-label">Full Name <span class="text-danger">*</span></label>
+                        <input asp-for="FullName" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="FullName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="KnownName" class="form-label">Known Name</label>
+                        <input asp-for="KnownName" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="KnownName" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Password" class="form-label">Password <span class="text-danger"
+                                id="passwordRequired">*</span></label>
+                        <input asp-for="Password" type="password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <small class="form-text text-muted" id="passwordHelp">Leave blank when editing to keep current
+                            password</small>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <label for="Roles" class="form-label">Roles</label>
+                        <input asp-for="Roles" class="form-control" autocomplete="off" />
+                        <span asp-validation-for="Roles" class="text-danger"></span>
+                    </div>
+
+                    <div class="form-group mb-3">
+                        <div class="form-check">
+                            <input asp-for="HasAccess" class="form-check-input" type="checkbox" />
+                            <label class="form-check-label" for="HasAccess">
+                                User has system access
+                            </label>
+                        </div>
+                        <span asp-validation-for="HasAccess" class="text-danger"></span>
+                    </div>
+
+                    <div class="d-flex gap-2">
+                        <button type="button" id="cancelButton" class="btn btn-secondary">Cancel</button>
+                        <button type="submit" id="submitButton" class="btn btn-primary">Save User</button>
+                    </div>
+
+                    <!-- Hidden Fields -->
+                    <input type="hidden" asp-for="Id" id="userId" />
+                    <input type="hidden" asp-for="SelectedHoldingCompanyUid" />
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Users List Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">Existing Users</h5>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Users != null && ViewBag.Users.Count > 0)
+                {
+                    <div class="table-responsive">
+                        <table class="table table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Known Name</th>
+                                    <th>Access</th>
+                                    <th>Created</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var user in ViewBag.Users)
+                                {
+                                    <tr class="user-row" data-user-id="@user.Uid" data-full-name="@user.FullName"
+                                        data-known-name="@user.KnownName" data-roles="@user.Roles"
+                                        data-has-access="@user.HasAccess.ToString().ToLower()">
+                                        <td>@user.FullName</td>
+                                        <td>@user.KnownName</td>
+                                        <td>
+                                            @if (user.HasAccess)
+                                            {
+                                                <span class="badge bg-success">Yes</span>
+                                            }
+                                            else
+                                            {
+                                                <span class="badge bg-danger">No</span>
+                                            }
+                                        </td>
+                                        <td>@user.InsertDate.ToString("dd/MM/yyyy")</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center text-muted py-4">
+                        <i class="fas fa-users fa-3x mb-3"></i>
+                        <p>No users found for this holding company.</p>
+                        <p class="small">Add your first user using the form on the left.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // User form elements
+            const $fullNameInput = $('#FullName');
+            const $knownNameInput = $('#KnownName');
+            const $passwordInput = $('#Password');
+            const $rolesInput = $('#Roles');
+            const $hasAccessInput = $('#HasAccess');
+            const $userIdInput = $('#userId');
+            const $submitButton = $('#submitButton');
+            const $cancelButton = $('#cancelButton');
+            const $formTitle = $('#formTitle');
+            const $passwordRequired = $('#passwordRequired');
+            const $passwordHelp = $('#passwordHelp');
+
+            // Store original form state
+            const originalState = {
+                fullName: $fullNameInput.val(),
+                knownName: $knownNameInput.val(),
+                password: $passwordInput.val(),
+                roles: $rolesInput.val(),
+                hasAccess: $hasAccessInput.prop('checked'),
+                userId: $userIdInput.val(),
+                submitText: $submitButton.text(),
+                formTitle: $formTitle.text()
+            };
+
+            // Handle user row click
+            $('.user-row').on('click', function () {
+                // Remove selected class from all rows
+                $('.user-row').removeClass('selected');
+
+                // Add selected class to clicked row
+                $(this).addClass('selected');
+
+                // Populate form with user data
+                const userId = $(this).data('user-id');
+                const fullName = $(this).data('full-name');
+                const knownName = $(this).data('known-name');
+                const roles = $(this).data('roles');
+                const hasAccess = $(this).data('has-access') === 'true';
+
+                $fullNameInput.val(fullName);
+                $knownNameInput.val(knownName);
+                $passwordInput.val(''); // Clear password for security
+                $rolesInput.val(roles);
+                $hasAccessInput.prop('checked', hasAccess);
+                $userIdInput.val(userId);
+
+                // Switch to update mode
+                $submitButton.text('Update User');
+                $formTitle.text('Edit User');
+                $passwordRequired.hide();
+                $passwordHelp.show();
+                $cancelButton.show();
+            });
+
+            // Handle cancel button
+            $cancelButton.on('click', function () {
+                // Reset form to original state
+                $fullNameInput.val(originalState.fullName);
+                $knownNameInput.val(originalState.knownName);
+                $passwordInput.val(originalState.password);
+                $rolesInput.val(originalState.roles);
+                $hasAccessInput.prop('checked', originalState.hasAccess);
+                $userIdInput.val(originalState.userId);
+                $submitButton.text(originalState.submitText);
+                $formTitle.text(originalState.formTitle);
+                $passwordRequired.show();
+                $passwordHelp.hide();
+                $cancelButton.hide();
+
+                // Remove selected class from all rows
+                $('.user-row').removeClass('selected');
+            });
+
+            // Form validation
+            $('form').on('submit', function (e) {
+                let isValid = true;
+
+                if (!$fullNameInput.val().trim()) {
+                    isValid = false;
+                }
+
+                if (!$passwordInput.val().trim() && !$userIdInput.val()) {
+                    // Password required for new users
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    e.preventDefault();
+                    alert('Please fill in all required fields.');
+                }
+            });
+        });
+    </script>
+}

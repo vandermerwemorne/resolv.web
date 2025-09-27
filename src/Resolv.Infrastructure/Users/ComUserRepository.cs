@@ -3,9 +3,9 @@ using Dapper;
 
 namespace Resolv.Infrastructure.Users;
 
-public class CommonUserRepository(SqlConnectionFactory factory) : ICommonUserRepository
+public class ComUserRepository(SqlConnectionFactory factory) : IComUserRepository
 {
-    public async Task<CommonUser> GetUserByCredentialsAsync(string username, string password)
+    public async Task<ComUser> GetUserByCredentialsAsync(string username, string password)
     {
         using var connection = factory.CreateNpgsqlConnection();
         const string sql = @"
@@ -15,7 +15,7 @@ WHERE email = @Username
 AND password = @Password
 AND has_access = TRUE";
 
-        var user = await connection.QuerySingleOrDefaultAsync<CommonUser>(sql, new { Username = username, Password = password });
-        return user ?? new CommonUser { Id = 0 };
+        var user = await connection.QuerySingleOrDefaultAsync<ComUser>(sql, new { Username = username, Password = password });
+        return user ?? new ComUser { Id = 0 };
     }
 }

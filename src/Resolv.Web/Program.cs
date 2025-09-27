@@ -42,7 +42,8 @@ builder.Services.AddSingleton(sp =>
     return new SqlConnectionFactory(options.Value.ConnectionString);
 });
 
-builder.Services.AddScoped<ICommonUserRepository, CommonUserRepository>();
+builder.Services.AddScoped<IComUserRepository, ComUserRepository>();
+builder.Services.AddScoped<ICustUserRepository, CustUserRepository>();
 builder.Services.AddScoped<ICommonOnboardingRepository, CommonOnboardingRepository>();
 builder.Services.AddScoped<IHoldingCompanyRepository, HoldingCompanyRepository>();
 builder.Services.AddScoped<ICustDivisionRepository, CustDivisionRepository>();

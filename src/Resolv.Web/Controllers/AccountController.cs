@@ -5,7 +5,7 @@ using Resolv.Domain.Services;
 
 namespace Resolv.Web.Controllers
 {
-    public class AccountController(ICommonUserRepository commonUserRepository, IEncryptionService encryptionService) : Controller
+    public class AccountController(IComUserRepository commonUserRepository, IEncryptionService encryptionService) : Controller
     {
         [HttpPost]
         public async Task<IActionResult> Login(string username, string password)

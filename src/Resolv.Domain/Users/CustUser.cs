@@ -1,6 +1,10 @@
 ﻿namespace Resolv.Domain.Users;
 
-public class CommonUser
+/// <summary>
+/// Customers of Resolv, example Hulamin
+/// Database is [CUSTOMER SCHEMA].users
+/// </summary>
+public class CustUser
 {
     public int Id { get; set; }
     public Guid Uid { get; set; }

@@ -1,6 +1,6 @@
 ﻿namespace Resolv.Domain.Users;
 
-public interface ICommonUserRepository
+public interface IComUserRepository
 {
     /// <summary>
     /// These are our admin (software administrator) type users, not customers like Hulamin
@@ -8,5 +8,5 @@ public interface ICommonUserRepository
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>
-    Task<CommonUser> GetUserByCredentialsAsync(string username, string password);
+    Task<ComUser> GetUserByCredentialsAsync(string username, string password);
 }

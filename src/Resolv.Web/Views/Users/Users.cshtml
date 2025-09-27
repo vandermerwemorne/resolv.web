@@ -1,0 +1,50 @@
+@model Resolv.Web.Models.User
+@{
+    ViewData["Title"] = "Users";
+}
+
+<h2 class="mb-4">Manage Users</h2>
+
+<form asp-action="Users" method="post">
+    <div asp-validation-summary="All" class="alert alert-danger"
+        style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+    <div class="form-group row mb-4">
+        <label for="SelectedHoldingCompanyUid" class="col-md-3 col-form-label">Company Name</label>
+        <div class="col-md-6">
+            <select asp-for="SelectedHoldingCompanyUid" class="form-select" id="holdingCompanySelect">
+                <option value="">Select a holding company</option>
+                @if (ViewBag.HoldingCompanies != null)
+                {
+                    @foreach (var company in ViewBag.HoldingCompanies)
+                    {
+                        <option value="@company.Uid">@company.Name</option>
+                    }
+                }
+            </select>
+            <span asp-validation-for="SelectedHoldingCompanyUid" class="text-danger"></span>
+        </div>
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary" id="selectCompanyBtn" disabled>Continue</button>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            const $holdingCompanySelect = $('#holdingCompanySelect');
+            const $selectCompanyBtn = $('#selectCompanyBtn');
+
+            // Enable/disable continue button based on selection
+            $holdingCompanySelect.on('change', function () {
+                const selectedValue = $(this).val();
+                $selectCompanyBtn.prop('disabled', !selectedValue);
+            });
+
+            // Set initial state
+            const initialValue = $holdingCompanySelect.val();
+            $selectCompanyBtn.prop('disabled', !initialValue);
+        });
+    </script>
+}
