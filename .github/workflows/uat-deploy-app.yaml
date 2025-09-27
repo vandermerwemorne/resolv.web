@@ -71,4 +71,8 @@ jobs:
           containerAppName: resolv-uat
           containerAppEnvironment: resolv-uat
           resourceGroup: resolv-uat-rg
-          environmentVariables: Database__ResolvDb__ConnectionString=${{ secrets.UAT_AZ_PGSQL_DB_CONN }} ASPNETCORE_ENVIRONMENT=UAT DetailedErrors=true EnableDeveloperExceptionPage=true
+          environmentVariables: | 
+            Database__ResolvDb__ConnectionString=${{ secrets.UAT_AZ_PGSQL_DB_CONN }} 
+            ASPNETCORE_ENVIRONMENT=UAT 
+            DetailedErrors=true 
+            EnableDeveloperExceptionPage=true

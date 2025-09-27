@@ -68,4 +68,7 @@ jobs:
           containerAppName: resolv-prod
           containerAppEnvironment: resolv-prod
           resourceGroup: resolv-prod-rg
-          environmentVariables: Database__ResolvDb__ConnectionString=${{ secrets.PROD_AZ_PGSQL_DB_CONN }} ASPNETCORE_ENVIRONMENT=Production Logging__LogLevel__Default=Warning
+          environmentVariables: |
+            Database__ResolvDb__ConnectionString=${{ secrets.PROD_AZ_PGSQL_DB_CONN }}
+            ASPNETCORE_ENVIRONMENT=Production 
+            Logging__LogLevel__Default=Warning
