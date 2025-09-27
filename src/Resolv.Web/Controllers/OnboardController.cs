@@ -151,8 +151,20 @@ namespace Resolv.Web.Controllers
             // Ensure ViewBag values are set for validation failure scenario
             ViewBag.DivisionUid = model.DivisionUid;
             ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
-            await SetViewBagAssessmentSite(model.DivisionUid, model.HoldingCompanyUid);
+            await SetViewBagAssessmentSite(model.DivisionUid, model.HoldingCompanyUid, model.ProvinceId);
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> GetTown(int provinceId)
+        {
+            var towns = await townRepository.GetAsync(provinceId);
+            var townList = towns.Select(t => new
+            {
+                t.Id,
+                t.Name
+            });
+            return Json(townList);
         }
 
         private async Task SetViewBagHoldingCompanies()
@@ -200,6 +212,22 @@ namespace Resolv.Web.Controllers
                     Value = p.Id.ToString(),
                     Text = p.Name
                 }).ToList();
+        }
+
+        private async Task SetViewBagAssessmentSite(Guid divisionId, Guid holdingCompanyId, int? provinceId = null)
+        {
+            await SetViewBagAssessmentSite(divisionId, holdingCompanyId);
+
+            // If we have a provinceId, pre-populate the towns for validation error scenarios
+            if (provinceId.HasValue && provinceId.Value > 0)
+            {
+                var towns = await townRepository.GetAsync(provinceId.Value);
+                ViewBag.Towns = towns.Select(t => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
+                {
+                    Value = t.Id.ToString(),
+                    Text = t.Name
+                }).ToList();
+            }
         }
     }
 }

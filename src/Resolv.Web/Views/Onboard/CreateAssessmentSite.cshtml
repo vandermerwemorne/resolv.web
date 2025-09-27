@@ -62,7 +62,9 @@
     <div class="form-group row mb-3">
         <label for="TownId" class="col-md-2 col-form-label">Town</label>
         <div class="col-md-10">
-            <input asp-for="TownId" class="form-control" type="number" />
+            <select asp-for="TownId" asp-items="ViewBag.Towns" class="form-control">
+                <option value="">Please select a province first</option>
+            </select>
             <span asp-validation-for="TownId" class="text-danger"></span>
         </div>
     </div>
@@ -99,4 +101,75 @@
             }
         </tbody>
     </table>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var $provinceSelect = $('select[name="ProvinceId"]');
+            var $townSelect = $('select[name="TownId"]');
+            var initialTownId = $townSelect.val(); // Store initial TownId for validation error scenarios
+
+            // Function to load towns for a given province
+            function loadTowns(provinceId, selectedTownId) {
+                if (!provinceId || provinceId === '0') {
+                    $townSelect.html('<option value="">Please select a province first</option>').prop('disabled', true);
+                    return;
+                }
+
+                // Show loading state
+                $townSelect.html('<option value="">Loading towns...</option>').prop('disabled', true);
+
+                // Make AJAX call to GetTown endpoint
+                $.ajax({
+                    url: '/Onboard/GetTown',
+                    type: 'GET',
+                    data: { provinceId: provinceId },
+                    success: function (towns) {
+                        // Clear existing options
+                        $townSelect.empty();
+
+                        // Add default option
+                        $townSelect.append('<option value="">Please select</option>');
+
+                        // Add town options
+                        $.each(towns, function (index, town) {
+                            var option = $('<option value="' + town.id + '">' + town.name + '</option>');
+                            if (selectedTownId && selectedTownId == town.id) {
+                                option.prop('selected', true);
+                            }
+                            $townSelect.append(option);
+                        });
+
+                        $townSelect.prop('disabled', false);
+                    },
+                    error: function () {
+                        console.error('Error fetching towns');
+                        $townSelect.html('<option value="">Error loading towns</option>').prop('disabled', true);
+                    }
+                });
+            }
+
+            // Initialize on page load
+            var initialProvinceId = $provinceSelect.val();
+            if (initialProvinceId && initialProvinceId !== '0') {
+                // If we already have towns from server (validation error scenario), enable the dropdown
+                if ($townSelect.find('option').length > 1) {
+                    $townSelect.prop('disabled', false);
+                } else {
+                    // Otherwise load them via AJAX
+                    loadTowns(initialProvinceId, initialTownId);
+                }
+            } else {
+                // No province selected, disable town select
+                $townSelect.html('<option value="">Please select a province first</option>').prop('disabled', true);
+            }
+
+            // Handle province change
+            $provinceSelect.on('change', function () {
+                var provinceId = $(this).val();
+                loadTowns(provinceId);
+            });
+        });
+    </script>
 }
