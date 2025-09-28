@@ -3,6 +3,7 @@ using Resolv.Domain.Division;
 using Resolv.Domain.Geographical;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
+using Resolv.Domain.Risk;
 using Resolv.Domain.Services;
 using Resolv.Domain.Users;
 using Resolv.Infrastructure;
@@ -11,6 +12,7 @@ using Resolv.Infrastructure.Division;
 using Resolv.Infrastructure.Geographical;
 using Resolv.Infrastructure.HoldingCompany;
 using Resolv.Infrastructure.Onboarding;
+using Resolv.Infrastructure.Risk;
 using Resolv.Infrastructure.Users;
 using Resolv.Services;
 using Resolv.Web;
@@ -42,6 +44,7 @@ builder.Services.AddSingleton(sp =>
     return new SqlConnectionFactory(options.Value.ConnectionString);
 });
 
+builder.Services.AddScoped<IRiskRepository, RiskRepository>();
 builder.Services.AddScoped<IComUserRepository, ComUserRepository>();
 builder.Services.AddScoped<ICustUserRepository, CustUserRepository>();
 builder.Services.AddScoped<ICommonOnboardingRepository, CommonOnboardingRepository>();

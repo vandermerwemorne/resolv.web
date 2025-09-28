@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Resolv.Domain.Risk;
 
 namespace Resolv.Web.Models;
 
@@ -11,4 +12,5 @@ public class RiskIndexViewModel
     public List<SelectListItem> HoldingCompanies { get; set; } = new List<SelectListItem>();
     public List<SelectListItem> Divisions { get; set; } = new List<SelectListItem>();
     public List<SelectListItem> AssessmentSites { get; set; } = new List<SelectListItem>();
+    public List<CustRisk> Risks { get; set; } = new List<CustRisk>();
 }
