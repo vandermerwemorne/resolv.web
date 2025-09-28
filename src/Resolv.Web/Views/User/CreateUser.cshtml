@@ -1,3 +1,4 @@
+@using Resolv.Web.Models
 @model Resolv.Web.Models.User
 @{
     ViewData["Title"] = Model.Id != null && Model.Id != Guid.Empty ? "Edit User" : "Create User";
@@ -78,7 +79,41 @@
                         Reset password to default
                     </label>
                 </div>
-                <small class="form-text text-muted">Check to reset user's password to "password1"</small>
+                <small class="form-text text-muted">Check to reset user's password to "password1", they will be prompted to
+                    change it on next login</small>
+            }
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label class="col-md-2 col-form-label">Assessment Site Access</label>
+        <div class="col-md-10">
+            @{
+                var assessmentSites = ViewBag.AssessmentSites as List<Resolv.Web.Models.UserAccessAssessmentSite>;
+            }
+            @if (assessmentSites != null && assessmentSites.Any())
+            {
+                <div class="border p-3 rounded" style="max-height: 200px; overflow-y: auto;">
+                    @for (int i = 0; i < assessmentSites.Count; i++)
+                    {
+                        var site = assessmentSites[i];
+                        <div class="form-check mb-2">
+                            <input type="checkbox" name="SelectedAssessmentSiteIds" value="@site.Id"
+                                class="form-check-input assessment-site-checkbox"
+                                @(Model.SelectedAssessmentSiteIds?.Contains(site.Id) == true ? "checked" : "") />
+                            <label class="form-check-label">
+                                @site.SiteName
+                            </label>
+                        </div>
+                    }
+                </div>
+                <small class="form-text text-muted">Select the assessment sites this user can access</small>
+            }
+            else
+            {
+                <div class="alert alert-info">
+                    No assessment sites available for this holding company.
+                </div>
             }
         </div>
     </div>

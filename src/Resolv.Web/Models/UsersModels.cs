@@ -39,4 +39,15 @@ public class User
     [Display(Name = "Known Name")]
     [StringLength(45, ErrorMessage = "Known Name cannot exceed 45 characters")]
     public string KnownName { get; set; } = string.Empty;
+
+    /// <summary>
+    /// List of assessment site IDs that the user has access to
+    /// </summary>
+    public List<int> SelectedAssessmentSiteIds { get; set; } = new List<int>();
+}
+
+public class UserAccessAssessmentSite
+{
+    public int Id { get; set; }
+    public string SiteName { get; set; } = string.Empty;
 }

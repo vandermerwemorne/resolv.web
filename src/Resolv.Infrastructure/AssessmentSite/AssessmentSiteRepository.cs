@@ -1,5 +1,6 @@
 ﻿using Dapper;
 using Resolv.Domain.AssessmentSite;
+using Resolv.Domain.Division;
 
 namespace Resolv.Infrastructure.AssessmentSite;
 
@@ -32,6 +33,18 @@ RETURNING id, uid;";
             obj.DivisionId
         });
         return result;
+    }
+
+    public async Task<List<CustAssessmentSite>> GetAsync(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.client
+ORDER BY site_name;";
+
+        var result = await connection.QueryAsync<CustAssessmentSite>(sql);
+        return [.. result];
     }
 
     public async Task<List<CustAssessmentSite>> GetByDivisionIdAsync(string schema, int divisionId)

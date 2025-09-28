@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Users;
 using Resolv.Domain.Services;
+using Resolv.Domain.AssessmentSite;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
@@ -11,7 +12,8 @@ namespace Resolv.Web.Controllers
     public class UserController(
         IHoldingCompanyRepository holdingCompanyRepository,
         ICustUserRepository custUserRepository,
-        IEncryptionService encryptionService) : Controller
+        IEncryptionService encryptionService,
+        IAssessmentSiteRepository assessmentSiteRepository) : Controller
     {
         [HttpGet]
         public async Task<IActionResult> Index(Guid? selectedHoldingCompanyUid = null)
@@ -60,6 +62,8 @@ namespace Resolv.Web.Controllers
             ViewBag.HoldingCompanyUid = holdingCompanyUid;
             ViewBag.HoldingName = holdingCompany.Name;
 
+            await SetViewBagAssessmentSites(holdingCompany.SchemaName);
+
             var model = new User();
 
             if (userId.HasValue && userId.Value != Guid.Empty)
@@ -68,6 +72,17 @@ namespace Resolv.Web.Controllers
                 var existingUser = await custUserRepository.GetUserAsync(holdingCompany.SchemaName, userId.Value);
                 if (existingUser.Id > 0)
                 {
+                    // Convert comma-separated AssessmentSiteAccess string to list of IDs
+                    var selectedSiteIds = new List<int>();
+                    if (!string.IsNullOrEmpty(existingUser.AssessmentSiteAccess))
+                    {
+                        selectedSiteIds = existingUser.AssessmentSiteAccess
+                            .Split(',', StringSplitOptions.RemoveEmptyEntries)
+                            .Where(id => int.TryParse(id.Trim(), out _))
+                            .Select(id => int.Parse(id.Trim()))
+                            .ToList();
+                    }
+
                     model = new User
                     {
                         Id = existingUser.Uid,
@@ -78,6 +93,7 @@ namespace Resolv.Web.Controllers
                         HasAccess = existingUser.HasAccess,
                         AssessmentSiteAccess = existingUser.AssessmentSiteAccess ?? "",
                         Roles = existingUser.Roles ?? "",
+                        SelectedAssessmentSiteIds = selectedSiteIds,
                         // Don't populate password for security
                         Password = ""
                     };
@@ -104,6 +120,11 @@ namespace Resolv.Web.Controllers
 
             if (ModelState.IsValid)
             {
+                // Convert SelectedAssessmentSiteIds to comma-separated string
+                var assessmentSiteAccessString = model.SelectedAssessmentSiteIds?.Any() == true
+                    ? string.Join(",", model.SelectedAssessmentSiteIds)
+                    : string.Empty;
+
                 if (model.Id.HasValue && model.Id.Value != Guid.Empty)
                 {
                     // Update existing user
@@ -114,7 +135,7 @@ namespace Resolv.Web.Controllers
                         existingUser.FullName = model.FullName;
                         existingUser.KnownName = model.KnownName;
                         existingUser.HasAccess = model.HasAccess;
-                        existingUser.AssessmentSiteAccess = model.AssessmentSiteAccess;
+                        existingUser.AssessmentSiteAccess = assessmentSiteAccessString;
                         existingUser.Roles = model.Roles;
 
                         // Reset password if checkbox is checked
@@ -137,7 +158,7 @@ namespace Resolv.Web.Controllers
                         FullName = model.FullName,
                         KnownName = model.KnownName,
                         HasAccess = model.HasAccess,
-                        AssessmentSiteAccess = model.AssessmentSiteAccess,
+                        AssessmentSiteAccess = assessmentSiteAccessString,
                         Roles = model.Roles,
                         Password = hashedPassword,
                         AddedByUserId = int.Parse(userId ?? "0")
@@ -151,6 +172,7 @@ namespace Resolv.Web.Controllers
 
             // Ensure ViewBag values are set for validation failure scenario
             await SetViewBagUsers(holdingCompany.SchemaName, holdingCompany.Uid);
+            await SetViewBagAssessmentSites(holdingCompany.SchemaName);
             ViewBag.HoldingCompanyUid = model.HoldingCompanyUid;
             ViewBag.HoldingName = holdingCompany.Name;
             return View(model);
@@ -184,6 +206,16 @@ namespace Resolv.Web.Controllers
                 u.Roles,
                 u.InsertDate,
                 HoldingCompanyUid = holdingCompanyId
+            }).ToList();
+        }
+
+        private async Task SetViewBagAssessmentSites(string schemaName)
+        {
+            var domainAssessmentSites = await assessmentSiteRepository.GetAsync(schemaName);
+            ViewBag.AssessmentSites = domainAssessmentSites.Select(domainSite => new UserAccessAssessmentSite
+            {
+                Id = domainSite.Id,
+                SiteName = domainSite.SiteName ?? string.Empty
             }).ToList();
         }
     }

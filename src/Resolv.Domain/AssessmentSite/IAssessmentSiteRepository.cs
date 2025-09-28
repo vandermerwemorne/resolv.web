@@ -6,4 +6,5 @@ public interface IAssessmentSiteRepository
     Task<List<CustAssessmentSite>> GetByDivisionIdAsync(string schema, int divisionId);
     Task UpdateAsync(CustAssessmentSite obj, string schema);
     Task<CustAssessmentSite> GetByUidAsync(string schema, Guid uid);
+    Task<List<CustAssessmentSite>> GetAsync(string schema);
 }
