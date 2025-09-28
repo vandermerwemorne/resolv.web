@@ -5,19 +5,18 @@ using Resolv.Domain.Division;
 using Resolv.Domain.Geographical;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
-using Resolv.Domain.Users;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
 {
+    [Microsoft.AspNetCore.Authorization.Authorize(Roles = "Admin")]
     public class OnboardController(
         ICustDivisionRepository custDivisionRepository,
         IHoldingCompanyRepository holdingCompanyRepository,
         IAssessmentSiteRepository assessmentSiteRepository,
         IProvinceRepository provinceRepository,
         ITownRepository townRepository,
-        ICommonOnboardingRepository onboardingRepository,
-        ICustUserRepository custUserRepository) : Controller
+        ICommonOnboardingRepository onboardingRepository) : Controller
     {
         [HttpGet]
         public IActionResult Index()

@@ -74,6 +74,33 @@ public class User
 </form>
 ```
 
+### Dropdown Lists
+- **Always use modern ASP.NET Core tag helpers** for dropdown lists
+- Use `asp-for` and `asp-items` instead of legacy `@Html.DropDownListFor`
+- Include default option text within the select element
+- Use meaningful IDs for JavaScript interaction
+
+#### Correct Pattern (Modern ASP.NET Core):
+```razor
+<select asp-for="SelectedItemId" asp-items="Model.Items" 
+        class="form-select" id="itemSelect">
+    <option value="">-- Select Item --</option>
+</select>
+```
+
+#### Incorrect Pattern (Legacy MVC 5 syntax):
+```razor
+@Html.DropDownListFor(m => m.SelectedItemId, 
+    Model.Items, 
+    new { @class = "form-select", @id = "itemSelect" })
+```
+
+#### Benefits of Modern Syntax:
+- Better IntelliSense and compile-time checking
+- Cleaner, more readable code
+- Better integration with model binding and validation
+- Follows current ASP.NET Core best practices
+
 ### Form Interactions
 - When implementing edit functionality:
   - Store original form state on page load

@@ -1,0 +1,116 @@
+@model Resolv.Web.Models.RiskIndexViewModel
+
+@{
+    ViewData["Title"] = "Risk Management";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Risk Management</h2>
+        <hr />
+
+        <div class="row">
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="holdingCompanySelect" class="form-label">Holding Company</label>
+                    <select asp-for="SelectedHoldingCompanyUid" asp-items="Model.HoldingCompanies" class="form-select"
+                        id="holdingCompanySelect">
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="divisionSelect" class="form-label">Division</label>
+                    <select asp-for="SelectedDivisionId" asp-items="Model.Divisions" class="form-select"
+                        id="divisionSelect" disabled>
+                        <option value="">-- Select Division --</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-md-4">
+                <div class="form-group">
+                    <label for="assessmentSiteSelect" class="form-label">Assessment Site</label>
+                    <select asp-for="SelectedAssessmentSiteId" asp-items="Model.AssessmentSites" class="form-select"
+                        id="assessmentSiteSelect" disabled>
+                        <option value="">-- Select Assessment Site --</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            var $holdingCompanySelect = $('#holdingCompanySelect');
+            var $divisionSelect = $('#divisionSelect');
+            var $assessmentSiteSelect = $('#assessmentSiteSelect');
+
+            // Handle holding company change
+            $holdingCompanySelect.on('change', function () {
+                var holdingCompanyUid = $(this).val();
+
+                // Reset and disable dependent dropdowns
+                $divisionSelect.empty().append('<option value="">-- Select Division --</option>').prop('disabled', true);
+                $assessmentSiteSelect.empty().append('<option value="">-- Select Assessment Site --</option>').prop('disabled', true);
+
+                if (holdingCompanyUid) {
+                    // Load divisions for selected holding company
+                    $.ajax({
+                        url: '@Url.Action("GetDivisions", "Risk")',
+                        type: 'GET',
+                        data: { holdingCompanyUid: holdingCompanyUid },
+                        success: function (divisions) {
+                            $divisionSelect.empty().append('<option value="">-- Select Division --</option>');
+
+                            $.each(divisions, function (index, division) {
+                                $divisionSelect.append('<option value="' + division.value + '">' + division.text + '</option>');
+                            });
+
+                            $divisionSelect.prop('disabled', false);
+                        },
+                        error: function () {
+                            console.error('Failed to load divisions');
+                        }
+                    });
+                }
+            });
+
+            // Handle division change
+            $divisionSelect.on('change', function () {
+                var divisionId = $(this).val();
+                var holdingCompanyUid = $holdingCompanySelect.val();
+
+                // Reset assessment site dropdown
+                $assessmentSiteSelect.empty().append('<option value="">-- Select Assessment Site --</option>').prop('disabled', true);
+
+                if (divisionId && holdingCompanyUid) {
+                    // Load assessment sites for selected division
+                    $.ajax({
+                        url: '@Url.Action("GetAssessmentSites", "Risk")',
+                        type: 'GET',
+                        data: {
+                            holdingCompanyUid: holdingCompanyUid,
+                            divisionId: divisionId
+                        },
+                        success: function (assessmentSites) {
+                            $assessmentSiteSelect.empty().append('<option value="">-- Select Assessment Site --</option>');
+
+                            $.each(assessmentSites, function (index, site) {
+                                $assessmentSiteSelect.append('<option value="' + site.value + '">' + site.text + '</option>');
+                            });
+
+                            $assessmentSiteSelect.prop('disabled', false);
+                        },
+                        error: function () {
+                            console.error('Failed to load assessment sites');
+                        }
+                    });
+                }
+            });
+        });
+    </script>
+}
