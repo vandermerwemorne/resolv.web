@@ -6,4 +6,5 @@ public interface ICommonOnboardingRepository
     Task AddTableDivision(string schema);
     Task AddTableAssessmentSite(string schema);
     Task AddTableUser(string schema);
+    Task AddTableRisk(string schema);
 }

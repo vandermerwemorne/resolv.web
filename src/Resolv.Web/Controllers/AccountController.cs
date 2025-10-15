@@ -25,7 +25,7 @@ namespace Resolv.Web.Controllers
                 var identity = new System.Security.Claims.ClaimsIdentity(claims, AuthConstants.CookieAuthScheme);
                 var principal = new System.Security.Claims.ClaimsPrincipal(identity);
                 await HttpContext.SignInAsync(AuthConstants.CookieAuthScheme, principal);
-                return RedirectToAction("Index", "Capture");
+                return RedirectToAction("Index", "Assessment");
             }
 
             // TODO customer users

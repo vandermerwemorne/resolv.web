@@ -101,6 +101,23 @@ public class User
 - Better integration with model binding and validation
 - Follows current ASP.NET Core best practices
 
+### Partial Views
+- **Use partial views for dynamic content** instead of building HTML in JavaScript
+- Prefer server-side rendering with Razor over client-side string concatenation
+- Return `PartialView()` from controller actions for AJAX-loaded content
+- Place reusable UI components in `Views/Shared/` or controller-specific `Views/[Controller]/` folders
+
+#### Benefits of Partial Views:
+- Strongly-typed models with IntelliSense
+- Automatic HTML encoding for security
+- Better maintainability and reusability
+- Server-side validation and formatting
+- Separation of concerns (view logic in views, not JavaScript)
+
+#### When to Use Partial Views vs AJAX:
+- **Partial Views**: Dynamic content with complex HTML structure, tables, forms
+- **AJAX with JSON**: Simple data updates, dropdown population, validation responses
+
 ### Form Interactions
 - When implementing edit functionality:
   - Store original form state on page load
@@ -113,6 +130,8 @@ public class User
 - Handle loading, success, and error states
 - Disable form elements during AJAX operations
 - Display server errors in validation summary, not alert boxes
+- **For complex HTML content**: Return partial views instead of building HTML strings in JavaScript
+- **For simple data**: Continue using JSON responses (dropdowns, validation, status updates)
 
 ### CSS Classes
 - Use hover effects for clickable elements

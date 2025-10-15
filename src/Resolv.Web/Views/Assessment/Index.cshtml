@@ -1,0 +1,77 @@
+@model Resolv.Web.Models.AssessmentViewModel
+
+@{
+    ViewData["Title"] = "Assessments";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Assessments</h2>
+        <hr />
+
+        <form asp-action="Index" method="post" id="assessmentForm">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="holdingCompanySelect" class="form-label">Holding Company</label>
+                        <select asp-for="SelectedHoldingCompanyUid" asp-items="Model.HoldingCompanies"
+                            class="form-select" id="holdingCompanySelect" onchange="this.form.submit()">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="divisionSelect" class="form-label">Division</label>
+                        <select asp-for="SelectedDivisionId" asp-items="Model.Divisions" class="form-select"
+                            id="divisionSelect" onchange="this.form.submit()">
+                        </select>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="assessmentSiteSelect" class="form-label">Assessment Site</label>
+                        <select asp-for="SelectedAssessmentSiteId" asp-items="Model.AssessmentSites" class="form-select"
+                            id="assessmentSiteSelect" onchange="this.form.submit()">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div id="risksTableContainer">
+                    @await Html.PartialAsync("_RisksTable", new Resolv.Web.Models.RisksTableViewModel { Risks =
+                    Model.Risks })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        #risksTable tbody tr {
+            cursor: pointer;
+        }
+
+        #risksTable tbody tr:hover {
+            background-color: #f5f5f5 !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            // Add click event to risk table rows
+            $('#risksTable tbody tr').on('click', function () {
+                var riskUid = $(this).data('risk-uid');
+                if (riskUid) {
+                    window.location.href = '@Url.Action("RiskLine", "Risk")?riskuid=' + riskUid;
+                }
+            });
+        });
+    </script>
+}

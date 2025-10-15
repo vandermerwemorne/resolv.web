@@ -88,4 +88,30 @@ ALTER TABLE IF EXISTS {schema}.user
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }
+
+    public async Task AddTableRisk(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.risk 
+(
+id SERIAL PRIMARY KEY,
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+reevaluation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+risk_status_id INTEGER,
+evaluation_type_id INTEGER,
+risk_id_re_evaluation INTEGER,
+client_id INTEGER,
+user_id INTEGER,
+sector_id INTEGER,
+sub_sector_id INTEGER,
+added_by_user_id INTEGER,
+annual_status INTEGER,
+uid UUID DEFAULT gen_random_uuid()
+);
+
+ALTER TABLE IF EXISTS {schema}.risk
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
 }

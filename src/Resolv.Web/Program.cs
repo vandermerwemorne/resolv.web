@@ -45,6 +45,7 @@ builder.Services.AddSingleton(sp =>
 });
 
 builder.Services.AddScoped<IRiskRepository, RiskRepository>();
+builder.Services.AddScoped<IRiskLineRepository, RiskLineRepository>();
 builder.Services.AddScoped<IComUserRepository, ComUserRepository>();
 builder.Services.AddScoped<ICustUserRepository, CustUserRepository>();
 builder.Services.AddScoped<ICommonOnboardingRepository, CommonOnboardingRepository>();
