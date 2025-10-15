@@ -114,4 +114,88 @@ ALTER TABLE IF EXISTS {schema}.risk
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }
+
+    public async Task AddTableRiskLine(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.risk_line 
+(
+id SERIAL PRIMARY KEY,
+uid UUID DEFAULT gen_random_uuid(),
+risk_id INTEGER,
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+dept_division VARCHAR(45),
+reference_no VARCHAR(125),
+hazard_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+step_in_operation_id INTEGER,
+classification_id INTEGER,
+hazard VARCHAR(1000),
+risk VARCHAR(1000),
+picture_id INTEGER,
+severity_id INTEGER,
+frequency_id INTEGER,
+exposure_id INTEGER,
+eng_control_id INTEGER,
+admin_control_id INTEGER,
+ppe_control_id INTEGER,
+current_eng_controls VARCHAR(1000),
+rec_eng_controls VARCHAR(1000),
+assigned_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+corrective_action_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+percentage_complete_id INTEGER,
+management_super_id INTEGER,
+conform_legal_req_id INTEGER,
+current_admin_controls VARCHAR(1000),
+current_management_super_controls VARCHAR(1000),
+current_conform_legal_req_controls VARCHAR(1000),
+current_ppe_controls VARCHAR(1000),
+rec_admin_controls VARCHAR(1000),
+rec_management_super_controls VARCHAR(1000),
+rec_conform_legal_req_controls VARCHAR(1000),
+rec_ppe_controls VARCHAR(1000),
+assigned_to_composite_id VARCHAR(50),
+added_by_user_id INTEGER,
+raw_risk INTEGER,
+residual_risk INTEGER,
+eliminate_id INTEGER,
+eliminate_rec VARCHAR(1000),
+updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+can_edit BOOLEAN,
+updated_by INTEGER,
+data_upload INTEGER,
+assigned_to_user_id INTEGER,
+created_user_id INTEGER,
+updated_user_id INTEGER,
+prev_risk_id INTEGER,
+new_residual_risk INTEGER,
+status_id INTEGER,
+observation VARCHAR(500)
+);
+
+ALTER TABLE IF EXISTS {schema}.risk_line
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
+
+    public async Task AddTableRiskImages(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.risk_images 
+(
+id SERIAL PRIMARY KEY,
+risk_line_id INTEGER,
+image_name VARCHAR(200),
+image_blob bytea,
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+height INTEGER,
+width INTEGER,
+user_agent VARCHAR(1000)
+);
+
+ALTER TABLE IF EXISTS {schema}.risk_images
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
 }

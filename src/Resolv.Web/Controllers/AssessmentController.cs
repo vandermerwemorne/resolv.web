@@ -104,27 +104,5 @@ namespace Resolv.Web.Controllers
 
             return View(model);
         }
-
-        //[HttpGet]
-        //public async Task<IActionResult> GetDivisions(Guid holdingCompanyUid)
-        //{
-        //    // First get the holding company to get its schema and ID
-        //    var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyUid);
-        //    if (holdingCompany == null)
-        //    {
-        //        return Json(new List<SelectListItem>());
-        //    }
-
-        //    // Get divisions for this holding company
-        //    var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
-
-        //    var divisionList = divisions.Select(d => new SelectListItem
-        //    {
-        //        Value = d.Id.ToString(),
-        //        Text = d.Name
-        //    }).ToList();
-
-        //    return Json(divisionList);
-        //}
     }
 }

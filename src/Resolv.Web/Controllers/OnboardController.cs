@@ -86,6 +86,8 @@ namespace Resolv.Web.Controllers
                     await onboardingRepository.AddTableAssessmentSite(schema);
                     await onboardingRepository.AddTableUser(schema);
                     await onboardingRepository.AddTableRisk(schema);
+                    await onboardingRepository.AddTableRiskLine(schema);
+                    await onboardingRepository.AddTableRiskImages(schema);
 
                     return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
                 }
