@@ -1,0 +1,58 @@
+@model Resolv.Web.Models.RiskLineViewModel
+
+@{
+    ViewData["Title"] = "Assessments";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+            <a asp-controller="Assessment" asp-action="Index">Assessments</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">@Model.HoldingCompanyName</li>
+        <li class="breadcrumb-item" aria-current="page">@Model.DivisionName</li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.AssessmentSiteName</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Assessments</h2>
+        <hr />
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div id="riskLinesTableContainer">
+                    @await Html.PartialAsync("_RiskLinesTable", new Resolv.Web.Models.RiskLinesTableViewModel {
+                    RiskLines = Model.RiskLines })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        #riskLinesTable tbody tr {
+            cursor: pointer;
+        }
+
+        #riskLinesTable tbody tr:hover {
+            background-color: #f5f5f5 !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            // Add click event to risk lines table rows for future functionality
+            $('#riskLinesTable tbody tr').on('click', function () {
+                var riskLineUid = $(this).data('risk-line-uid');
+                if (riskLineUid) {
+                    // Future: navigate to risk line details
+                    console.log('Risk line clicked:', riskLineUid);
+                }
+            });
+        });
+    </script>
+}

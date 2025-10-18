@@ -1,0 +1,42 @@
+@model Resolv.Web.Models.RiskLinesTableViewModel
+
+@if (Model.RiskLines != null && Model.RiskLines.Any())
+{
+    <table class="table table-striped" id="riskLinesTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Reference No</th>
+                <th>Dept/Division</th>
+                <th>Raw Risk</th>
+                <th>Residual Risk</th>
+            </tr>
+        </thead>
+        <tbody id="riskLinesTableBody">
+            @foreach (var riskLine in Model.RiskLines)
+            {
+                <tr data-risk-line-uid="@riskLine.Uid" style="cursor: pointer;">
+                    <td>@(riskLine.HazardDate?.ToLocalTime().ToString("MM/dd/yyyy") ?? "")</td>
+                    <td>@riskLine.ReferenceNo</td>
+                    <td>@riskLine.DeptDivision</td>
+                    <td>
+                        <span
+                            class="badge @(riskLine.RawRisk >= 15 ? "bg-danger" : riskLine.RawRisk >= 10 ? "bg-warning" : "bg-success")">
+                            @riskLine.RawRisk
+                        </span>
+                    </td>
+                    <td>
+                        <span
+                            class="badge @(riskLine.ResidualRisk >= 15 ? "bg-danger" : riskLine.ResidualRisk >= 10 ? "bg-warning" : "bg-success")">
+                            @riskLine.ResidualRisk
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No assessments found.</p>
+}

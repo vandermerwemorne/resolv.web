@@ -69,7 +69,7 @@
             $('#risksTable tbody tr').on('click', function () {
                 var riskUid = $(this).data('risk-uid');
                 if (riskUid) {
-                    window.location.href = '@Url.Action("RiskLine", "Risk")?riskuid=' + riskUid;
+                    window.location.href = '@Url.Action("Assessments", "Assessment")?id=' + riskUid;
                 }
             });
         });

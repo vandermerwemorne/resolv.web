@@ -104,5 +104,92 @@ namespace Resolv.Web.Controllers
 
             return View(model);
         }
+
+        public async Task<IActionResult> Assessments(Guid id)
+        {
+            try
+            {
+                // We need to get the holding company schema to pass to the repositories
+                // First, get all holding companies to find the schema
+                var holdingCompanies = await holdingCompanyRepository.GetAsync();
+
+                foreach (var holdingCompany in holdingCompanies)
+                {
+                    try
+                    {
+                        // Try to get the risk from this schema
+                        var risk = await riskRepository.GetAsync(holdingCompany.SchemaName, id);
+                        if (risk != null)
+                        {
+                            // Found the risk, now get the risk lines
+                            var riskLines = await riskLineRepository.GetByRiskIdAsync(holdingCompany.SchemaName, risk.Id);
+
+                            // Get breadcrumb information - we need to find the assessment site from the risk's client ID
+                            var assessmentSites = await assessmentSiteRepository.GetAsync(holdingCompany.SchemaName);
+                            var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.ClientId);
+
+                            string divisionName = string.Empty;
+                            string assessmentSiteName = assessmentSite?.SiteName ?? "Unknown Site";
+
+                            if (assessmentSite != null)
+                            {
+                                var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
+                                var division = divisions.FirstOrDefault(d => d.Id == assessmentSite.DivisionId);
+                                divisionName = division?.Name ?? "Unknown Division";
+                            }
+
+                            var viewModel = new RiskLineViewModel
+                            {
+                                RiskUid = id,
+                                HoldingCompanyName = holdingCompany.Name ?? "Unknown Company",
+                                DivisionName = divisionName,
+                                AssessmentSiteName = assessmentSiteName,
+                                Risk = new AssessmentViewModelRisk
+                                {
+                                    SiteName = assessmentSiteName,
+                                    Uid = risk.Uid,
+                                    InsertDate = risk.InsertDate,
+                                    ReevaluationDate = risk.ReevaluationDate,
+                                    RiskStatus = risk.RiskStatusId == 1 ? "Complete" : "In progress",
+                                    EvaluationType = risk.EvaluationTypeId.ToString(),
+                                    AnnualStatus = risk.AnnualStatus ?? string.Empty
+                                },
+                                RiskLines = riskLines.Select(rl => new RiskLineViewModelItem
+                                {
+                                    Uid = rl.Uid,
+                                    InsertDate = rl.InsertDate,
+                                    HazardDate = rl.HazardDate,
+                                    AssignedDate = rl.AssignedDate,
+                                    CorrectiveActionDate = rl.CorrectiveActionDate,
+                                    DeptDivision = rl.DeptDivision ?? string.Empty,
+                                    ReferenceNo = rl.ReferenceNo ?? string.Empty,
+                                    Hazard = rl.Hazard ?? string.Empty,
+                                    Risk = rl.Risk ?? string.Empty,
+                                    RawRisk = rl.RawRisk,
+                                    ResidualRisk = rl.ResidualRisk,
+                                    StatusDisplay = rl.StatusId == 1 ? "Active" : "Inactive",
+                                    AssignedToCompositeId = rl.AssignedToCompositeId ?? string.Empty
+                                }).ToList()
+                            };
+
+                            return View(viewModel);
+                        }
+                    }
+                    catch
+                    {
+                        // Continue to next holding company
+                        continue;
+                    }
+                }
+
+                // Risk not found in any schema
+                return NotFound("Risk assessment not found.");
+            }
+            catch (Exception ex)
+            {
+                // Log the exception if you have logging configured
+                return BadRequest($"Error loading risk assessment: {ex.Message}");
+            }
+        }
     }
 }

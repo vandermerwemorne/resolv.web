@@ -19,7 +19,32 @@ public class RiskLineViewModel
 {
     public Guid RiskUid { get; set; }
     public AssessmentViewModelRisk Risk { get; set; } = new AssessmentViewModelRisk();
-    public List<CustRiskLine> RiskLines { get; set; } = [];
+    public List<RiskLineViewModelItem> RiskLines { get; set; } = [];
+    public string HoldingCompanyName { get; set; } = string.Empty;
+    public string DivisionName { get; set; } = string.Empty;
+    public string AssessmentSiteName { get; set; } = string.Empty;
+}
+
+public class RiskLinesTableViewModel
+{
+    public List<RiskLineViewModelItem> RiskLines { get; set; } = [];
+}
+
+public class RiskLineViewModelItem
+{
+    public Guid Uid { get; set; }
+    public DateTime InsertDate { get; set; }
+    public DateTime? HazardDate { get; set; }
+    public DateTime? AssignedDate { get; set; }
+    public DateTime? CorrectiveActionDate { get; set; }
+    public string DeptDivision { get; set; } = string.Empty;
+    public string ReferenceNo { get; set; } = string.Empty;
+    public string Hazard { get; set; } = string.Empty;
+    public string Risk { get; set; } = string.Empty;
+    public int RawRisk { get; set; }
+    public int ResidualRisk { get; set; }
+    public string StatusDisplay { get; set; } = string.Empty;
+    public string AssignedToCompositeId { get; set; } = string.Empty;
 }
 
 public class RisksTableViewModel
