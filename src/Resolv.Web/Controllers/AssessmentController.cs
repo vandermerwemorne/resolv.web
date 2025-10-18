@@ -91,7 +91,7 @@ namespace Resolv.Web.Controllers
                                 ReevaluationDate = risk.ReevaluationDate,
                                 RiskStatus = risk.RiskStatusId == 1 ? "Complete" : "In progress",
                                 EvaluationType = risk.EvaluationTypeId.ToString(), // TODO: do we still need this for resolv?
-                                AnnualStatus = risk.AnnualStatus ?? string.Empty
+                                AnnualStatus = risk.AnnualStatus
                             })];
                         }
                     }
@@ -152,9 +152,9 @@ namespace Resolv.Web.Controllers
                                     ReevaluationDate = risk.ReevaluationDate,
                                     RiskStatus = risk.RiskStatusId == 1 ? "Complete" : "In progress",
                                     EvaluationType = risk.EvaluationTypeId.ToString(),
-                                    AnnualStatus = risk.AnnualStatus ?? string.Empty
+                                    AnnualStatus = risk.AnnualStatus
                                 },
-                                RiskLines = riskLines.Select(rl => new RiskLineViewModelItem
+                                RiskLines = [.. riskLines.Select(rl => new RiskLineViewModelItem
                                 {
                                     Uid = rl.Uid,
                                     InsertDate = rl.InsertDate,
@@ -169,7 +169,7 @@ namespace Resolv.Web.Controllers
                                     ResidualRisk = rl.ResidualRisk,
                                     StatusDisplay = rl.StatusId == 1 ? "Active" : "Inactive",
                                     AssignedToCompositeId = rl.AssignedToCompositeId ?? string.Empty
-                                }).ToList()
+                                })]
                             };
 
                             return View(viewModel);
@@ -190,6 +190,37 @@ namespace Resolv.Web.Controllers
                 // Log the exception if you have logging configured
                 return BadRequest($"Error loading risk assessment: {ex.Message}");
             }
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Add(AssessmentViewModel model)
+        {
+            if (model.SelectedHoldingCompanyUid.HasValue && model.SelectedAssessmentSiteId.HasValue)
+            {
+                // Get the holding company to obtain the schema name
+                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid.Value);
+                if (holdingCompany != null)
+                {
+                    var newRisk = new CustRisk
+                    {
+                        Uid = Guid.NewGuid(),
+                        InsertDate = DateTime.UtcNow,
+                        ReevaluationDate = DateTime.UtcNow.AddYears(2),
+                        RiskStatusId = 0, // TODO do we need this?
+                        EvaluationTypeId = 1, // Default evaluation type
+                        ClientId = model.SelectedAssessmentSiteId.Value,
+                        UserId = 1, // TODO: Get current user ID
+                        SectorId = 1, // TODO: Set appropriate sector
+                        SubSectorId = 1, // TODO: Set appropriate sub-sector
+                        AddedByUserId = 1, // TODO: Get current user ID
+                        AnnualStatus = 0 // TODO do we need this?
+                    };
+
+                    await riskRepository.AddAsync(newRisk, holdingCompany.SchemaName);
+                }
+            }
+
+            return RedirectToAction("Index");
         }
     }
 }

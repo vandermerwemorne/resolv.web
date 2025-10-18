@@ -9,7 +9,7 @@
         <h2>Assessments</h2>
         <hr />
 
-        <form asp-action="Index" method="post" id="assessmentForm">
+        <form asp-action="Index" method="post">
             <div class="row">
                 <div class="col-md-4">
                     <div class="form-group">
@@ -48,6 +48,13 @@
                 </div>
             </div>
         </div>
+
+        <form asp-action="Add" method="post">
+            @Html.HiddenFor(m => m.SelectedHoldingCompanyUid)
+            @Html.HiddenFor(m => m.SelectedDivisionId)
+            @Html.HiddenFor(m => m.SelectedAssessmentSiteId)
+            <input type="submit" class="btn btn-primary" value="Add" />
+        </form>
     </div>
 </div>
 

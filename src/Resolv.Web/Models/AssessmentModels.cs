@@ -60,5 +60,5 @@ public class AssessmentViewModelRisk
     public DateTime? ReevaluationDate { get; set; }
     public string RiskStatus { get; set; } = string.Empty;
     public string EvaluationType { get; set; } = string.Empty;
-    public string AnnualStatus { get; set; } = string.Empty;
+    public int AnnualStatus { get; set; }
 }

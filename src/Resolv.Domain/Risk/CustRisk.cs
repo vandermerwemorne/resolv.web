@@ -14,5 +14,5 @@ public class CustRisk
     public int SectorId { get; set; }
     public int SubSectorId { get; set; }
     public int AddedByUserId { get; set; }
-    public string? AnnualStatus { get; set; }
+    public int AnnualStatus { get; set; }
 }
