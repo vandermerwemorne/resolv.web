@@ -43,13 +43,17 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <div id="risksTableContainer">
-                    @await Html.PartialAsync("_RisksTable", new Resolv.Web.Models.RisksTableViewModel { Risks =
-                    Model.Risks })
+                    @await Html.PartialAsync("_RisksTable", 
+                    new Resolv.Web.Models.RisksTableViewModel 
+                    { 
+                        Risks = Model.Risks,
+                        SelectedHoldingCompanyUid = Model.SelectedHoldingCompanyUid
+                    })
                 </div>
             </div>
         </div>
 
-        <form asp-action="Add" method="post">
+        <form asp-action="AddRisk" method="post">
             @Html.HiddenFor(m => m.SelectedHoldingCompanyUid)
             @Html.HiddenFor(m => m.SelectedDivisionId)
             @Html.HiddenFor(m => m.SelectedAssessmentSiteId)
@@ -75,8 +79,9 @@
             // Add click event to risk table rows
             $('#risksTable tbody tr').on('click', function () {
                 var riskUid = $(this).data('risk-uid');
+                var holdingcompanyUid = $(this).data('holdingcompany-uid');
                 if (riskUid) {
-                    window.location.href = '@Url.Action("Assessments", "Assessment")?id=' + riskUid;
+                    window.location.href = '@Url.Action("Assessments", "Assessment")?riskid=' + riskUid + '&holdingcompanyid=' + holdingcompanyUid;
                 }
             });
         });

@@ -51,9 +51,9 @@ namespace Resolv.Web.Controllers
             model.HoldingCompanies.Insert(0, new SelectListItem { Value = "", Text = "-- Select Holding Company --" });
 
             // Load divisions if holding company is selected
-            if (model.SelectedHoldingCompanyUid.HasValue)
+            if (model.SelectedHoldingCompanyUid != Guid.Empty)
             {
-                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid.Value);
+                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid);
                 if (holdingCompany != null)
                 {
                     var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
@@ -105,100 +105,78 @@ namespace Resolv.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Assessments(Guid id)
+        public async Task<IActionResult> Assessments(Guid riskId, Guid holdingCompanyId)
         {
-            try
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
+
+            var risk = await riskRepository.GetAsync(holdingCompany.SchemaName, riskId);
+            if (risk != null)
             {
-                // We need to get the holding company schema to pass to the repositories
-                // First, get all holding companies to find the schema
-                var holdingCompanies = await holdingCompanyRepository.GetAsync();
+                // Found the risk, now get the risk lines
+                var riskLines = await riskLineRepository.GetByRiskIdAsync(holdingCompany.SchemaName, risk.Id);
 
-                foreach (var holdingCompany in holdingCompanies)
+                // Get breadcrumb information - we need to find the assessment site from the risk's client ID
+                var assessmentSites = await assessmentSiteRepository.GetAsync(holdingCompany.SchemaName);
+                var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.ClientId);
+
+                string divisionName = string.Empty;
+                string assessmentSiteName = assessmentSite?.SiteName ?? "Unknown Site";
+
+                if (assessmentSite != null)
                 {
-                    try
-                    {
-                        // Try to get the risk from this schema
-                        var risk = await riskRepository.GetAsync(holdingCompany.SchemaName, id);
-                        if (risk != null)
-                        {
-                            // Found the risk, now get the risk lines
-                            var riskLines = await riskLineRepository.GetByRiskIdAsync(holdingCompany.SchemaName, risk.Id);
-
-                            // Get breadcrumb information - we need to find the assessment site from the risk's client ID
-                            var assessmentSites = await assessmentSiteRepository.GetAsync(holdingCompany.SchemaName);
-                            var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.ClientId);
-
-                            string divisionName = string.Empty;
-                            string assessmentSiteName = assessmentSite?.SiteName ?? "Unknown Site";
-
-                            if (assessmentSite != null)
-                            {
-                                var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
-                                var division = divisions.FirstOrDefault(d => d.Id == assessmentSite.DivisionId);
-                                divisionName = division?.Name ?? "Unknown Division";
-                            }
-
-                            var viewModel = new RiskLineViewModel
-                            {
-                                RiskUid = id,
-                                HoldingCompanyName = holdingCompany.Name ?? "Unknown Company",
-                                DivisionName = divisionName,
-                                AssessmentSiteName = assessmentSiteName,
-                                Risk = new AssessmentViewModelRisk
-                                {
-                                    SiteName = assessmentSiteName,
-                                    Uid = risk.Uid,
-                                    InsertDate = risk.InsertDate,
-                                    ReevaluationDate = risk.ReevaluationDate,
-                                    RiskStatus = risk.RiskStatusId == 1 ? "Complete" : "In progress",
-                                    EvaluationType = risk.EvaluationTypeId.ToString(),
-                                    AnnualStatus = risk.AnnualStatus
-                                },
-                                RiskLines = [.. riskLines.Select(rl => new RiskLineViewModelItem
-                                {
-                                    Uid = rl.Uid,
-                                    InsertDate = rl.InsertDate,
-                                    HazardDate = rl.HazardDate,
-                                    AssignedDate = rl.AssignedDate,
-                                    CorrectiveActionDate = rl.CorrectiveActionDate,
-                                    DeptDivision = rl.DeptDivision ?? string.Empty,
-                                    ReferenceNo = rl.ReferenceNo ?? string.Empty,
-                                    Hazard = rl.Hazard ?? string.Empty,
-                                    Risk = rl.Risk ?? string.Empty,
-                                    RawRisk = rl.RawRisk,
-                                    ResidualRisk = rl.ResidualRisk,
-                                    StatusDisplay = rl.StatusId == 1 ? "Active" : "Inactive",
-                                    AssignedToCompositeId = rl.AssignedToCompositeId ?? string.Empty
-                                })]
-                            };
-
-                            return View(viewModel);
-                        }
-                    }
-                    catch
-                    {
-                        // Continue to next holding company
-                        continue;
-                    }
+                    var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
+                    var division = divisions.FirstOrDefault(d => d.Id == assessmentSite.DivisionId);
+                    divisionName = division?.Name ?? "Unknown Division";
                 }
 
-                // Risk not found in any schema
-                return NotFound("Risk assessment not found.");
+                var viewModel = new RiskLineViewModel
+                {
+                    SelectedHoldingCompanyUid = holdingCompany.Uid,
+                    RiskUid = riskId,
+                    HoldingCompanyName = holdingCompany.Name ?? "Unknown Company",
+                    DivisionName = divisionName,
+                    AssessmentSiteName = assessmentSiteName,
+                    Risk = new AssessmentViewModelRisk
+                    {
+                        SiteName = assessmentSiteName,
+                        Uid = risk.Uid,
+                        InsertDate = risk.InsertDate,
+                        ReevaluationDate = risk.ReevaluationDate,
+                        RiskStatus = risk.RiskStatusId == 1 ? "Complete" : "In progress",
+                        EvaluationType = risk.EvaluationTypeId.ToString(),
+                        AnnualStatus = risk.AnnualStatus
+                    },
+                    RiskLines = [.. riskLines.Select(rl => new RiskLineViewModelItem
+                {
+                    Uid = rl.Uid,
+                    InsertDate = rl.InsertDate,
+                    HazardDate = rl.HazardDate,
+                    AssignedDate = rl.AssignedDate,
+                    CorrectiveActionDate = rl.CorrectiveActionDate,
+                    DeptDivision = rl.DeptDivision ?? string.Empty,
+                    ReferenceNo = rl.ReferenceNo ?? string.Empty,
+                    Hazard = rl.Hazard ?? string.Empty,
+                    Risk = rl.Risk ?? string.Empty,
+                    RawRisk = rl.RawRisk,
+                    ResidualRisk = rl.ResidualRisk,
+                    StatusDisplay = rl.StatusId == 1 ? "Active" : "Inactive",
+                    AssignedToCompositeId = rl.AssignedToCompositeId ?? string.Empty
+                })]
+                };
+
+                return View(viewModel);
             }
-            catch (Exception ex)
-            {
-                // Log the exception if you have logging configured
-                return BadRequest($"Error loading risk assessment: {ex.Message}");
-            }
+
+            return BadRequest();
         }
 
         [HttpPost]
-        public async Task<IActionResult> Add(AssessmentViewModel model)
+        public async Task<IActionResult> AddRisk(AssessmentViewModel model)
         {
-            if (model.SelectedHoldingCompanyUid.HasValue && model.SelectedAssessmentSiteId.HasValue)
+            if (model.SelectedHoldingCompanyUid != Guid.Empty)
             {
                 // Get the holding company to obtain the schema name
-                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid.Value);
+                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid);
                 if (holdingCompany != null)
                 {
                     var newRisk = new CustRisk
@@ -221,6 +199,25 @@ namespace Resolv.Web.Controllers
             }
 
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> AddRiskLine(Guid riskUid, Guid selectedHoldingCompanyUid)
+        {
+            if (riskUid != Guid.Empty && selectedHoldingCompanyUid != Guid.Empty)
+            {
+                var holdingCompany = await holdingCompanyRepository.GetAsync(selectedHoldingCompanyUid);
+                var risk = await riskRepository.GetAsync(holdingCompany.SchemaName, riskUid);
+                var uid = Guid.Empty;
+
+                if (holdingCompany != null)
+                {
+                    (_, uid) = await riskLineRepository.AddEmptyAsync(holdingCompany.SchemaName, risk.Id);
+                }
+                return RedirectToAction("StepOne", new { risklineid = uid });
+            }
+
+            return BadRequest();
         }
     }
 }

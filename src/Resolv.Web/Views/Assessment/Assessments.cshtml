@@ -23,11 +23,21 @@
         <div class="row mt-4">
             <div class="col-md-12">
                 <div id="riskLinesTableContainer">
-                    @await Html.PartialAsync("_RiskLinesTable", new Resolv.Web.Models.RiskLinesTableViewModel {
-                    RiskLines = Model.RiskLines })
+                    @await Html.PartialAsync("_RiskLinesTable", 
+                    new Resolv.Web.Models.RiskLinesTableViewModel {
+                        RiskLines = Model.RiskLines,
+                        RiskUid = Model.RiskUid,
+                        SelectedHoldingCompanyUid = Model.SelectedHoldingCompanyUid
+                    })
                 </div>
             </div>
         </div>
+
+        <form asp-action="AddRiskLine" method="post">
+            @Html.HiddenFor(m => m.RiskUid)
+            @Html.HiddenFor(m => m.SelectedHoldingCompanyUid)
+            <input type="submit" class="btn btn-primary" value="Add" />
+        </form>
     </div>
 </div>
 
@@ -45,12 +55,10 @@
     </style>
     <script>
         $(document).ready(function () {
-            // Add click event to risk lines table rows for future functionality
             $('#riskLinesTable tbody tr').on('click', function () {
                 var riskLineUid = $(this).data('risk-line-uid');
                 if (riskLineUid) {
-                    // Future: navigate to risk line details
-                    console.log('Risk line clicked:', riskLineUid);
+                    window.location.href = '@Url.Action("StepOne", "Assessment")?risklineid=' + riskLineUid;
                 }
             });
         });

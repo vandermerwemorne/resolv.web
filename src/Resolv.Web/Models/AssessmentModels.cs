@@ -1,11 +1,10 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
-using Resolv.Domain.Risk;
 
 namespace Resolv.Web.Models;
 
 public class AssessmentViewModel
 {
-    public Guid? SelectedHoldingCompanyUid { get; set; }
+    public Guid SelectedHoldingCompanyUid { get; set; }
     public int? SelectedDivisionId { get; set; }
     public int? SelectedAssessmentSiteId { get; set; }
 
@@ -17,6 +16,7 @@ public class AssessmentViewModel
 
 public class RiskLineViewModel
 {
+    public Guid SelectedHoldingCompanyUid { get; set; }
     public Guid RiskUid { get; set; }
     public AssessmentViewModelRisk Risk { get; set; } = new AssessmentViewModelRisk();
     public List<RiskLineViewModelItem> RiskLines { get; set; } = [];
@@ -27,11 +27,14 @@ public class RiskLineViewModel
 
 public class RiskLinesTableViewModel
 {
+    public Guid RiskUid { get; set; }
+    public Guid SelectedHoldingCompanyUid { get; set; }
     public List<RiskLineViewModelItem> RiskLines { get; set; } = [];
 }
 
 public class RiskLineViewModelItem
 {
+    public Guid RiskUid { get; set; }
     public Guid Uid { get; set; }
     public DateTime InsertDate { get; set; }
     public DateTime? HazardDate { get; set; }
@@ -49,6 +52,7 @@ public class RiskLineViewModelItem
 
 public class RisksTableViewModel
 {
+    public Guid SelectedHoldingCompanyUid { get; set; }
     public List<AssessmentViewModelRisk> Risks { get; set; } = [];
 }
 
