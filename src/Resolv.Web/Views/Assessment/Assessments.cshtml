@@ -58,7 +58,7 @@
             $('#riskLinesTable tbody tr').on('click', function () {
                 var riskLineUid = $(this).data('risk-line-uid');
                 if (riskLineUid) {
-                    window.location.href = '@Url.Action("StepOne", "Assessment")?risklineid=' + riskLineUid;
+                    window.location.href = '@Url.Action("StepOne", "Assessment")?riskid=@Model.RiskUid&risklineid=' + riskLineUid + '&holdingcompanyid=@Model.SelectedHoldingCompanyUid';
                 }
             });
         });

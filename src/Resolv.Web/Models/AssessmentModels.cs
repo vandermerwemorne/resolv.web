@@ -1,6 +1,45 @@
 using Microsoft.AspNetCore.Mvc.Rendering;
+using System.ComponentModel.DataAnnotations;
 
 namespace Resolv.Web.Models;
+
+public class StepOneViewModel
+{
+    public Guid RiskUid { get; set; }
+    public Guid RiskLineUid { get; set; }
+    public Guid HoldingCompanyId { get; set; }
+
+    [Display(Name = "Department/Division")]
+    [StringLength(255, ErrorMessage = "Department/Division cannot exceed 255 characters")]
+    [Required(ErrorMessage = "Department/Division is required")]
+    public string? DeptDivision { get; set; }
+
+    [Display(Name = "Reference No")]
+    [StringLength(100, ErrorMessage = "Reference No cannot exceed 100 characters")]
+    [Required(ErrorMessage = "Reference No is required")]
+    public string? ReferenceNo { get; set; }
+
+    [Display(Name = "Hazard Category")]
+    public int? StepInOperationId { get; set; }
+
+    [Display(Name = "Classification")]
+    public int? ClassificationId { get; set; }
+
+    [Display(Name = "Hazard")]
+    [StringLength(500, ErrorMessage = "Hazard cannot exceed 500 characters")]
+    public string? Hazard { get; set; }
+
+    [Display(Name = "Risk")]
+    [StringLength(500, ErrorMessage = "Risk cannot exceed 500 characters")]
+    public string? Risk { get; set; }
+
+    [Display(Name = "Picture Upload")]
+    public IFormFile? PictureFile { get; set; }
+
+    // Dropdown lists for the select options
+    public List<SelectListItem> HazardCategories { get; set; } = [];
+    public List<SelectListItem> Classifications { get; set; } = [];
+}
 
 public class AssessmentViewModel
 {

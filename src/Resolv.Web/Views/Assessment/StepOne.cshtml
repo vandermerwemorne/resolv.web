@@ -1,0 +1,113 @@
+@model Resolv.Web.Models.StepOneViewModel
+
+@{
+    ViewData["Title"] = "Hazard Identification";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="Assessment" asp-action="Index">Assessments</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+        <hr />
+
+        <form asp-action="StepOne" method="post" enctype="multipart/form-data">
+            <div asp-validation-summary="All" class="alert alert-danger"
+                style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+            @Html.HiddenFor(m => m.RiskLineUid)
+            @Html.HiddenFor(m => m.HoldingCompanyId)
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="DeptDivision" class="form-label"></label>
+                        <input asp-for="DeptDivision" class="form-control" />
+                        <span asp-validation-for="DeptDivision" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="ReferenceNo" class="form-label"></label>
+                        <input asp-for="ReferenceNo" class="form-control" />
+                        <span asp-validation-for="ReferenceNo" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="StepInOperationId" class="form-label"></label>
+                        <select asp-for="StepInOperationId" asp-items="Model.HazardCategories" class="form-select">
+                            <option value="">-- Select Hazard Category --</option>
+                        </select>
+                        <span asp-validation-for="StepInOperationId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="ClassificationId" class="form-label"></label>
+                        <select asp-for="ClassificationId" asp-items="Model.Classifications" class="form-select">
+                            <option value="">-- Select Classification --</option>
+                        </select>
+                        <span asp-validation-for="ClassificationId" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="Hazard" class="form-label"></label>
+                        <textarea asp-for="Hazard" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Hazard" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="Risk" class="form-label"></label>
+                        <textarea asp-for="Risk" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="Risk" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="PictureFile" class="form-label"></label>
+                        <input asp-for="PictureFile" type="file" class="form-control" accept="image/*" />
+                        <span asp-validation-for="PictureFile" class="text-danger"></span>
+                        <div class="form-text">Select an image file to upload (optional)</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a class="btn btn-secondary" asp-controller="Assessment" asp-action="Assessments"
+                        asp-route-riskid="@Model.RiskUid"
+                        asp-route-holdingcompanyid="@Model.HoldingCompanyId">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

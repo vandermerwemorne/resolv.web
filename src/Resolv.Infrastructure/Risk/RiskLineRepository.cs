@@ -8,8 +8,8 @@ public class RiskLineRepository(SqlConnectionFactory factory) : IRiskLineReposit
     public async Task<(int Id, Guid Uid)> AddAsync(string schema, CustRiskLine riskline)
     {
         using var connection = factory.CreateNpgsqlConnection();
-            var sql =
-                $@"
+        var sql =
+            $@"
 INSERT INTO 
 {schema}.risk_line(
 risk_id, insert_date, dept_division, reference_no, hazard_date, step_in_operation_id, classification_id, hazard, risk, picture_id, severity_id, frequency_id, exposure_id, eng_control_id, admin_control_id, ppe_control_id, current_eng_controls, rec_eng_controls, assigned_date, corrective_action_date, percentage_complete_id, management_super_id, conform_legal_req_id, current_admin_controls, current_management_super_controls, current_conform_legal_req_controls, current_ppe_controls, rec_admin_controls, rec_management_super_controls, rec_conform_legal_req_controls, rec_ppe_controls, assigned_to_composite_id, added_by_user_id, raw_risk, residual_risk, eliminate_id, eliminate_rec, updated, can_edit, updated_by, data_upload, assigned_to_user_id, created_user_id, updated_user_id, prev_risk_id, new_residual_risk, status_id, observation)
@@ -35,7 +35,7 @@ VALUES
 (@RiskId)
 RETURNING id, uid";
 
-        var result = await connection.QuerySingleAsync<(int Id, Guid Uid)>(sql, new 
+        var result = await connection.QuerySingleAsync<(int Id, Guid Uid)>(sql, new
         {
             RiskId = riskId
         });
@@ -53,5 +53,37 @@ ORDER BY insert_date ASC;";
 
         var result = await connection.QueryAsync<CustRiskLine>(sql, new { riskId });
         return [.. result];
+    }
+
+    public async Task<CustRiskLine?> GetByUidAsync(string schema, Guid uid)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.risk_line
+WHERE uid = @uid;";
+
+        var result = await connection.QuerySingleOrDefaultAsync<CustRiskLine>(sql, new { uid });
+        return result;
+    }
+
+    public async Task UpdateAsync(string schema, CustRiskLine riskLine)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+UPDATE {schema}.risk_line
+SET 
+    dept_division = @DeptDivision,
+    reference_no = @ReferenceNo,
+    step_in_operation_id = @StepInOperationId,
+    classification_id = @ClassificationId,
+    hazard = @Hazard,
+    risk = @Risk,
+    updated = @Updated,
+    updated_by = @UpdatedBy
+WHERE uid = @Uid;";
+
+        riskLine.Updated = DateTime.UtcNow;
+        await connection.ExecuteAsync(sql, riskLine);
     }
 }

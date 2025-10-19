@@ -46,6 +46,7 @@
 - Remove `novalidate` attribute from forms to enable HTML5 validation
 - Use `<span asp-validation-for="PropertyName">` for field-level error display
 - Use `<div asp-validation-summary="All">` for form-level error summary
+- **Show validation summary conditionally** to prevent empty error containers on page load
 
 #### Validation Pattern:
 ```csharp
@@ -63,9 +64,10 @@ public class User
 ```
 
 ```razor
-<!-- View with validation -->
+<!-- View with conditional validation summary -->
 <form asp-action="Create" method="post">
-    <div asp-validation-summary="All" class="alert alert-danger"></div>
+    <div asp-validation-summary="All" class="alert alert-danger"
+         style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
     
     <input asp-for="Name" class="form-control" />
     <span asp-validation-for="Name" class="text-danger"></span>

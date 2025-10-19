@@ -173,7 +173,7 @@ namespace Resolv.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> AddRisk(AssessmentViewModel model)
         {
-            if (model.SelectedHoldingCompanyUid != Guid.Empty)
+            if (model.SelectedHoldingCompanyUid != Guid.Empty && model.SelectedAssessmentSiteId.HasValue)
             {
                 // Get the holding company to obtain the schema name
                 var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid);
@@ -214,10 +214,93 @@ namespace Resolv.Web.Controllers
                 {
                     (_, uid) = await riskLineRepository.AddEmptyAsync(holdingCompany.SchemaName, risk.Id);
                 }
-                return RedirectToAction("StepOne", new { risklineid = uid });
+                return RedirectToAction("StepOne", new { risklineid = uid, holdingCompanyId = selectedHoldingCompanyUid });
             }
 
             return BadRequest();
+        }
+
+        public async Task<IActionResult> StepOne(Guid riskId, Guid riskLineId, Guid holdingCompanyId)
+        {
+            if (riskLineId == Guid.Empty || holdingCompanyId == Guid.Empty)
+            {
+                return BadRequest("Risk line ID and holding company ID are required");
+            }
+
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
+            var riskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, riskLineId);
+            if (riskLine == null)
+            {
+                return NotFound("Risk line not found");
+            }
+
+            var viewModel = new StepOneViewModel
+            {
+                RiskUid = riskId,
+                RiskLineUid = riskLine.Uid,
+                HoldingCompanyId = holdingCompanyId,
+                DeptDivision = riskLine.DeptDivision,
+                ReferenceNo = riskLine.ReferenceNo,
+                StepInOperationId = riskLine.StepInOperationId,
+                ClassificationId = riskLine.ClassificationId,
+                Hazard = riskLine.Hazard,
+                Risk = riskLine.Risk,
+                // TODO: Populate dropdown lists for HazardCategories and Classifications
+                HazardCategories = [],
+                Classifications = []
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StepOne(StepOneViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // TODO: Repopulate dropdown lists
+                model.HazardCategories = [];
+                model.Classifications = [];
+                return View(model);
+            }
+
+            if (model.HoldingCompanyId == Guid.Empty)
+            {
+                return BadRequest("Holding company ID is required");
+            }
+
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
+            var existingRiskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, model.RiskLineUid);
+            if (existingRiskLine == null)
+            {
+                return NotFound("Risk line not found");
+            }
+
+            // Update the risk line with form data
+            existingRiskLine.DeptDivision = model.DeptDivision;
+            existingRiskLine.ReferenceNo = model.ReferenceNo;
+            existingRiskLine.StepInOperationId = model.StepInOperationId;
+            existingRiskLine.ClassificationId = model.ClassificationId;
+            existingRiskLine.Hazard = model.Hazard;
+            existingRiskLine.Risk = model.Risk;
+            existingRiskLine.UpdatedBy = 1; // TODO: Get current user ID
+
+            await riskLineRepository.UpdateAsync(holdingCompany.SchemaName, existingRiskLine);
+
+            // TODO: Handle picture upload when implemented
+
+            // For now, redirect back to the same page to show the saved data
+            return RedirectToAction("StepOne", new { risklineid = model.RiskLineUid, holdingCompanyId = model.HoldingCompanyId });
         }
     }
 }
