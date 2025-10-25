@@ -299,8 +299,137 @@ namespace Resolv.Web.Controllers
 
             // TODO: Handle picture upload when implemented
 
-            // For now, redirect back to the same page to show the saved data
-            return RedirectToAction("StepOne", new { risklineid = model.RiskLineUid, holdingCompanyId = model.HoldingCompanyId });
+            // Redirect to StepTwo after successfully saving StepOne
+            return RedirectToAction("StepTwo", new { riskid = model.RiskUid, risklineid = model.RiskLineUid, holdingcompanyid = model.HoldingCompanyId });
+        }
+
+        public async Task<IActionResult> StepTwo(Guid riskId, Guid riskLineId, Guid holdingCompanyId)
+        {
+            if (riskLineId == Guid.Empty || holdingCompanyId == Guid.Empty)
+            {
+                return BadRequest("Risk line ID and holding company ID are required");
+            }
+
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
+            var riskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, riskLineId);
+            if (riskLine == null)
+            {
+                return NotFound("Risk line not found");
+            }
+
+            var viewModel = new StepTwoViewModel
+            {
+                RiskUid = riskId,
+                RiskLineUid = riskLine.Uid,
+                HoldingCompanyId = holdingCompanyId,
+                SeverityId = riskLine.SeverityId,
+                FrequencyId = riskLine.FrequencyId,
+                ExposureId = riskLine.ExposureId,
+                EliminateId = riskLine.EliminateId,
+                EliminateRec = riskLine.EliminateRec,
+                EngControlId = riskLine.EngControlId,
+                CurrentEngControls = riskLine.CurrentEngControls,
+                RecEngControls = riskLine.RecEngControls,
+                AdminControlId = riskLine.AdminControlId,
+                CurrentAdminControls = riskLine.CurrentAdminControls,
+                RecAdminControls = riskLine.RecAdminControls,
+                ManagementSuperId = riskLine.ManagementSuperId,
+                CurrentManagementSuperControls = riskLine.CurrentManagementSuperControls,
+                RecManagementSuperControls = riskLine.RecManagementSuperControls,
+                PPEControlId = riskLine.PpeControlId,
+                CurrentPPEControls = riskLine.CurrentPpeControls,
+                RecPPEControls = riskLine.RecPpeControls,
+                ConformLegalReqId = riskLine.ConformLegalReqId,
+                CurrentConformLegalReqControls = riskLine.CurrentConformLegalReqControls,
+                RecConformLegalReqControls = riskLine.RecConformLegalReqControls,
+                AssignedToCompositeId = riskLine.AssignedToCompositeId,
+                AssignedDate = riskLine.AssignedDate,
+                CorrectiveActionDate = riskLine.CorrectiveActionDate,
+                // TODO: Populate dropdown lists
+                Severities = [],
+                Frequencies = [],
+                Exposures = [],
+                Eliminates = [],
+                EngControls = [],
+                AdminControls = [],
+                ManagementSupers = [],
+                PPEControls = [],
+                ConformLegalReqs = []
+            };
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> StepTwo(StepTwoViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                // TODO: Repopulate dropdown lists
+                model.Severities = [];
+                model.Frequencies = [];
+                model.Exposures = [];
+                model.Eliminates = [];
+                model.EngControls = [];
+                model.AdminControls = [];
+                model.ManagementSupers = [];
+                model.PPEControls = [];
+                model.ConformLegalReqs = [];
+                return View(model);
+            }
+
+            if (model.HoldingCompanyId == Guid.Empty)
+            {
+                return BadRequest("Holding company ID is required");
+            }
+
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
+            var existingRiskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, model.RiskLineUid);
+            if (existingRiskLine == null)
+            {
+                return NotFound("Risk line not found");
+            }
+
+            // Update the risk line with StepTwo form data
+            existingRiskLine.SeverityId = model.SeverityId;
+            existingRiskLine.FrequencyId = model.FrequencyId;
+            existingRiskLine.ExposureId = model.ExposureId;
+            existingRiskLine.EliminateId = model.EliminateId ?? 0;
+            existingRiskLine.EliminateRec = model.EliminateRec;
+            existingRiskLine.EngControlId = model.EngControlId;
+            existingRiskLine.CurrentEngControls = model.CurrentEngControls;
+            existingRiskLine.RecEngControls = model.RecEngControls;
+            existingRiskLine.AdminControlId = model.AdminControlId;
+            existingRiskLine.CurrentAdminControls = model.CurrentAdminControls;
+            existingRiskLine.RecAdminControls = model.RecAdminControls;
+            existingRiskLine.ManagementSuperId = model.ManagementSuperId;
+            existingRiskLine.CurrentManagementSuperControls = model.CurrentManagementSuperControls;
+            existingRiskLine.RecManagementSuperControls = model.RecManagementSuperControls;
+            existingRiskLine.PpeControlId = model.PPEControlId;
+            existingRiskLine.CurrentPpeControls = model.CurrentPPEControls;
+            existingRiskLine.RecPpeControls = model.RecPPEControls;
+            existingRiskLine.ConformLegalReqId = model.ConformLegalReqId;
+            existingRiskLine.CurrentConformLegalReqControls = model.CurrentConformLegalReqControls;
+            existingRiskLine.RecConformLegalReqControls = model.RecConformLegalReqControls;
+            existingRiskLine.AssignedToCompositeId = model.AssignedToCompositeId;
+            existingRiskLine.AssignedDate = model.AssignedDate;
+            existingRiskLine.CorrectiveActionDate = model.CorrectiveActionDate;
+            existingRiskLine.UpdatedBy = 1; // TODO: Get current user ID
+
+            await riskLineRepository.UpdateAsync(holdingCompany.SchemaName, existingRiskLine);
+
+            // Redirect back to assessments list after successful save
+            return RedirectToAction("Assessments", new { riskid = model.RiskUid, holdingcompanyid = model.HoldingCompanyId });
         }
     }
 }

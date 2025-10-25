@@ -41,6 +41,117 @@ public class StepOneViewModel
     public List<SelectListItem> Classifications { get; set; } = [];
 }
 
+public class StepTwoViewModel
+{
+    public Guid RiskUid { get; set; }
+    public Guid RiskLineUid { get; set; }
+    public Guid HoldingCompanyId { get; set; }
+
+    [Display(Name = "Severity")]
+    public int? SeverityId { get; set; }
+
+    [Display(Name = "Frequency")]
+    public int? FrequencyId { get; set; }
+
+    [Display(Name = "Exposure")]
+    public int? ExposureId { get; set; }
+
+    [Display(Name = "Eliminate/Substitute")]
+    public int? EliminateId { get; set; }
+
+    [Display(Name = "Recommendations")]
+    [StringLength(1000, ErrorMessage = "Eliminate Recommendations cannot exceed 1000 characters")]
+    public string? EliminateRec { get; set; }
+
+    [Display(Name = "Eng. Control")]
+    public int? EngControlId { get; set; }
+
+    [Display(Name = "Current Engineering Controls")]
+    [StringLength(1000, ErrorMessage = "Current Engineering Controls cannot exceed 1000 characters")]
+    public string? CurrentEngControls { get; set; }
+
+    [Display(Name = "Recommended Engineering Controls")]
+    [StringLength(1000, ErrorMessage = "Recommended Engineering Controls cannot exceed 1000 characters")]
+    public string? RecEngControls { get; set; }
+
+    [Display(Name = "Admin Control")]
+    public int? AdminControlId { get; set; }
+
+    [Display(Name = "Current Administrative Controls")]
+    [StringLength(1000, ErrorMessage = "Current Administrative Controls cannot exceed 1000 characters")]
+    public string? CurrentAdminControls { get; set; }
+
+    [Display(Name = "Recommended Administrative Controls")]
+    [StringLength(1000, ErrorMessage = "Recommended Administrative Controls cannot exceed 1000 characters")]
+    public string? RecAdminControls { get; set; }
+
+    [Display(Name = "MGNT/Sup")]
+    public int? ManagementSuperId { get; set; }
+
+    [Display(Name = "Current Management/Supervision Controls")]
+    [StringLength(1000, ErrorMessage = "Current Management/Supervision Controls cannot exceed 1000 characters")]
+    public string? CurrentManagementSuperControls { get; set; }
+
+    [Display(Name = "Recommended Management/Supervision Controls")]
+    [StringLength(1000, ErrorMessage = "Recommended Management/Supervision Controls cannot exceed 1000 characters")]
+    public string? RecManagementSuperControls { get; set; }
+
+    [Display(Name = "PPE Control")]
+    public int? PPEControlId { get; set; }
+
+    [Display(Name = "Current PPE Controls")]
+    [StringLength(1000, ErrorMessage = "Current PPE Controls cannot exceed 1000 characters")]
+    public string? CurrentPPEControls { get; set; }
+
+    [Display(Name = "Recommended PPE Controls")]
+    [StringLength(1000, ErrorMessage = "Recommended PPE Controls cannot exceed 1000 characters")]
+    public string? RecPPEControls { get; set; }
+
+    [Display(Name = "LGL/REG CONF")]
+    public int? ConformLegalReqId { get; set; }
+
+    [Display(Name = "Current Legal Requirements Controls")]
+    [StringLength(1000, ErrorMessage = "Current Legal Requirements Controls cannot exceed 1000 characters")]
+    public string? CurrentConformLegalReqControls { get; set; }
+
+    [Display(Name = "Recommended Legal Requirements Controls")]
+    [StringLength(1000, ErrorMessage = "Recommended Legal Requirements Controls cannot exceed 1000 characters")]
+    public string? RecConformLegalReqControls { get; set; }
+
+    [Display(Name = "Assigned To")]
+    [StringLength(255, ErrorMessage = "Assigned To cannot exceed 255 characters")]
+    public string? AssignedToCompositeId { get; set; }
+
+    [Display(Name = "Assigned Date")]
+    [DataType(DataType.Date)]
+    public DateTime? AssignedDate { get; set; }
+
+    [Display(Name = "Corrective Action Date")]
+    [DataType(DataType.Date)]
+    public DateTime? CorrectiveActionDate { get; set; }
+
+    [Display(Name = "Raw Risk")]
+    public int RawRisk { get; set; } = 125;
+
+    [Display(Name = "Residual Risk")]
+    public int ResidualRisk { get; set; } = 125;
+
+    [Display(Name = "Priority")]
+    public int Priority { get; set; } = 1;
+
+
+    // Dropdown lists for the select options
+    public List<SelectListItem> Severities { get; set; } = [];
+    public List<SelectListItem> Frequencies { get; set; } = [];
+    public List<SelectListItem> Exposures { get; set; } = [];
+    public List<SelectListItem> Eliminates { get; set; } = [];
+    public List<SelectListItem> EngControls { get; set; } = [];
+    public List<SelectListItem> AdminControls { get; set; } = [];
+    public List<SelectListItem> ManagementSupers { get; set; } = [];
+    public List<SelectListItem> PPEControls { get; set; } = [];
+    public List<SelectListItem> ConformLegalReqs { get; set; } = [];
+}
+
 public class AssessmentViewModel
 {
     public Guid SelectedHoldingCompanyUid { get; set; }
