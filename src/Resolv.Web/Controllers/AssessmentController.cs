@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Resolv.Domain.AssessmentSite;
+using Resolv.Domain.Classification;
 using Resolv.Domain.Division;
 using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
@@ -15,7 +16,8 @@ namespace Resolv.Web.Controllers
         IAssessmentSiteRepository assessmentSiteRepository,
         IRiskRepository riskRepository,
         IRiskLineRepository riskLineRepository,
-        IHazardCategoryRepository hazardCategoryRepository) : Controller
+        IHazardCategoryRepository hazardCategoryRepository,
+        IClassificationRepository classificationRepository) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -254,7 +256,7 @@ namespace Resolv.Web.Controllers
                 Risk = riskLine.Risk,
 
                 HazardCategories = await SetHazardCategories(holdingCompany.SchemaName),
-                Classifications = []
+                Classifications = await SetClassifications()
             };
 
             return View(viewModel);
@@ -278,7 +280,7 @@ namespace Resolv.Web.Controllers
             if (!ModelState.IsValid)
             {
                 model.HazardCategories = await SetHazardCategories(holdingCompany.SchemaName);
-                model.Classifications = [];
+                model.Classifications = await SetClassifications();
                 return View(model);
             }
 
@@ -436,8 +438,19 @@ namespace Resolv.Web.Controllers
 
         private async Task<List<SelectListItem>> SetHazardCategories(string schemaName)
         {
-            var hazardCategories = await hazardCategoryRepository.GetCustAsync(schemaName);
-            return [.. hazardCategories.Prepend(new CustHazardCategory { Id = 0, Description = "-- Select Hazard Category --" })
+            var data = await hazardCategoryRepository.GetCustAsync(schemaName);
+            return [.. data.Prepend(new CustHazardCategory { Id = 0, Description = "-- Select Hazard Category --" })
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetClassifications()
+        {
+            var data = await classificationRepository.GetComAsync();
+            return [.. data.Prepend(new ComClassification { Id = 0, Description = "-- Select Classification --" })
                 .Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
