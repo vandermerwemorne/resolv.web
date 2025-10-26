@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
+using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
 using Resolv.Web.Models;
@@ -13,7 +14,8 @@ namespace Resolv.Web.Controllers
         ICustDivisionRepository divisionRepository,
         IAssessmentSiteRepository assessmentSiteRepository,
         IRiskRepository riskRepository,
-        IRiskLineRepository riskLineRepository) : Controller
+        IRiskLineRepository riskLineRepository,
+        IHazardCategoryRepository hazardCategoryRepository) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -250,8 +252,8 @@ namespace Resolv.Web.Controllers
                 ClassificationId = riskLine.ClassificationId,
                 Hazard = riskLine.Hazard,
                 Risk = riskLine.Risk,
-                // TODO: Populate dropdown lists for HazardCategories and Classifications
-                HazardCategories = [],
+
+                HazardCategories = await SetHazardCategories(holdingCompany.SchemaName),
                 Classifications = []
             };
 
@@ -261,23 +263,23 @@ namespace Resolv.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StepOne(StepOneViewModel model)
         {
-            if (!ModelState.IsValid)
-            {
-                // TODO: Repopulate dropdown lists
-                model.HazardCategories = [];
-                model.Classifications = [];
-                return View(model);
-            }
-
             if (model.HoldingCompanyId == Guid.Empty)
             {
                 return BadRequest("Holding company ID is required");
             }
 
             var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
+
             if (holdingCompany == null)
             {
                 return NotFound("Holding company not found");
+            }
+
+            if (!ModelState.IsValid)
+            {
+                model.HazardCategories = await SetHazardCategories(holdingCompany.SchemaName);
+                model.Classifications = [];
+                return View(model);
             }
 
             var existingRiskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, model.RiskLineUid);
@@ -430,6 +432,17 @@ namespace Resolv.Web.Controllers
 
             // Redirect back to assessments list after successful save
             return RedirectToAction("Assessments", new { riskid = model.RiskUid, holdingcompanyid = model.HoldingCompanyId });
+        }
+
+        private async Task<List<SelectListItem>> SetHazardCategories(string schemaName)
+        {
+            var hazardCategories = await hazardCategoryRepository.GetCustAsync(schemaName);
+            return [.. hazardCategories.Prepend(new CustHazardCategory { Id = 0, Description = "-- Select Hazard Category --" })
+                .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
         }
     }
 }

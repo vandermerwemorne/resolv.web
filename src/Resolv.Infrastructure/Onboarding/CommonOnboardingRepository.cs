@@ -198,4 +198,36 @@ ALTER TABLE IF EXISTS {schema}.risk_images
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }
+
+    public async Task AddTableHazardCategory(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.step_in_operation 
+(
+id SERIAL PRIMARY KEY,
+description VARCHAR(200),
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+inc_in_calc BOOLEAN DEFAULT true,
+enabled BOOLEAN DEFAULT true
+);
+
+ALTER TABLE IF EXISTS {schema}.step_in_operation
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
+
+    public async Task CopyHazardCategory(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var data = await connection.QueryAsync<string>("SELECT description FROM common.master_step_in_operation ORDER BY description;");
+        foreach (var item in data)
+        {
+            var sql = $@"
+INSERT INTO {schema}.step_in_operation (description)
+VALUES ('{item}');
+";
+            await connection.ExecuteAsync(sql);
+        }
+    }
 }

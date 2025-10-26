@@ -82,12 +82,16 @@ namespace Resolv.Web.Controllers
                     var (_, uid) = await holdingCompanyRepository.AddAsync(commonHoldingCompany);
 
                     await onboardingRepository.AddCustomerSchema(schema);
+
                     await onboardingRepository.AddTableDivision(schema);
                     await onboardingRepository.AddTableAssessmentSite(schema);
                     await onboardingRepository.AddTableUser(schema);
                     await onboardingRepository.AddTableRisk(schema);
                     await onboardingRepository.AddTableRiskLine(schema);
                     await onboardingRepository.AddTableRiskImages(schema);
+                    await onboardingRepository.AddTableHazardCategory(schema);
+
+                    await onboardingRepository.CopyHazardCategory(schema);
 
                     return RedirectToAction("CreateDivision", new { holdingCompanyUid = uid });
                 }
@@ -279,7 +283,7 @@ namespace Resolv.Web.Controllers
             }).ToList();
 
             var provinces = await provinceRepository.GetAsync();
-            ViewBag.Province = provinces.Prepend(new Province { Id = 0, Name = "Please select" })
+            ViewBag.Province = provinces.Prepend(new Province { Id = 0, Name = "-- Select Province --" })
                 .Select(p => new Microsoft.AspNetCore.Mvc.Rendering.SelectListItem
                 {
                     Value = p.Id.ToString(),

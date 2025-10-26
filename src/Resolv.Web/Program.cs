@@ -1,6 +1,7 @@
 using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
 using Resolv.Domain.Geographical;
+using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
 using Resolv.Domain.Risk;
@@ -10,6 +11,7 @@ using Resolv.Infrastructure;
 using Resolv.Infrastructure.AssessmentSite;
 using Resolv.Infrastructure.Division;
 using Resolv.Infrastructure.Geographical;
+using Resolv.Infrastructure.HazardCategory;
 using Resolv.Infrastructure.HoldingCompany;
 using Resolv.Infrastructure.Onboarding;
 using Resolv.Infrastructure.Risk;
@@ -54,6 +56,8 @@ builder.Services.AddScoped<ICustDivisionRepository, CustDivisionRepository>();
 builder.Services.AddScoped<IAssessmentSiteRepository, AssessmentSiteRepository>();
 builder.Services.AddScoped<IProvinceRepository, ProvinceRepository>();
 builder.Services.AddScoped<ITownRepository, TownRepository>();
+builder.Services.AddScoped<IHazardCategoryRepository, HazardCategoryRepository>();
+
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
 var app = builder.Build();
