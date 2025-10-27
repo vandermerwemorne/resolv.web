@@ -32,4 +32,13 @@ public interface ICustUserRepository
     /// <param name="uid">The user UID</param>
     /// <returns></returns>
     Task<CustUser> GetUserAsync(string schemaName, Guid uid);
+
+    /// <summary>
+    /// These are customer users, eg Hulamin
+    /// </summary>
+    /// <param name="schemaName"></param>
+    /// <param name="username"></param>
+    /// <param name="password"></param>
+    /// <returns></returns>
+    Task<CustUser> GetByCredentialsAsync(string schemaName, string username, string password);
 }

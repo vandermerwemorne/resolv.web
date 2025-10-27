@@ -64,4 +64,18 @@ WHERE uid = @Uid";
         var user = await connection.QuerySingleOrDefaultAsync<CustUser>(sql, new { Uid = uid });
         return user ?? new CustUser { Id = 0 };
     }
+
+    public async Task<CustUser> GetByCredentialsAsync(string schemaName, string username, string password)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schemaName}.user
+WHERE email = @Username
+AND password = @Password
+AND has_access = TRUE";
+
+        var user = await connection.QuerySingleOrDefaultAsync<CustUser>(sql, new { Username = username, Password = password });
+        return user ?? new CustUser { Id = 0 };
+    }
 }

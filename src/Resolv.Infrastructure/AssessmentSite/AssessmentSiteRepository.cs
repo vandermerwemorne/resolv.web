@@ -1,6 +1,5 @@
 ﻿using Dapper;
 using Resolv.Domain.AssessmentSite;
-using Resolv.Domain.Division;
 
 namespace Resolv.Infrastructure.AssessmentSite;
 
