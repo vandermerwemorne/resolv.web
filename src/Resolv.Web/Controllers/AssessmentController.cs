@@ -6,7 +6,10 @@ using Resolv.Domain.Division;
 using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
+using Resolv.Domain.RiskControl;
+using Resolv.Infrastructure.RiskControl;
 using Resolv.Web.Models;
+using System.Collections.Generic;
 
 namespace Resolv.Web.Controllers
 {
@@ -17,7 +20,17 @@ namespace Resolv.Web.Controllers
         IRiskRepository riskRepository,
         IRiskLineRepository riskLineRepository,
         IHazardCategoryRepository hazardCategoryRepository,
-        IClassificationRepository classificationRepository) : Controller
+        IClassificationRepository classificationRepository,
+        IExposureRepository exposureRepository,
+        IFrequencyRepository frequencyRepository,
+        ISeverityRepository severityRepository,
+
+        IAdminControlRepository adminControlRepository,
+        IEliminateControlRepository eliminateControlRepository,
+        IEngineeringControlRepository engineeringControlRepository,
+        ILegalRequirementControlRepository legalRequirementControlRepository,
+        IManagementSuperControlRepository managementSuperControlRepository,
+        IPPEControlRepository ppeControlRepository) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -354,16 +367,17 @@ namespace Resolv.Web.Controllers
                 AssignedToCompositeId = riskLine.AssignedToCompositeId,
                 AssignedDate = riskLine.AssignedDate,
                 CorrectiveActionDate = riskLine.CorrectiveActionDate,
-                // TODO: Populate dropdown lists
-                Severities = [],
-                Frequencies = [],
-                Exposures = [],
-                Eliminates = [],
-                EngControls = [],
-                AdminControls = [],
-                ManagementSupers = [],
-                PPEControls = [],
-                ConformLegalReqs = []
+
+                Severities = await SetSeverity(),
+                Frequencies = await SetFrequency(),
+                Exposures = await SetExposure(),
+
+                Eliminates = await SetEliminateControl(),
+                EngControls = await SetEngineeringControl(),
+                AdminControls = await SetAdminControl(),
+                ManagementSupers = await SetManagementSuperControl(),
+                PPEControls = await SetPPEControl(),
+                ConformLegalReqs = await SetLegalRequirementControl()
             };
 
             return View(viewModel);
@@ -374,16 +388,17 @@ namespace Resolv.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                // TODO: Repopulate dropdown lists
-                model.Severities = [];
-                model.Frequencies = [];
-                model.Exposures = [];
-                model.Eliminates = [];
-                model.EngControls = [];
-                model.AdminControls = [];
-                model.ManagementSupers = [];
-                model.PPEControls = [];
-                model.ConformLegalReqs = [];
+                model.Severities = await SetSeverity();
+                model.Frequencies = await SetFrequency();
+                model.Exposures = await SetExposure();
+
+                model.Eliminates = await SetEliminateControl();
+                model.EngControls = await SetEngineeringControl();
+                model.AdminControls = await SetAdminControl();
+                model.ManagementSupers = await SetManagementSuperControl();
+                model.PPEControls = await SetPPEControl();
+                model.ConformLegalReqs = await SetLegalRequirementControl();
+
                 return View(model);
             }
 
@@ -452,6 +467,96 @@ namespace Resolv.Web.Controllers
             var data = await classificationRepository.GetComAsync();
             return [.. data.Prepend(new ComClassification { Id = 0, Description = "-- Select Classification --" })
                 .Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetExposure()
+        {
+            var data = await exposureRepository.GetComAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetFrequency()
+        {
+            var data = await frequencyRepository.GetComAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetSeverity()
+        {
+            var data = await severityRepository.GetComAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetAdminControl()
+        {
+            var data = await adminControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetEliminateControl()
+        {
+            var data = await eliminateControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetEngineeringControl()
+        {
+            var data = await engineeringControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetLegalRequirementControl()
+        {
+            var data = await legalRequirementControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetManagementSuperControl()
+        {
+            var data = await managementSuperControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
+                {
+                    Value = p.Id.ToString(),
+                    Text = p.Description
+                })];
+        }
+
+        private async Task<List<SelectListItem>> SetPPEControl()
+        {
+            var data = await ppeControlRepository.GetAsync();
+            return [.. data.Select(p => new SelectListItem
                 {
                     Value = p.Id.ToString(),
                     Text = p.Description

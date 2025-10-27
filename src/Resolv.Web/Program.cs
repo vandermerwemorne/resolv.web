@@ -6,6 +6,7 @@ using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
 using Resolv.Domain.Risk;
+using Resolv.Domain.RiskControl;
 using Resolv.Domain.Services;
 using Resolv.Domain.Users;
 using Resolv.Infrastructure;
@@ -17,6 +18,7 @@ using Resolv.Infrastructure.HazardCategory;
 using Resolv.Infrastructure.HoldingCompany;
 using Resolv.Infrastructure.Onboarding;
 using Resolv.Infrastructure.Risk;
+using Resolv.Infrastructure.RiskControl;
 using Resolv.Infrastructure.Users;
 using Resolv.Services;
 using Resolv.Web;
@@ -58,8 +60,26 @@ builder.Services.AddScoped<ICustDivisionRepository, CustDivisionRepository>();
 builder.Services.AddScoped<IAssessmentSiteRepository, AssessmentSiteRepository>();
 builder.Services.AddScoped<IProvinceRepository, ProvinceRepository>();
 builder.Services.AddScoped<ITownRepository, TownRepository>();
+
 builder.Services.AddScoped<IHazardCategoryRepository, HazardCategoryRepository>();
 builder.Services.AddScoped<IClassificationRepository, ClassificationRepository>();
+builder.Services.AddScoped<IExposureRepository, ExposureRepository>();
+builder.Services.AddScoped<IFrequencyRepository, FrequencyRepository>();
+builder.Services.AddScoped<ISeverityRepository, SeverityRepository>();
+
+builder.Services.AddScoped<IAdminControlRepository, AdminControlRepository>();
+builder.Services.AddScoped<IEliminateControlRepository, EliminateControlRepository>();
+builder.Services.AddScoped<IEngineeringControlRepository, EngineeringControlRepository>();
+builder.Services.AddScoped<ILegalRequirementControlRepository, LegalRequirementControlRepository>();
+builder.Services.AddScoped<IManagementSuperControlRepository, ManagementSuperControlRepository>();
+builder.Services.AddScoped<IPPEControlRepository, PPEControlRepository>();
+
+builder.Services.AddScoped<IAdminControlRepository, AdminControlRepository>();
+builder.Services.AddScoped<IEliminateControlRepository, EliminateControlRepository>();
+builder.Services.AddScoped<IEngineeringControlRepository, EngineeringControlRepository>();
+builder.Services.AddScoped<ILegalRequirementControlRepository, LegalRequirementControlRepository>();
+builder.Services.AddScoped<IManagementSuperControlRepository, ManagementSuperControlRepository>();
+builder.Services.AddScoped<IPPEControlRepository, PPEControlRepository>();
 
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 
