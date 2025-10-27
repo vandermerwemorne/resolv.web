@@ -90,9 +90,13 @@
                             </ul>
                         }
                     </div>
-                    @if (TempData["LoginError"] != null)
+                    @if (TempData["ErrorMessage"] != null)
                     {
-                        <div class="alert alert-danger text-center">@TempData["LoginError"]</div>
+                        <div class="alert alert-danger text-center">@TempData["ErrorMessage"]</div>
+                    }
+                    @if (TempData["InfoMessage"] != null)
+                    {
+                        <div class="alert alert-info text-center">@TempData["InfoMessage"]</div>
                     }
                 </div>
             </div>

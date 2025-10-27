@@ -65,7 +65,7 @@ namespace Resolv.Web.Controllers
                 }
             }
 
-            TempData["LoginError"] = "Invalid username or password.";
+            TempData["ErrorMessage"] = "Invalid username or password.";
             return RedirectToAction("Index", "Home");
         }
 
@@ -126,12 +126,11 @@ namespace Resolv.Web.Controllers
                     }
                 }
 
-                TempData["LoginError"] = "Login with new credentials.";
+                TempData["InfoMessage"] = "Login with new credentials.";
                 return RedirectToAction("Index", "Home");
             }
             catch (Exception)
             {
-                TempData.Keep("Schema"); // Keep TempData for the next request
                 ModelState.AddModelError("", "An error occurred while updating the password. Please try again.");
                 return View(model);
             }
