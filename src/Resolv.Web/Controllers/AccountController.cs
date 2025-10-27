@@ -13,7 +13,7 @@ namespace Resolv.Web.Controllers
             var hash = encryptionService.Hash(password, username);
 
             // Common software admin users
-            var user = await commonUserRepository.GetUserByCredentialsAsync(username, hash);
+            var user = await commonUserRepository.GetByCredentialsAsync(username, hash);
             if (user.Id > 0)
             {
                 var claims = new List<System.Security.Claims.Claim>

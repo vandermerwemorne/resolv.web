@@ -8,5 +8,17 @@ public interface IComUserRepository
     /// <param name="username"></param>
     /// <param name="password"></param>
     /// <returns></returns>
-    Task<ComUser> GetUserByCredentialsAsync(string username, string password);
+    Task<ComUser> GetByCredentialsAsync(string username, string password);
+
+    /// <summary>
+    /// Get all users for a specific customer schema
+    /// </summary>
+    /// <returns></returns>
+    Task<IEnumerable<ComUser>> GetAsync();
+
+    Task UpdateAsync(ComUser user);
+
+    Task<ComUser> GetAsync(Guid uid);
+
+    Task<(int Id, Guid Uid)> AddAsync(ComUser user);
 }

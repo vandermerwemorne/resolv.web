@@ -1,0 +1,98 @@
+@using Resolv.Web.Models
+@model Resolv.Web.Models.AdminUser
+@{
+    ViewData["Title"] = Model.Id != null && Model.Id != Guid.Empty ? "Edit Admin User" : "Create Admin User";
+    var isEditing = Model.Id != null && Model.Id != Guid.Empty;
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="AdminUser" asp-action="Index">Admin User Management</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@(isEditing ? "Edit Admin User" : "Create Admin User")</li>
+    </ol>
+</nav>
+
+<h2 class="mb-4">@(isEditing ? "Edit Admin User" : "Create Admin User")</h2>
+
+<form asp-action="EditUser" method="post" class="needs-validation" novalidate autocomplete="off">
+    <div asp-validation-summary="All" class="alert alert-danger"
+        style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+    <div class="form-group row mb-3">
+        <label for="FullName" class="col-md-2 col-form-label">Full Name</label>
+        <div class="col-md-10">
+            <input asp-for="FullName" class="form-control" autocomplete="off" />
+            <span asp-validation-for="FullName" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="KnownName" class="col-md-2 col-form-label">Known Name</label>
+        <div class="col-md-10">
+            <input asp-for="KnownName" class="form-control" autocomplete="off" />
+            <span asp-validation-for="KnownName" class="text-danger"></span>
+            <small class="form-text text-muted">Optional: How this person is commonly known (e.g., nickname)</small>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="Email" class="col-md-2 col-form-label">Email Address</label>
+        <div class="col-md-10">
+            <input asp-for="Email" class="form-control" autocomplete="off" />
+            <span asp-validation-for="Email" class="text-danger"></span>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <label for="Roles" class="col-md-2 col-form-label">Roles</label>
+        <div class="col-md-10">
+            <input asp-for="Roles" class="form-control" autocomplete="off" />
+            <span asp-validation-for="Roles" class="text-danger"></span>
+            <small class="form-text text-muted">Comma-separated list of user roles</small>
+        </div>
+    </div>
+
+    <div class="form-group row mb-3">
+        <div class="offset-md-2 col-md-10">
+            <div class="form-check">
+                <input asp-for="HasAccess" class="form-check-input" type="checkbox" />
+                <label asp-for="HasAccess" class="form-check-label">
+                    User has system access
+                </label>
+            </div>
+            <small class="form-text text-muted">Uncheck to disable user access without deleting the account</small>
+            @if (isEditing)
+            {
+                <div class="form-check mt-2">
+                    <input asp-for="ResetPassword" class="form-check-input" type="checkbox" />
+                    <label asp-for="ResetPassword" class="form-check-label">
+                        Reset password to default
+                    </label>
+                </div>
+                <small class="form-text text-muted">Check to reset user's password to "password1", they will be prompted to
+                    change it on next login</small>
+            }
+        </div>
+    </div>
+
+    <div class="form-group row">
+        <div class="offset-md-2 col-md-10 d-flex gap-2">
+            <a asp-controller="AdminUser" asp-action="Index" class="btn btn-secondary">Back</a>
+            <button type="submit" id="submitButton" class="btn btn-primary">@(isEditing ? "Update" : "Save")</button>
+        </div>
+    </div>
+
+    <input type="hidden" asp-for="Id" id="userId" />
+</form>
+
+<partial name="_ValidationScriptsPartial" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Form is ready for interaction
+        });
+    </script>
+}

@@ -1,0 +1,83 @@
+@{
+    ViewData["Title"] = "Admin User Management";
+}
+
+<style>
+    .user-row:hover {
+        background-color: #f8f9fa;
+        cursor: pointer;
+    }
+
+    .user-row.selected {
+        background-color: #e3f2fd;
+    }
+</style>
+
+<h2 class="mb-4">Admin User Management</h2>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3>System Administrators</h3>
+    <a asp-controller="AdminUser" asp-action="EditUser" class="btn btn-primary">Add</a>
+</div>
+
+@if (ViewBag.Users != null)
+{
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Full Name</th>
+                <th>Known Name</th>
+                <th>Email</th>
+                <th>Has Access</th>
+                <th>Roles</th>
+                <th>Insert Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var user in ViewBag.Users)
+            {
+                <tr class="user-row" data-user-id="@user.Uid">
+                    <td>@user.FullName</td>
+                    <td>@user.KnownName</td>
+                    <td>@user.Email</td>
+                    <td>
+                        @if (user.HasAccess)
+                        {
+                            <span class="badge bg-success">Yes</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">No</span>
+                        }
+                    </td>
+                    <td>@user.Roles</td>
+                    <td>@user.InsertDate.ToString("dd/MM/yyyy HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i> No admin users found.
+    </div>
+}
+
+<partial name="_ValidationScriptsPartial" />
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            // Handle user row click to navigate to edit user
+            $('.user-row').on('click', function (e) {
+                var $row = $(this);
+                var userId = $row.data('user-id');
+
+                // Navigate to the EditUser action with user ID for editing
+                var editUrl = '@Url.Action("EditUser", "AdminUser")?userId=' + userId;
+                window.location.href = editUrl;
+            });
+        });
+    </script>
+}
