@@ -7,9 +7,9 @@ using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
 using Resolv.Domain.RiskControl;
-using Resolv.Infrastructure.RiskControl;
+using Resolv.Domain.Users;
 using Resolv.Web.Models;
-using System.Collections.Generic;
+using System.Linq;
 
 namespace Resolv.Web.Controllers
 {
@@ -30,7 +30,8 @@ namespace Resolv.Web.Controllers
         IEngineeringControlRepository engineeringControlRepository,
         ILegalRequirementControlRepository legalRequirementControlRepository,
         IManagementSuperControlRepository managementSuperControlRepository,
-        IPPEControlRepository ppeControlRepository) : Controller
+        IPPEControlRepository ppeControlRepository,
+        ICustUserRepository custUserRepository) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -377,7 +378,9 @@ namespace Resolv.Web.Controllers
                 AdminControls = await SetAdminControl(),
                 ManagementSupers = await SetManagementSuperControl(),
                 PPEControls = await SetPPEControl(),
-                ConformLegalReqs = await SetLegalRequirementControl()
+                ConformLegalReqs = await SetLegalRequirementControl(),
+
+                AssignedTo = await SetAssignedTo(holdingCompany.SchemaName)
             };
 
             return View(viewModel);
@@ -386,6 +389,17 @@ namespace Resolv.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> StepTwo(StepTwoViewModel model)
         {
+            if (model.HoldingCompanyId == Guid.Empty)
+            {
+                return BadRequest("Holding company ID is required");
+            }
+
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
             if (!ModelState.IsValid)
             {
                 model.Severities = await SetSeverity();
@@ -399,18 +413,9 @@ namespace Resolv.Web.Controllers
                 model.PPEControls = await SetPPEControl();
                 model.ConformLegalReqs = await SetLegalRequirementControl();
 
+                model.AssignedTo = await SetAssignedTo(holdingCompany.SchemaName);
+
                 return View(model);
-            }
-
-            if (model.HoldingCompanyId == Guid.Empty)
-            {
-                return BadRequest("Holding company ID is required");
-            }
-
-            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
-            if (holdingCompany == null)
-            {
-                return NotFound("Holding company not found");
             }
 
             var existingRiskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, model.RiskLineUid);
@@ -560,6 +565,26 @@ namespace Resolv.Web.Controllers
                 {
                     Value = p.Id.ToString(),
                     Text = p.Description
+                })];
+        }
+
+        /// <summary>
+        /// 123*O
+        /// 
+        /// 123 links to the customer user table
+        /// * is the delimiter
+        /// O means OHAS (the the customers staff responsable for occupational health and safety)
+        /// </summary>
+        /// <param name="schema"></param>
+        /// <returns></returns>
+        private async Task<List<SelectListItem>> SetAssignedTo(string schema)
+        {
+            var data = await custUserRepository.GetUsersAsync(schema);
+            return [.. data.Prepend(new CustUser { Id = 0, KnownName = null, Email = "-- Select User -"})
+                .Select(p => new SelectListItem
+                {
+                    Value = $"{p.Id}*O",
+                    Text = p.KnownName == null ? p.Email : $"{p.Email} ({p.KnownName})"
                 })];
         }
     }

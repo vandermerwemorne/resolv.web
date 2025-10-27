@@ -312,7 +312,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="AssignedToCompositeId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <input asp-for="AssignedToCompositeId" class="form-control" />
+
+                        <select asp-for="AssignedToCompositeId" asp-items="Model.AssignedTo" class="form-select">
+                        </select>
                         <span asp-validation-for="AssignedToCompositeId" class="text-danger"></span>
                     </div>
                 </div>

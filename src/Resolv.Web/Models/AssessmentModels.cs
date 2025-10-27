@@ -150,6 +150,7 @@ public class StepTwoViewModel
     public List<SelectListItem> ManagementSupers { get; set; } = [];
     public List<SelectListItem> PPEControls { get; set; } = [];
     public List<SelectListItem> ConformLegalReqs { get; set; } = [];
+    public List<SelectListItem> AssignedTo { get; set; } = [];
 }
 
 public class AssessmentViewModel

@@ -11,7 +11,7 @@ public class CustUserRepository(SqlConnectionFactory factory) : ICustUserReposit
         var sql = $@"
 SELECT *
 FROM {schemaName}.user
-ORDER BY insert_date DESC";
+ORDER BY email";
 
         var users = await connection.QueryAsync<CustUser>(sql);
         return users ?? [];
