@@ -18,6 +18,9 @@ public interface ICommonOnboardingRepository
     /// <returns></returns>
     Task AddTableHazardCategory(string schema);
 
+    Task AddTableReEval(string schema);
+
+
     /// <summary>
     /// TODO `master_step_in_operation` need to change to be `master_hazard_category`
     /// </summary>

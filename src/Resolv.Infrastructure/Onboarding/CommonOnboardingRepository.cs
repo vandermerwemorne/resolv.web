@@ -230,4 +230,31 @@ VALUES ('{item}');
             await connection.ExecuteAsync(sql);
         }
     }
+
+    public async Task AddTableReEval(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.re_eval 
+(
+id SERIAL PRIMARY KEY,
+risk_id INTEGER,
+risk_line_id INTEGER,
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+coract_eng_controls VARCHAR(500),
+coract_admin_controls VARCHAR(500),
+coract_super_controls VARCHAR(500),
+coract_ppe_controls VARCHAR(500),
+coract_legal_req_controls VARCHAR(500),
+re_eval_status_id INTEGER,
+added_by_user_id INTEGER,
+picture_id INTEGER,
+coract_eliminate VARCHAR(500),
+updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+created_by INTEGER);
+
+ALTER TABLE IF EXISTS {schema}.re_eval
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
 }

@@ -6,8 +6,6 @@ using Resolv.Domain.Division;
 using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
-using Resolv.Domain.RiskControl;
-using Resolv.Domain.Users;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
@@ -20,17 +18,8 @@ namespace Resolv.Web.Controllers
         IRiskLineRepository riskLineRepository,
         IHazardCategoryRepository hazardCategoryRepository,
         IClassificationRepository classificationRepository,
-        IExposureRepository exposureRepository,
-        IFrequencyRepository frequencyRepository,
-        ISeverityRepository severityRepository,
-
-        IAdminControlRepository adminControlRepository,
-        IEliminateControlRepository eliminateControlRepository,
-        IEngineeringControlRepository engineeringControlRepository,
-        ILegalRequirementControlRepository legalRequirementControlRepository,
-        IManagementSuperControlRepository managementSuperControlRepository,
-        IPPEControlRepository ppeControlRepository,
-        ICustUserRepository custUserRepository) : Controller
+        ICustReEvalRepository custReEvalRepository,
+        IReEvalStatusRepository reEvalStatusRepository) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -206,6 +195,8 @@ namespace Resolv.Web.Controllers
                 return NotFound("Risk line not found");
             }
 
+            var reEval = await custReEvalRepository.GetByRiskLineIdAsync(holdingCompany.SchemaName, riskLine.Id);
+
             var viewModel = new CorrectiveActionsViewModel
             {
                 RiskUid = riskId,
@@ -224,17 +215,65 @@ namespace Resolv.Web.Controllers
                 ClassificationId = riskLine.ClassificationId,
                 StepInOperationId = riskLine.StepInOperationId,
 
-                CorrectEngControls = "",
-                CorrectAdminControls = "",
-                CorrectManagementSuperControls = "",
-                CorrectPPEControls = "",
-                CorrectLegalReqControls = "",
+                CorrectEngControls = reEval.CoractEngControls,
+                CorrectAdminControls = reEval.CoractAdminControls,
+                CorrectManagementSuperControls = reEval.CoractSuperControls,
+                CorrectPPEControls = reEval.CoractPpeControls,
+                CorrectLegalReqControls = reEval.CoractLegalReqControls,
 
                 HazardCategories = await SetHazardCategories(holdingCompany.SchemaName),
                 Classifications = await SetClassifications(),
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> CorrectiveActions(CorrectiveActionsViewModel model)
+        {
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyId);
+            if (holdingCompany == null)
+            {
+                return NotFound("Holding company not found");
+            }
+
+            var riskLine = await riskLineRepository.GetByUidAsync(holdingCompany.SchemaName, model.RiskLineUid);
+            if (riskLine == null)
+            {
+                return NotFound("Risk line not found");
+            }
+
+            var existingReEval = await custReEvalRepository.GetByRiskLineIdAsync(holdingCompany.SchemaName, riskLine.Id);
+
+            if (existingReEval.Id == 0)
+            {
+                var reEval = new CustReEval
+                {
+                    RiskLineId = riskLine.Id,
+                    CoractEngControls = model.CorrectEngControls,
+                    CoractAdminControls = model.CorrectAdminControls,
+                    CoractSuperControls = model.CorrectManagementSuperControls,
+                    CoractPpeControls = model.CorrectPPEControls,
+                    CoractLegalReqControls = model.CorrectLegalReqControls,
+                    ReEvalStatusId = 2, // (2, 'Awaiting Verification'),
+                    AddedByUserId = 1, // TODO: Replace with actual user ID from session/context
+                    PictureId = 0, // TODO: Handle picture uploads if applicable
+                    CreatedBy = 1 // TODO: Replace with actual user ID from session/context
+                };
+                await custReEvalRepository.AddAsync(holdingCompany.SchemaName, reEval);
+            }
+            else
+            {
+                existingReEval.CoractEngControls = model.CorrectEngControls;
+                existingReEval.CoractAdminControls = model.CorrectAdminControls;
+                existingReEval.CoractSuperControls = model.CorrectManagementSuperControls;
+                existingReEval.CoractPpeControls = model.CorrectPPEControls;
+                existingReEval.CoractLegalReqControls = model.CorrectLegalReqControls;
+                existingReEval.ReEvalStatusId = 2; // (2, 'Awaiting Verification'),
+                await custReEvalRepository.UpdateAsync(holdingCompany.SchemaName, existingReEval);
+            }
+
+            return View(model);
         }
 
         private async Task<List<SelectListItem>> SetHazardCategories(string schemaName)
@@ -257,6 +296,6 @@ namespace Resolv.Web.Controllers
                     Value = p.Id.ToString(),
                     Text = p.Description
                 })];
-        }        
+        }
     }
 }

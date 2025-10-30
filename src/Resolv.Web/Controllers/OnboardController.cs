@@ -90,6 +90,7 @@ namespace Resolv.Web.Controllers
                     await onboardingRepository.AddTableRiskLine(schema);
                     await onboardingRepository.AddTableRiskImages(schema);
                     await onboardingRepository.AddTableHazardCategory(schema);
+                    await onboardingRepository.AddTableReEval(schema);
 
                     await onboardingRepository.CopyHazardCategory(schema);
 
