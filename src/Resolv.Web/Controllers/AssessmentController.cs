@@ -9,7 +9,6 @@ using Resolv.Domain.Risk;
 using Resolv.Domain.RiskControl;
 using Resolv.Domain.Users;
 using Resolv.Web.Models;
-using System.Linq;
 
 namespace Resolv.Web.Controllers
 {

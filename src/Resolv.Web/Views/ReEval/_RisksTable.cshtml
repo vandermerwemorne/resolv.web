@@ -1,0 +1,37 @@
+@model Resolv.Web.Models.RisksTableViewModel
+
+    <h4>Assessment Site</h4>
+@if (Model.Risks != null && Model.Risks.Any())
+{
+    <table class="table table-striped" id="risksTable">
+        <thead>
+            <tr>
+                <th>Site</th>
+                <th>Date</th>
+                <th>Re-Evaluation</th>
+                <th>Status</th>
+                <th>Evaluation Type</th>
+                <th>Annual Status</th>
+            </tr>
+        </thead>
+        <tbody id="risksTableBody">
+            @foreach (var risk in Model.Risks)
+            {
+                <tr 
+                    data-risk-uid="@risk.Uid"
+                    data-holdingcompany-uid="@Model.SelectedHoldingCompanyUid" style="cursor: pointer;">
+                    <td>@risk.SiteName</td>
+                    <td>@risk.InsertDate.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                    <td>@(risk.ReevaluationDate?.ToLocalTime().ToString("MM/dd/yyyy") ?? "")</td>
+                    <td>@risk.RiskStatus</td>
+                    <td>@risk.EvaluationType</td>
+                    <td>@risk.AnnualStatus</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No assessments found.</p>
+}

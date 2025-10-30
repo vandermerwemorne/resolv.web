@@ -1,0 +1,214 @@
+@model Resolv.Web.Models.CorrectiveActionsViewModel
+
+@{
+    ViewData["Title"] = "Corrective Actions";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a asp-controller="ReEval" asp-action="Index">Re-Evaluations</a>
+        </li>
+        <li class="breadcrumb-item">
+            <a asp-controller="ReEval" asp-action="Assessments" asp-route-riskid="@Model.RiskUid"
+                asp-route-holdingcompanyid="@Model.HoldingCompanyId">Risk Lines</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+        <hr />
+
+        <form asp-action="CorrectiveActions" method="post">
+            <div asp-validation-summary="All" class="alert alert-danger"
+                style="display: @(ViewData.ModelState.IsValid ? "none" : "block")"></div>
+
+            @Html.HiddenFor(m => m.RiskUid)
+            @Html.HiddenFor(m => m.RiskLineUid)
+            @Html.HiddenFor(m => m.HoldingCompanyId)
+
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Hazard" class="form-label"></label>
+                        <textarea asp-for="Hazard" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="form-group mb-3">
+                        <label asp-for="Risk" class="form-label"></label>
+                        <textarea asp-for="Risk" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="DeptDivision" class="form-label"></label>
+                        <input asp-for="DeptDivision" class="form-control" disabled />
+                    </div>
+                </div>            
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="ReferenceNo" class="form-label"></label>
+                        <input asp-for="ReferenceNo" class="form-control" disabled />
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="ClassificationId" class="form-label"></label>
+                        <select asp-for="ClassificationId" asp-items="Model.Classifications" class="form-select" disabled>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="StepInOperationId" class="form-label"></label>
+                        <select asp-for="StepInOperationId" asp-items="Model.HazardCategories" class="form-select" disabled>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="color: #9ca0a5;" />
+            <div class="row d-none d-md-flex">
+                <div class="col-md-3">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-bold text-uppercase small custom-label">Recommendations</label>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label fw-bold text-uppercase small custom-label">Corrective Actions</label>
+                </div>
+            </div>
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-uppercase small custom-label">Eng. Control</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="RecEngControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="RecEngControls" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>            
+                <div class="col-md-5">
+                    <div class="form-group mb-3">
+                        <label asp-for="CorrectEngControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="CorrectEngControls" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CorrectEngControls" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-uppercase small custom-label">Admin Control</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="RecAdminControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="RecAdminControls" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-3">
+                        <label asp-for="CorrectAdminControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="CorrectAdminControls" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CorrectAdminControls" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-uppercase small custom-label">Sup & MGNT</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="RecManagementSuperControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="RecManagementSuperControls" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-3">
+                        <label asp-for="CorrectManagementSuperControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="CorrectManagementSuperControls" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CorrectManagementSuperControls" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-uppercase small custom-label">PPE Control</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="RecPPEControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="RecPPEControls" class="form-control" rows="3" disabled></textarea>
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-3">
+                        <label asp-for="CorrectPPEControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="CorrectPPEControls" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CorrectPPEControls" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <label class="form-label fw-bold text-uppercase small custom-label">LGL&REG Conf</label>
+                </div>
+                <div class="col-md-4">
+                    <div class="form-group mb-3">
+                        <label asp-for="RecConformLegalReqControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="RecConformLegalReqControls" class="form-control" rows="3" disabled></textarea> 
+                    </div>
+                </div>
+                <div class="col-md-5">
+                    <div class="form-group mb-3">
+                        <label asp-for="CorrectLegalReqControls"
+                            class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                        <textarea asp-for="CorrectLegalReqControls" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="CorrectLegalReqControls" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <hr style="color: #9ca0a5;" />
+
+            <div class="row">
+                <div class="col-md-12">
+                    <a class="btn btn-secondary" asp-controller="ReEval" asp-action="Assessments"
+                        asp-route-riskid="@Model.RiskUid"
+                        asp-route-holdingcompanyid="@Model.HoldingCompanyId">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save</button>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
+
+<style>
+    .custom-label {
+        color: #9b9494;
+    }
+</style>
