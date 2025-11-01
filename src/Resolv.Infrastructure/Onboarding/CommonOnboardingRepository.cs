@@ -251,9 +251,47 @@ added_by_user_id INTEGER,
 picture_id INTEGER,
 coract_eliminate VARCHAR(500),
 updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-created_by INTEGER);
+created_by INTEGER
+);
 
 ALTER TABLE IF EXISTS {schema}.re_eval
+OWNER to {_owner}";
+        await connection.ExecuteAsync(sql);
+    }
+
+    public async Task AddTableReEvalVerify(string schema)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+CREATE TABLE {schema}.re_eval_verify 
+(
+id SERIAL PRIMARY KEY,
+insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+added_by_user_id INTEGER,
+re_eval_id INTEGER,
+rec_eng_controls VARCHAR(500),
+rec_admin_controls VARCHAR(500),
+rec_super_controls VARCHAR(500),
+rec_ppe_controls VARCHAR(500),
+rec_legal_req_controls VARCHAR(500),
+rec_eliminate_controls VARCHAR(500),
+new_eng_control_id INTEGER,
+new_admin_control_id INTEGER,
+new_management_super_id INTEGER,
+new_ppe_control_id INTEGER,
+new_conform_legal_req_id INTEGER,
+new_severity_id INTEGER,
+new_frequency_id INTEGER,
+new_exposure_id INTEGER,
+new_hazard VARCHAR(500),
+new_risk VARCHAR(500),
+new_residual_risk INTEGER,
+updated_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+updated_by INTEGER,
+created_by INTEGER
+);
+
+ALTER TABLE IF EXISTS {schema}.re_eval_verify
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }

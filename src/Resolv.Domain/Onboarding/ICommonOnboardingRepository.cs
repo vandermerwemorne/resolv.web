@@ -19,6 +19,7 @@ public interface ICommonOnboardingRepository
     Task AddTableHazardCategory(string schema);
 
     Task AddTableReEval(string schema);
+    Task AddTableReEvalVerify(string schema);
 
 
     /// <summary>
