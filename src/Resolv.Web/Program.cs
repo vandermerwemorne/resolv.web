@@ -54,6 +54,7 @@ builder.Services.AddScoped<IRiskRepository, RiskRepository>();
 builder.Services.AddScoped<IRiskLineRepository, RiskLineRepository>();
 builder.Services.AddScoped<ICustReEvalRepository, CustReEvalRepository>();
 builder.Services.AddScoped<IReEvalStatusRepository, ReEvalStatusRepository>();
+builder.Services.AddScoped<ICustReEvalVerifyRepository, CustReEvalVerifyRepository>();
 
 builder.Services.AddScoped<IComUserRepository, ComUserRepository>();
 builder.Services.AddScoped<ICustUserRepository, CustUserRepository>();

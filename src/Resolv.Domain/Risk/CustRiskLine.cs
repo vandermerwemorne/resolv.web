@@ -4,7 +4,7 @@ public class CustRiskLine
 {
     public int Id { get; set; }
     public Guid Uid { get; set; }
-    public int? RiskId { get; set; }
+    public int RiskId { get; set; }
     public DateTime InsertDate { get; set; }
     public DateTime? HazardDate { get; set; }
     public DateTime? AssignedDate { get; set; }

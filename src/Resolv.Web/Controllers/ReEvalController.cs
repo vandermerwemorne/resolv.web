@@ -249,6 +249,7 @@ namespace Resolv.Web.Controllers
             {
                 var reEval = new CustReEval
                 {
+                    RiskId = riskLine.RiskId,
                     RiskLineId = riskLine.Id,
                     CoractEngControls = model.CorrectEngControls,
                     CoractAdminControls = model.CorrectAdminControls,

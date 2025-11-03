@@ -1,0 +1,61 @@
+@model Resolv.Web.Models.VerificationViewModel
+
+@{
+    ViewData["Title"] = "Verification";
+}
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>Verification</h2>
+        <hr />
+
+        <form asp-action="Index" method="post">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="form-group">
+                        <label for="holdingCompanySelect" class="form-label">Holding Company</label>
+                        <select asp-for="SelectedHoldingCompanyUid" asp-items="Model.HoldingCompanies"
+                            class="form-select" id="holdingCompanySelect" onchange="this.form.submit()">
+                        </select>
+                    </div>
+                </div>
+            </div>
+        </form>
+
+        <div class="row mt-4">
+            <div class="col-md-12">
+                <div id="verificationsTableContainer">
+                    @await Html.PartialAsync("_VerificationsTable",
+                    new Resolv.Web.Models.VerificationsTableViewModel
+                    {
+                        Verifications = Model.Verifications,
+                        SelectedHoldingCompanyUid = Model.SelectedHoldingCompanyUid
+                    })
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <style>
+        #verificationsTable tbody tr {
+            cursor: pointer;
+        }
+
+        #verificationsTable tbody tr:hover {
+            background-color: #f5f5f5 !important;
+            transform: scale(1.01);
+            transition: all 0.2s ease;
+        }
+    </style>
+    <script>
+        $(document).ready(function () {
+            // Add click event to verification table rows
+            $('#verificationsTable tbody tr').on('click', function () {
+                var verificationUid = $(this).data('verification-uid');
+                console.log('Row clicked. Verification UID: ' + verificationUid);
+            });
+        });
+    </script>
+}

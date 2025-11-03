@@ -1,0 +1,30 @@
+@model Resolv.Web.Models.VerificationsTableViewModel
+
+@if (Model.Verifications != null && Model.Verifications.Any())
+{
+    <table class="table table-striped" id="verificationsTable">
+        <thead>
+            <tr>
+                <th>Division</th>
+                <th>Assessment Site</th>
+                <th>Re-Evaluations Count</th>
+            </tr>
+        </thead>
+        <tbody id="verificationsTableBody">
+            @foreach (var verification in Model.Verifications)
+            {
+                <tr data-verification-uid="@verification.Uid" style="cursor: pointer;">
+                    <td>@verification.Division</td>
+                    <td>@verification.AssessmentSite</td>
+                    <td>
+                        <span class="badge bg-warning text-dark">@verification.VerificationsCount</span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No pending verifications found.</p>
+}

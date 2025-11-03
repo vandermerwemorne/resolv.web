@@ -23,6 +23,22 @@ RETURNING id";
         return result;
     }
 
+    public async Task<List<CustReEval>> GetByRiskIdsAsync(string schema, List<int> riskIds)
+    {
+        if (riskIds == null || riskIds.Count == 0)
+            return [];
+
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.re_eval
+WHERE risk_id = ANY(@RiskIds)
+ORDER BY insert_date DESC";
+
+        var result = await connection.QueryAsync<CustReEval>(sql, new { RiskIds = riskIds.ToArray() });
+        return [.. result];
+    }
+
     public async Task<CustReEval> GetByRiskLineIdAsync(string schema, int riskLineId)
     {
         using var connection = factory.CreateNpgsqlConnection();

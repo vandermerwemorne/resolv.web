@@ -1,0 +1,87 @@
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Resolv.Domain.AssessmentSite;
+using Resolv.Domain.Division;
+using Resolv.Domain.HoldingCompany;
+using Resolv.Domain.Risk;
+using Resolv.Web.Models;
+
+namespace Resolv.Web.Controllers
+{
+    public class VerificationController(
+        IHoldingCompanyRepository holdingCompanyRepository,
+        ICustDivisionRepository divisionRepository,
+        IAssessmentSiteRepository assessmentSiteRepository,
+        ICustReEvalRepository custReEvalRepository,
+        IRiskRepository riskRepository,
+        IRiskLineRepository riskLineRepository) : Controller
+    {
+        public async Task<IActionResult> Index()
+        {
+            var viewModel = new VerificationViewModel();
+
+            // Load all holding companies
+            var holdingCompanies = await holdingCompanyRepository.GetAsync();
+            viewModel.HoldingCompanies = [.. holdingCompanies.Select(hc => new SelectListItem
+            {
+                Value = hc.Uid.ToString(),
+                Text = hc.Name
+            })];
+
+            // Add default option
+            viewModel.HoldingCompanies.Insert(0, new SelectListItem { Value = "", Text = "-- Select Holding Company --" });
+
+            return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Index(VerificationViewModel model)
+        {
+            // Reload all holding companies
+            var holdingCompanies = await holdingCompanyRepository.GetAsync();
+            model.HoldingCompanies = [.. holdingCompanies.Select(hc => new SelectListItem
+            {
+                Value = hc.Uid.ToString(),
+                Text = hc.Name,
+                Selected = hc.Uid == model.SelectedHoldingCompanyUid
+            })];
+
+            // Add default option
+            model.HoldingCompanies.Insert(0, new SelectListItem { Value = "", Text = "-- Select Holding Company --" });
+
+            // Load divisions if holding company is selected
+            if (model.SelectedHoldingCompanyUid != Guid.Empty)
+            {
+                var holdingCompany = await holdingCompanyRepository.GetAsync(model.SelectedHoldingCompanyUid);
+                var divisions = await divisionRepository.GetAsync(holdingCompany.SchemaName);
+                var reEvalsWithVerifications = new List<ReEvalsWithVerifications>();
+
+                foreach (var division in divisions)
+                {
+                    var assessmentSites = await assessmentSiteRepository.GetByDivisionIdAsync(holdingCompany.SchemaName, division.Id);
+                    foreach (var assessmentSite in assessmentSites)
+                    {
+                        var risks = await riskRepository.GetByAssessmentSiteAsync(holdingCompany.SchemaName, assessmentSite.Id);
+                        var riskIds = risks.Select(r => r.Id).ToList();
+                        var reEvals = await custReEvalRepository.GetByRiskIdsAsync(holdingCompany.SchemaName, riskIds);
+
+                        if (reEvals.Count > 0)
+                        {
+                            reEvalsWithVerifications.Add(new ReEvalsWithVerifications
+                            {
+                                Uid = Guid.NewGuid(),
+                                Division = division.Name ?? "Division",
+                                AssessmentSite = assessmentSite.SiteName ?? "AssessmentSite",
+                                VerificationsCount = reEvals.Count
+                            });
+                        }
+                    }
+                }
+
+                model.Verifications = [.. reEvalsWithVerifications.OrderByDescending(x => x.VerificationsCount)];
+            }
+
+            return View(model);
+        }
+    }
+}
