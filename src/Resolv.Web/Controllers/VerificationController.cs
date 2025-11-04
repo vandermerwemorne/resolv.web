@@ -69,7 +69,8 @@ namespace Resolv.Web.Controllers
                         {
                             reEvalsWithVerifications.Add(new ReEvalsWithVerifications
                             {
-                                Uid = Guid.NewGuid(),
+                                Uid = assessmentSite.Uid,
+                                DivisionUid = division.Uid,
                                 Division = division.Name ?? "Division",
                                 AssessmentSite = assessmentSite.SiteName ?? "AssessmentSite",
                                 VerificationsCount = reEvals.Count
@@ -82,6 +83,47 @@ namespace Resolv.Web.Controllers
             }
 
             return View(model);
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Assessments(Guid holdingCompanyUid, Guid assessmentSiteUid, Guid divisionUid)
+        {
+            var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyUid);
+            var assessmentSite = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, assessmentSiteUid);
+            var division = await divisionRepository.GetAsync(holdingCompany.SchemaName, divisionUid);
+
+            var viewModel = new VerificationAssessmentsViewModel
+            {
+                HoldingCompanyUid = holdingCompanyUid,
+                AssessmentSiteUid = assessmentSiteUid,
+                DivisionUid = divisionUid,
+                HoldingCompanyName = holdingCompany.Name ?? "Holding Company",
+                AssessmentSiteName = assessmentSite.SiteName ?? "Assessment Site",
+                DivisionName = division.Name ?? "Division"
+            };
+
+            var assessment = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, assessmentSiteUid);
+            var risks = await riskRepository.GetByAssessmentSiteAsync(holdingCompany.SchemaName, assessment.Id);
+            var reEvals = await custReEvalRepository.GetByRiskIdsAsync(holdingCompany.SchemaName, [.. risks.Select(r => r.Id)]);
+
+            foreach (var re in reEvals)
+            {
+                var riskLine = await riskLineRepository.GetByIdAsync(holdingCompany.SchemaName, re.RiskLineId);
+                viewModel.ReEvals.Add(new ReEvals()
+                {
+                    Uid = Guid.NewGuid(),
+                    ReferenceNo = riskLine?.ReferenceNo ?? "ReferenceNo",
+                    InsertDate = re.InsertDate,
+                    StepInOperationId = riskLine?.StepInOperationId,
+                    ClassificationId = riskLine?.ClassificationId,
+                    Hazard = riskLine?.Hazard,
+                    Risk = riskLine?.Risk,
+                    StatusId = re.ReEvalStatusId
+                });
+            }
+
+
+            return View(viewModel);
         }
     }
 }

@@ -13,7 +13,10 @@
         <tbody id="verificationsTableBody">
             @foreach (var verification in Model.Verifications)
             {
-                <tr data-verification-uid="@verification.Uid" style="cursor: pointer;">
+                <tr data-holding-company-uid="@Model.SelectedHoldingCompanyUid"
+                    data-assessment-site-uid="@verification.Uid"
+                    data-division-uid="@verification.DivisionUid"
+                    style="cursor: pointer;">
                     <td>@verification.Division</td>
                     <td>@verification.AssessmentSite</td>
                     <td>

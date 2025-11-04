@@ -51,10 +51,13 @@
     </style>
     <script>
         $(document).ready(function () {
-            // Add click event to verification table rows
             $('#verificationsTable tbody tr').on('click', function () {
-                var verificationUid = $(this).data('verification-uid');
-                console.log('Row clicked. Verification UID: ' + verificationUid);
+                var assessmentSiteUid = $(this).data('assessment-site-uid');
+                var holdingCompanyUid = $(this).data('holding-company-uid');
+                var divisionUid = $(this).data('division-uid');
+                if (assessmentSiteUid && holdingCompanyUid && divisionUid) {
+                    window.location.href = '@Url.Action("Assessments", "Verification")?assessmentSiteUid=' + assessmentSiteUid + '&holdingCompanyUid=' + holdingCompanyUid + '&divisionUid=' + divisionUid;
+                }
             });
         });
     </script>

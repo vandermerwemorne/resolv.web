@@ -4,6 +4,8 @@ New .Net 9 Web Application deployed to Azure. Discovery miro is https://miro.com
 - [UAT](https://resolv-uat.yellowglacier-f378f1b4.southafricanorth.azurecontainerapps.io/)
 - [PROD (TBA)]()
 
+Riskmgnt1!
+
 Old [UAT framework 4.8 instance](https://resolveuatappservice-fzgkadgecrdffme9.southafricanorth-01.azurewebsites.net/)
 
 ## Infrastructure

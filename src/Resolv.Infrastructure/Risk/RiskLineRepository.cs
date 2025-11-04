@@ -42,6 +42,18 @@ RETURNING id, uid";
         return result;
     }
 
+    public async Task<CustRiskLine?> GetByIdAsync(string schema, int riskLineId)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.risk_line
+WHERE id = @riskLineId;";
+
+        var result = await connection.QuerySingleOrDefaultAsync<CustRiskLine>(sql, new { riskLineId });
+        return result;
+    }
+
     public async Task<List<CustRiskLine>> GetByRiskIdAsync(string schema, int riskId)
     {
         using var connection = factory.CreateNpgsqlConnection();

@@ -1,0 +1,48 @@
+@model Resolv.Web.Models.ReEvalsViewModel
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+            <a asp-controller="Verification" asp-action="Index">Verification</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">@Model.HoldingCompanyName</li>
+        <li class="breadcrumb-item" aria-current="page">@Model.DivisionName</li>
+        <li class="breadcrumb-item active" aria-current="page">@Model.AssessmentSiteName</li>
+    </ol>
+</nav>
+
+@if (Model.ReEvals != null && Model.ReEvals.Any())
+{
+    <table class="table table-striped" id="riskLinesTable">
+        <thead>
+            <tr>
+                <th>Date</th>
+                <th>Reference No</th>
+                <th>Hazard</th>
+                <th>Risk</th>
+                <th>Status</th>
+            </tr>
+        </thead>
+        <tbody id="riskLinesTableBody">
+            @foreach (var reEval in Model.ReEvals)
+            {
+                <tr data-re-eval-uid="@reEval.Uid" style="cursor: pointer;">
+                    <td>@reEval.InsertDate.ToLocalTime().ToString("MM/dd/yyyy")</td>
+                    <td>@reEval.ReferenceNo</td>
+                    <td>@reEval.Hazard</td>
+                    <td>@reEval.Risk</td>
+                    <td>
+                        <span
+                            class="badge @(reEval.StatusId == 1 ? "bg-warning" : reEval.StatusId == 2 ? "bg-info" : "bg-success")">
+                            @(reEval.StatusId == 1 ? "Pending" : reEval.StatusId == 2 ? "Awaiting Verification" : "Completed")
+                        </span>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>No re-evaluations found.</p>
+}
