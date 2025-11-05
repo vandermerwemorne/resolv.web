@@ -3,6 +3,7 @@
 public class CustReEval
 {
     public int Id { get; set; }
+    public Guid Uid { get; set; }
     public int RiskId { get; set; }
     public int RiskLineId { get; set; }
     public DateTime InsertDate { get; set; }

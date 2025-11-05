@@ -53,5 +53,16 @@ public class ReEvalsViewModel
     public List<ReEvals> ReEvals { get; set; } = [];
     public string HoldingCompanyName { get; set; } = string.Empty;
     public string AssessmentSiteName { get; set; } = string.Empty;
-    public string DivisionName { get; set; } = string.Empty;    
+    public string DivisionName { get; set; } = string.Empty;
+}
+
+public class VerifyViewModel
+{
+    public Guid ReEvalUid { get; set; }
+    public Guid HoldingCompanyUid { get; set; }
+    public Guid AssessmentSiteUid { get; set; }
+    public Guid DivisionUid { get; set; }
+    public string HoldingCompanyName { get; set; } = string.Empty;
+    public string AssessmentSiteName { get; set; } = string.Empty;
+    public string DivisionName { get; set; } = string.Empty;
 }

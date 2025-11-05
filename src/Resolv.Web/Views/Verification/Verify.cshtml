@@ -1,0 +1,42 @@
+@model Resolv.Web.Models.VerifyViewModel
+
+@{
+    ViewData["Title"] = "Verification";
+}
+
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item" aria-current="page">
+            <a asp-controller="Verification" asp-action="Index">@ViewData["Title"]</a>
+        </li>
+        <li class="breadcrumb-item" aria-current="page">@Model.HoldingCompanyName</li>
+        <li class="breadcrumb-item" aria-current="page">@Model.DivisionName</li>
+        <li class="breadcrumb-item" aria-current="page">
+            <a asp-controller="Verification" asp-action="Assessments"
+                asp-route-holdingCompanyUid="@Model.HoldingCompanyUid"
+                asp-route-assessmentSiteUid="@Model.AssessmentSiteUid"
+                asp-route-divisionUid="@Model.DivisionUid">@Model.AssessmentSiteName</a>
+        </li>
+        <li class="breadcrumb-item active" aria-current="page">@ViewData["Title"]</li>
+    </ol>
+</nav>
+
+<div class="row">
+    <div class="col-md-12">
+        <h2>@ViewData["Title"]</h2>
+        <hr />
+
+        <div class="row mt-4">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h5>Re-Evaluation ID</h5>
+                    </div>
+                    <div class="card-body">
+                        <p class="card-text">@Model.ReEvalUid</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -37,14 +37,14 @@
             transition: all 0.2s ease;
         }
     </style>
-    @* <script>
+    <script>
         $(document).ready(function () {
             $('#riskLinesTable tbody tr').on('click', function () {
-                var riskLineUid = $(this).data('risk-line-uid');
-                if (riskLineUid) {
-                    window.location.href = '@Url.Action("CorrectiveActions", "ReEval")?riskid=@Model.RiskUid&risklineid=' + riskLineUid + '&holdingcompanyid=@Model.SelectedHoldingCompanyUid';
+                var reEvalUid = $(this).data('re-eval-uid');
+                if (reEvalUid) {
+                    window.location.href = '@Url.Action("Verify", "Verification")?reEvalUid=' + reEvalUid + '&holdingcompanyuid=@Model.HoldingCompanyUid&assessmentsiteuid=@Model.AssessmentSiteUid&divisionuid=@Model.DivisionUid';
                 }
             });
         });
-    </script> *@
+    </script>
 }

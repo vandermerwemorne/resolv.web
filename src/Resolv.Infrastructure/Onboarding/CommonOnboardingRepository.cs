@@ -238,6 +238,7 @@ VALUES ('{item}');
 CREATE TABLE {schema}.re_eval 
 (
 id SERIAL PRIMARY KEY,
+uid UUID DEFAULT gen_random_uuid(),
 risk_id INTEGER,
 risk_line_id INTEGER,
 insert_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
