@@ -36,7 +36,7 @@ sequenceDiagram
     participant UR as UserRepository
     participant HC as HoldingCompanyRepository
     participant H as Hash
-    parameter A as Auth
+    participant A as Auth
     participant LL as LoginLog
     participant LLR as LandingController
 
@@ -209,7 +209,7 @@ sequenceDiagram
     participant RU as Reporting User
     participant VC as VerifyController
     participant VLC as VerifyListController
-    parameter RR as ReportRepository
+    participant RR as ReportRepository
     participant RLR as RiskLineRepository
     participant DR as DashboardRepository
     participant PDF as CreatePDF
@@ -363,7 +363,7 @@ sequenceDiagram
     participant A as Risk Assessor
     participant REL as ReEvalListController
     participant RER as ReEvalRepository
-    parameter REC as ReEvalController
+    participant REC as ReEvalController
     participant RLR as RiskLineRepository
     participant PS as PictureSave
     participant N as Notification
