@@ -4,6 +4,7 @@ using Resolv.Domain.AssessmentSite;
 using Resolv.Domain.Division;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
+using Resolv.Web.Infrastructure;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
@@ -14,7 +15,8 @@ namespace Resolv.Web.Controllers
         IAssessmentSiteRepository assessmentSiteRepository,
         ICustReEvalRepository custReEvalRepository,
         IRiskRepository riskRepository,
-        IRiskLineRepository riskLineRepository) : Controller
+        IRiskLineRepository riskLineRepository,
+        ISetSelectList setSelectList) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -140,10 +142,38 @@ namespace Resolv.Web.Controllers
                 DivisionUid = divisionUid,
                 HoldingCompanyName = holdingCompany.Name ?? "Holding Company",
                 AssessmentSiteName = assessmentSite.SiteName ?? "Assessment Site",
-                DivisionName = division.Name ?? "Division"
+                DivisionName = division.Name ?? "Division",
+
+                Severities = await setSelectList.SetSeverity(),
+                Frequencies = await setSelectList.SetFrequency(),
+                Exposures = await setSelectList.SetExposure(),
+
+                EngControls = await setSelectList.SetEngineeringControl(),
+                AdminControls = await setSelectList.SetAdminControl(),
+                PPEControls = await setSelectList.SetPPEControl(),
+                ManagementSupers = await setSelectList.SetManagementSuperControl(),
+                ConformLegalReqs = await setSelectList.SetLegalRequirementControl(),
+
+                ReEvalStatus = await setSelectList.ReEvalStatus(),
+                AssignedTo = await setSelectList.SetAssignedTo(holdingCompany.SchemaName)
             };
 
             return View(viewModel);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Verify(VerifyViewModel model) 
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            return RedirectToAction("Assessments", new { 
+                holdingCompanyUid = model.HoldingCompanyUid,
+                assessmentSiteUid = model.AssessmentSiteUid,
+                divisionUid = model.DivisionUid
+            });
         }
     }
 }

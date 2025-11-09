@@ -8,6 +8,7 @@ using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
 using Resolv.Domain.RiskControl;
 using Resolv.Domain.Users;
+using Resolv.Web.Infrastructure;
 using Resolv.Web.Models;
 
 namespace Resolv.Web.Controllers
@@ -20,17 +21,11 @@ namespace Resolv.Web.Controllers
         IRiskLineRepository riskLineRepository,
         IHazardCategoryRepository hazardCategoryRepository,
         IClassificationRepository classificationRepository,
-        IExposureRepository exposureRepository,
-        IFrequencyRepository frequencyRepository,
-        ISeverityRepository severityRepository,
 
-        IAdminControlRepository adminControlRepository,
-        IEliminateControlRepository eliminateControlRepository,
-        IEngineeringControlRepository engineeringControlRepository,
-        ILegalRequirementControlRepository legalRequirementControlRepository,
-        IManagementSuperControlRepository managementSuperControlRepository,
-        IPPEControlRepository ppeControlRepository,
-        ICustUserRepository custUserRepository) : Controller
+        IEliminateControlRepository eliminateControlRepository,        
+        
+        
+        ISetSelectList setSelectList) : Controller
     {
         public async Task<IActionResult> Index()
         {
@@ -368,18 +363,18 @@ namespace Resolv.Web.Controllers
                 AssignedDate = riskLine.AssignedDate,
                 CorrectiveActionDate = riskLine.CorrectiveActionDate,
 
-                Severities = await SetSeverity(),
-                Frequencies = await SetFrequency(),
-                Exposures = await SetExposure(),
+                Severities = await setSelectList.SetSeverity(),
+                Frequencies = await setSelectList.SetFrequency(),
+                Exposures = await setSelectList.SetExposure(),
 
                 Eliminates = await SetEliminateControl(),
-                EngControls = await SetEngineeringControl(),
-                AdminControls = await SetAdminControl(),
-                ManagementSupers = await SetManagementSuperControl(),
-                PPEControls = await SetPPEControl(),
-                ConformLegalReqs = await SetLegalRequirementControl(),
+                EngControls = await setSelectList.SetEngineeringControl(),
+                AdminControls = await setSelectList.SetAdminControl(),
+                ManagementSupers = await setSelectList.SetManagementSuperControl(),
+                PPEControls = await setSelectList.SetPPEControl(),
+                ConformLegalReqs = await setSelectList.SetLegalRequirementControl(),
 
-                AssignedTo = await SetAssignedTo(holdingCompany.SchemaName)
+                AssignedTo = await setSelectList.SetAssignedTo(holdingCompany.SchemaName)
             };
 
             return View(viewModel);
@@ -401,18 +396,18 @@ namespace Resolv.Web.Controllers
 
             if (!ModelState.IsValid)
             {
-                model.Severities = await SetSeverity();
-                model.Frequencies = await SetFrequency();
-                model.Exposures = await SetExposure();
+                model.Severities = await setSelectList.SetSeverity();
+                model.Frequencies = await setSelectList.SetFrequency();
+                model.Exposures = await setSelectList.SetExposure();
 
                 model.Eliminates = await SetEliminateControl();
-                model.EngControls = await SetEngineeringControl();
-                model.AdminControls = await SetAdminControl();
-                model.ManagementSupers = await SetManagementSuperControl();
-                model.PPEControls = await SetPPEControl();
-                model.ConformLegalReqs = await SetLegalRequirementControl();
+                model.EngControls = await setSelectList.SetEngineeringControl();
+                model.AdminControls = await setSelectList.SetAdminControl();
+                model.ManagementSupers = await setSelectList.SetManagementSuperControl();
+                model.PPEControls = await setSelectList.SetPPEControl();
+                model.ConformLegalReqs = await setSelectList.SetLegalRequirementControl();
 
-                model.AssignedTo = await SetAssignedTo(holdingCompany.SchemaName);
+                model.AssignedTo = await setSelectList.SetAssignedTo(holdingCompany.SchemaName);
 
                 return View(model);
             }
@@ -477,46 +472,6 @@ namespace Resolv.Web.Controllers
                 })];
         }
 
-        private async Task<List<SelectListItem>> SetExposure()
-        {
-            var data = await exposureRepository.GetComAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetFrequency()
-        {
-            var data = await frequencyRepository.GetComAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetSeverity()
-        {
-            var data = await severityRepository.GetComAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetAdminControl()
-        {
-            var data = await adminControlRepository.GetAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
         private async Task<List<SelectListItem>> SetEliminateControl()
         {
             var data = await eliminateControlRepository.GetAsync();
@@ -524,66 +479,6 @@ namespace Resolv.Web.Controllers
                 {
                     Value = p.Id.ToString(),
                     Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetEngineeringControl()
-        {
-            var data = await engineeringControlRepository.GetAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetLegalRequirementControl()
-        {
-            var data = await legalRequirementControlRepository.GetAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetManagementSuperControl()
-        {
-            var data = await managementSuperControlRepository.GetAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        private async Task<List<SelectListItem>> SetPPEControl()
-        {
-            var data = await ppeControlRepository.GetAsync();
-            return [.. data.Select(p => new SelectListItem
-                {
-                    Value = p.Id.ToString(),
-                    Text = p.Description
-                })];
-        }
-
-        /// <summary>
-        /// 123*O
-        /// 
-        /// 123 links to the customer user table
-        /// * is the delimiter
-        /// O means OHAS (the the customers staff responsable for occupational health and safety)
-        /// </summary>
-        /// <param name="schema"></param>
-        /// <returns></returns>
-        private async Task<List<SelectListItem>> SetAssignedTo(string schema)
-        {
-            var data = await custUserRepository.GetUsersAsync(schema);
-            return [.. data.Prepend(new CustUser { Id = 0, KnownName = null, Email = "-- Select User -"})
-                .Select(p => new SelectListItem
-                {
-                    Value = $"{p.Id}*O",
-                    Text = p.KnownName == null ? p.Email : $"{p.Email} ({p.KnownName})"
                 })];
         }
     }

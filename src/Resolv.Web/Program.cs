@@ -22,6 +22,7 @@ using Resolv.Infrastructure.RiskControl;
 using Resolv.Infrastructure.Users;
 using Resolv.Services;
 using Resolv.Web;
+using Resolv.Web.Infrastructure;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -86,6 +87,7 @@ builder.Services.AddScoped<IManagementSuperControlRepository, ManagementSuperCon
 builder.Services.AddScoped<IPPEControlRepository, PPEControlRepository>();
 
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<ISetSelectList, SetSelectList>();
 
 var app = builder.Build();
 var resolveDebugEnabled = builder.Configuration.GetSection("Logging:ResolvDebug:Enabled").Get<string>() ?? "";

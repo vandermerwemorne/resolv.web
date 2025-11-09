@@ -119,7 +119,6 @@ public class StepTwoViewModel
     public string? RecConformLegalReqControls { get; set; }
 
     [Display(Name = "Assigned To")]
-    [StringLength(255, ErrorMessage = "Assigned To cannot exceed 255 characters")]
     public string? AssignedToCompositeId { get; set; }
 
     [Display(Name = "Assigned Date")]

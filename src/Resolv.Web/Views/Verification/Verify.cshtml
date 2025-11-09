@@ -22,21 +22,343 @@
 </nav>
 
 <div class="row">
-    <div class="col-md-12">
-        <h2>@ViewData["Title"]</h2>
-        <hr />
+    <form asp-action="Verify" method="post">
 
-        <div class="row mt-4">
-            <div class="col-md-6">
-                <div class="card">
-                    <div class="card-header">
-                        <h5>Re-Evaluation ID</h5>
+        @Html.HiddenFor(m => m.ReEvalUid)
+        @Html.HiddenFor(m => m.HoldingCompanyUid)
+        @Html.HiddenFor(m => m.DivisionUid)
+        @Html.HiddenFor(m => m.AssessmentSiteUid)
+
+        <div class="col-md-12">
+            <h2>@ViewData["Title"]</h2>
+            <hr />
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewHazard" class="form-label"></label>
+                        <textarea asp-for="NewHazard" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="NewHazard" class="text-danger"></span>
                     </div>
-                    <div class="card-body">
-                        <p class="card-text">@Model.ReEvalUid</p>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewRisk" class="form-label"></label>
+                        <textarea asp-for="NewRisk" class="form-control" rows="3"></textarea>
+                        <span asp-validation-for="NewRisk" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewSeverityId"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <select asp-for="NewSeverityId" asp-items="Model.Severities" class="form-select">
+                        </select>
+                        <span asp-validation-for="NewSeverityId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewFrequencyId"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <select asp-for="NewFrequencyId" asp-items="Model.Frequencies" class="form-select">
+                        </select>
+                        <span asp-validation-for="NewFrequencyId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewExposureId"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <select asp-for="NewExposureId" asp-items="Model.Exposures" class="form-select">
+                        </select>
+                        <span asp-validation-for="NewExposureId" class="text-danger"></span>
+                    </div>
+                </div>
+
+                <div class="col-md-3">
+                    <div class="form-group mb-3">
+                        <label asp-for="NewRawRisk"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <div class="d-flex align-items-center">
+                            @{
+                                string buttonClassRawRisk = "btn-danger"; // Default for 0-50 (RED)
+                                if (Model.NewRawRisk >= 51 && Model.NewRawRisk <= 99)
+                                {
+                                    buttonClassRawRisk = "btn-warning"; // ORANGE for 51-99
+                                }
+                                else if (Model.NewRawRisk > 99)
+                                {
+                                    buttonClassRawRisk = "btn-success"; // GREEN for 99+
+                                }
+                            }
+                            <button type="button" class="btn @buttonClassRawRisk" style="min-width: 80px;">
+                                @Model.NewRawRisk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="color: #9ca0a5;" />
+                <div class="row d-none d-md-flex">
+                    <div class="col-md-3">
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold text-uppercase small custom-label">Corrective Actions</label>
+                    </div>
+                    <div class="col-md-5">
+                        <label class="form-label fw-bold text-uppercase small custom-label">Recommendations</label>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="NewEngControlId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <select asp-for="NewEngControlId" asp-items="Model.EngControls" class="form-select">
+                            </select>
+                            <span asp-validation-for="NewEngControlId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectEngControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="CorrectEngControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CorrectEngControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label asp-for="RecEngControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="RecEngControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="RecEngControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="NewAdminControlId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <select asp-for="NewAdminControlId" asp-items="Model.AdminControls" class="form-select">
+                            </select>
+                            <span asp-validation-for="NewAdminControlId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectAdminControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="CorrectAdminControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CorrectAdminControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label asp-for="RecAdminControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="RecAdminControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="RecAdminControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="NewManagementSuperId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <select asp-for="NewManagementSuperId" asp-items="Model.ManagementSupers" class="form-select">
+                            </select>
+                            <span asp-validation-for="NewManagementSuperId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectManagementSuperControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="CorrectManagementSuperControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CorrectManagementSuperControls" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label asp-for="RecManagementSuperControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="RecManagementSuperControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="RecManagementSuperControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="NewPPEControlId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <select asp-for="NewPPEControlId" asp-items="Model.PPEControls" class="form-select">
+                            </select>
+                            <span asp-validation-for="NewPPEControlId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectPPEControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="CorrectPPEControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CorrectPPEControls" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label asp-for="RecPPEControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="RecPPEControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="RecPPEControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="NewConformLegalReqId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <select asp-for="NewConformLegalReqId" asp-items="Model.ConformLegalReqs" class="form-select">
+                            </select>
+                            <span asp-validation-for="NewConformLegalReqId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectConformLegalReqControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="CorrectConformLegalReqControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="CorrectConformLegalReqControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-5">
+                        <div class="form-group mb-3">
+                            <label asp-for="RecConformLegalReqControls"
+                                   class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
+                            <textarea asp-for="RecConformLegalReqControls" class="form-control" rows="3"></textarea>
+                            <span asp-validation-for="RecConformLegalReqControls" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-2">
+                    <div class="form-group mb-3">
+                        <label asp-for="ResidualRisk"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <div class="d-flex align-items-center">
+                            @{
+                                string buttonClassResidualRisk = "btn-danger"; // Default for 0-50 (RED)
+                                if (Model.ResidualRisk >= 51 && Model.ResidualRisk <= 99)
+                                {
+                                    buttonClassResidualRisk = "btn-warning"; // ORANGE for 51-99
+                                }
+                                else if (Model.ResidualRisk > 99)
+                                {
+                                    buttonClassResidualRisk = "btn-success"; // GREEN for 99+
+                                }
+                            }
+                            <button type="button" class="btn @buttonClassResidualRisk" style="min-width: 80px;">
+                                @Model.ResidualRisk
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-2">
+                    <div class="form-group mb-3">
+                        <label asp-for="Priority"
+                               class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <div class="d-flex align-items-center">
+                            @{
+                                string buttonClassPriority = "btn-danger"; // Default 1
+                                if (Model.Priority == 2 || Model.Priority == 3)
+                                {
+                                    buttonClassPriority = "btn-warning"; // ORANGE for 2-3
+                                }
+                                else if (Model.Priority >= 4)
+                                {
+                                    buttonClassPriority = "btn-success"; // GREEN for 4+
+                                }
+                            }
+                            <button type="button" class="btn @buttonClassPriority" style="min-width: 80px;">
+                                P @Model.Priority
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <hr style="color: #9ca0a5;" />
+                <div class="row">
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="ReEvalStatusId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+
+                            <select asp-for="ReEvalStatusId" asp-items="Model.ReEvalStatus" class="form-select">
+                            </select>
+                            <span asp-validation-for="ReEvalStatusId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="AssignedToCompositeId"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+
+                            <select asp-for="AssignedToCompositeId" asp-items="Model.AssignedTo" class="form-select">
+                            </select>
+                            <span asp-validation-for="AssignedToCompositeId" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="AssignedDate"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <input asp-for="AssignedDate" type="date" class="form-control" />
+                            <span asp-validation-for="AssignedDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="form-group mb-3">
+                            <label asp-for="CorrectiveActionDate"
+                                   class="form-label fw-bold text-uppercase small custom-label"></label>
+                            <input asp-for="CorrectiveActionDate" type="date" class="form-control" />
+                            <span asp-validation-for="CorrectiveActionDate" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-12">
+                        <a class="btn btn-secondary" asp-controller="Verification" asp-action="Assessments"
+                           asp-route-holdingCompanyUid="@Model.HoldingCompanyUid"
+                           asp-route-assessmentSiteUid="@Model.AssessmentSiteUid"
+                           asp-route-divisionUid="@Model.DivisionUid">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Save</button>
                     </div>
                 </div>
             </div>
         </div>
-    </div>
+    </form>
 </div>
