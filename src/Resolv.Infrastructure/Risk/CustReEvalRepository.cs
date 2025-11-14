@@ -53,6 +53,18 @@ LIMIT 1;";
         return result ?? new() { Id = 0 };
     }
 
+    public async Task<CustReEval> GetByUidAsync(string schema, Guid uid)
+    {
+        using var connection = factory.CreateNpgsqlConnection();
+        var sql = $@"
+SELECT *
+FROM {schema}.re_eval
+WHERE uid = @uid";
+
+        var result = await connection.QuerySingleOrDefaultAsync<CustReEval>(sql, new { uid });
+        return result ?? new() { Id = 0 };
+    }
+
     public async Task UpdateAsync(string schema, CustReEval reEval)
     {
         using var connection = factory.CreateNpgsqlConnection();

@@ -10,6 +10,8 @@ public interface ICustReEvalRepository
     /// <returns></returns>
     Task<CustReEval> GetByRiskLineIdAsync(string schema, int riskLineId);
     Task<List<CustReEval>> GetByRiskIdsAsync(string schema, List<int> riskIds);
+    Task<CustReEval> GetByUidAsync(string schema, Guid uid);
     Task<int> AddAsync(string schema, CustReEval reEval);
     Task UpdateAsync(string schema, CustReEval reEval);
+
 }

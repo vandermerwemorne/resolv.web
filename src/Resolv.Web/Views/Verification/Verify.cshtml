@@ -133,8 +133,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="CorrectEngControls"
                                    class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
-                            <textarea asp-for="CorrectEngControls" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="CorrectEngControls" class="text-danger"></span>
+                            <textarea asp-for="CorrectEngControls" class="form-control" rows="3" disabled></textarea>
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -161,8 +160,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="CorrectAdminControls"
                                    class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
-                            <textarea asp-for="CorrectAdminControls" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="CorrectAdminControls" class="text-danger"></span>
+                            <textarea asp-for="CorrectAdminControls" class="form-control" rows="3" disabled></textarea>
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -189,8 +187,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="CorrectManagementSuperControls"
                                    class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
-                            <textarea asp-for="CorrectManagementSuperControls" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="CorrectManagementSuperControls" class="text-danger"></span>
+                            <textarea asp-for="CorrectManagementSuperControls" class="form-control" rows="3" disabled></textarea>
                         </div>
                     </div>
 
@@ -218,8 +215,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="CorrectPPEControls"
                                    class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
-                            <textarea asp-for="CorrectPPEControls" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="CorrectPPEControls" class="text-danger"></span>
+                            <textarea asp-for="CorrectPPEControls" class="form-control" rows="3" disabled></textarea>
                         </div>
                     </div>
 
@@ -247,8 +243,7 @@
                         <div class="form-group mb-3">
                             <label asp-for="CorrectConformLegalReqControls"
                                    class="form-label fw-bold text-uppercase small d-block d-sm-none custom-label"></label>
-                            <textarea asp-for="CorrectConformLegalReqControls" class="form-control" rows="3"></textarea>
-                            <span asp-validation-for="CorrectConformLegalReqControls" class="text-danger"></span>
+                            <textarea asp-for="CorrectConformLegalReqControls" class="form-control" rows="3" disabled></textarea>
                         </div>
                     </div>
                     <div class="col-md-5">
@@ -326,25 +321,22 @@
                             <label asp-for="AssignedToCompositeId"
                                    class="form-label fw-bold text-uppercase small custom-label"></label>
 
-                            <select asp-for="AssignedToCompositeId" asp-items="Model.AssignedTo" class="form-select">
+                            <select asp-for="AssignedToCompositeId" asp-items="Model.AssignedTo" class="form-select" disabled>
                             </select>
-                            <span asp-validation-for="AssignedToCompositeId" class="text-danger"></span>
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group mb-3">
                             <label asp-for="AssignedDate"
                                    class="form-label fw-bold text-uppercase small custom-label"></label>
-                            <input asp-for="AssignedDate" type="date" class="form-control" />
-                            <span asp-validation-for="AssignedDate" class="text-danger"></span>
+                            <input asp-for="AssignedDate" type="date" class="form-control" disabled />
                         </div>
                     </div>
                     <div class="col-md-3">
                         <div class="form-group mb-3">
                             <label asp-for="CorrectiveActionDate"
                                    class="form-label fw-bold text-uppercase small custom-label"></label>
-                            <input asp-for="CorrectiveActionDate" type="date" class="form-control" />
-                            <span asp-validation-for="CorrectiveActionDate" class="text-danger"></span>
+                            <input asp-for="CorrectiveActionDate" type="date" class="form-control" disabled />
                         </div>
                     </div>
                 </div>

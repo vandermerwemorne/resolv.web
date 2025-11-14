@@ -133,6 +133,9 @@ namespace Resolv.Web.Controllers
             var holdingCompany = await holdingCompanyRepository.GetAsync(holdingCompanyUid);
             var assessmentSite = await assessmentSiteRepository.GetByUidAsync(holdingCompany.SchemaName, assessmentSiteUid);
             var division = await divisionRepository.GetAsync(holdingCompany.SchemaName, divisionUid);
+            
+            var reEval = await custReEvalRepository.GetByUidAsync(holdingCompany.SchemaName, reEvalUid);
+            var riskLine = await riskLineRepository.GetByIdAsync(holdingCompany.SchemaName, reEval.RiskLineId);
 
             var viewModel = new VerifyViewModel
             {
@@ -143,6 +146,30 @@ namespace Resolv.Web.Controllers
                 HoldingCompanyName = holdingCompany.Name ?? "Holding Company",
                 AssessmentSiteName = assessmentSite.SiteName ?? "Assessment Site",
                 DivisionName = division.Name ?? "Division",
+
+                NewHazard = riskLine.Hazard,
+                NewRisk = riskLine.Risk,
+
+                NewSeverityId = riskLine.SeverityId,
+                NewFrequencyId = riskLine.FrequencyId,
+                NewExposureId = riskLine.ExposureId,
+                
+                NewEngControlId = riskLine.EngControlId,
+                NewAdminControlId = riskLine.AdminControlId,
+                NewManagementSuperId = riskLine.ManagementSuperId,
+                NewPPEControlId = riskLine.PpeControlId,
+                NewConformLegalReqId = riskLine.ConformLegalReqId,
+
+                ReEvalStatusId = reEval.ReEvalStatusId,
+                AssignedToCompositeId = riskLine.AssignedToCompositeId,
+                AssignedDate = riskLine.AssignedDate,
+                CorrectiveActionDate = riskLine.CorrectiveActionDate,
+
+                CorrectEngControls = reEval.CoractEngControls,
+                CorrectAdminControls = reEval.CoractAdminControls,
+                CorrectConformLegalReqControls = reEval.CoractLegalReqControls,
+                CorrectManagementSuperControls = reEval.CoractSuperControls,
+                CorrectPPEControls = reEval.CoractPpeControls,
 
                 Severities = await setSelectList.SetSeverity(),
                 Frequencies = await setSelectList.SetFrequency(),
