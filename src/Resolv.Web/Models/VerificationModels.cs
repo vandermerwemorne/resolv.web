@@ -76,30 +76,30 @@ public class VerifyViewModel
     public string? NewRisk { get; set; }
 
     [Display(Name = "Severity")]
-    public int? NewSeverityId { get; set; }
+    public int NewSeverityId { get; set; }
 
     [Display(Name = "Frequency")]
-    public int? NewFrequencyId { get; set; }
+    public int NewFrequencyId { get; set; }
 
     [Display(Name = "Exposure")]
-    public int? NewExposureId { get; set; }
+    public int NewExposureId { get; set; }
 
     [Display(Name = "Raw Risk")]
     public int NewRawRisk { get; set; } = 0;
 
     [Display(Name = "Eng. Control")]
-    public int? NewEngControlId { get; set; }
+    public int NewEngControlId { get; set; }
     [Display(Name = "Admin Control")]
-    public int? NewAdminControlId { get; set; }
+    public int NewAdminControlId { get; set; }
     [Display(Name = "MGNT/Sup")]
-    public int? NewManagementSuperId { get; set; }
+    public int NewManagementSuperId { get; set; }
     [Display(Name = "PPE Control")]
-    public int? NewPPEControlId { get; set; }
+    public int NewPPEControlId { get; set; }
     [Display(Name = "LGL/REG CONF")]
-    public int? NewConformLegalReqId { get; set; }
+    public int NewConformLegalReqId { get; set; }
 
     [Display(Name = "Status")]
-    public int? ReEvalStatusId { get; set; }
+    public int ReEvalStatusId { get; set; }
 
     [Display(Name = "Correct Engineering Controls")]
     [StringLength(1000, ErrorMessage = "Correct Engineering Controls cannot exceed 500 characters")]

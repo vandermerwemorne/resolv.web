@@ -48,13 +48,13 @@ public class StepTwoViewModel
     public Guid HoldingCompanyId { get; set; }
 
     [Display(Name = "Severity")]
-    public int? SeverityId { get; set; }
+    public int SeverityId { get; set; }
 
     [Display(Name = "Frequency")]
-    public int? FrequencyId { get; set; }
+    public int FrequencyId { get; set; }
 
     [Display(Name = "Exposure")]
-    public int? ExposureId { get; set; }
+    public int ExposureId { get; set; }
 
     [Display(Name = "Eliminate/Substitute")]
     public int? EliminateId { get; set; }
@@ -64,7 +64,7 @@ public class StepTwoViewModel
     public string? EliminateRec { get; set; }
 
     [Display(Name = "Eng. Control")]
-    public int? EngControlId { get; set; }
+    public int EngControlId { get; set; }
 
     [Display(Name = "Current Engineering Controls")]
     [StringLength(1000, ErrorMessage = "Current Engineering Controls cannot exceed 1000 characters")]
@@ -75,7 +75,7 @@ public class StepTwoViewModel
     public string? RecEngControls { get; set; }
 
     [Display(Name = "Admin Control")]
-    public int? AdminControlId { get; set; }
+    public int AdminControlId { get; set; }
 
     [Display(Name = "Current Administrative Controls")]
     [StringLength(1000, ErrorMessage = "Current Administrative Controls cannot exceed 1000 characters")]
@@ -86,7 +86,7 @@ public class StepTwoViewModel
     public string? RecAdminControls { get; set; }
 
     [Display(Name = "MGNT/Sup")]
-    public int? ManagementSuperId { get; set; }
+    public int ManagementSuperId { get; set; }
 
     [Display(Name = "Current Management/Supervision Controls")]
     [StringLength(1000, ErrorMessage = "Current Management/Supervision Controls cannot exceed 1000 characters")]
@@ -97,7 +97,7 @@ public class StepTwoViewModel
     public string? RecManagementSuperControls { get; set; }
 
     [Display(Name = "PPE Control")]
-    public int? PPEControlId { get; set; }
+    public int PPEControlId { get; set; }
 
     [Display(Name = "Current PPE Controls")]
     [StringLength(1000, ErrorMessage = "Current PPE Controls cannot exceed 1000 characters")]
@@ -108,7 +108,7 @@ public class StepTwoViewModel
     public string? RecPPEControls { get; set; }
 
     [Display(Name = "LGL/REG CONF")]
-    public int? ConformLegalReqId { get; set; }
+    public int ConformLegalReqId { get; set; }
 
     [Display(Name = "Current Legal Requirements Controls")]
     [StringLength(1000, ErrorMessage = "Current Legal Requirements Controls cannot exceed 1000 characters")]

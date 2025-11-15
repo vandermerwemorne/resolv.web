@@ -6,6 +6,7 @@ using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
 using Resolv.Web.Infrastructure;
 using Resolv.Web.Models;
+using System.Security.Claims;
 
 namespace Resolv.Web.Controllers
 {
@@ -16,6 +17,7 @@ namespace Resolv.Web.Controllers
         ICustReEvalRepository custReEvalRepository,
         IRiskRepository riskRepository,
         IRiskLineRepository riskLineRepository,
+        ICustReEvalVerifyRepository custReEvalVerifyRepository,
         ISetSelectList setSelectList) : Controller
     {
         public async Task<IActionResult> Index()
@@ -196,7 +198,69 @@ namespace Resolv.Web.Controllers
                 return View(model);
             }
 
-            return RedirectToAction("Assessments", new { 
+            var holdingCompany = await holdingCompanyRepository.GetAsync(model.HoldingCompanyUid);
+            var reEval = await custReEvalRepository.GetByUidAsync(holdingCompany.SchemaName, model.ReEvalUid);
+            var existingReEvalVerify = await custReEvalVerifyRepository.GetByReEvalIdAsync(holdingCompany.SchemaName, reEval.Id);
+
+            if (existingReEvalVerify.Id == 0) // INSERT NEW
+            {
+                var custReEvalVerify = new CustReEvalVerify()
+                {
+                    ReEvalId = reEval.Id,
+                    AddedByUserId = 0,
+                    CreatedBy = 0,
+
+                    NewHazard = model.NewHazard,
+                    NewRisk = model.NewRisk,
+
+                    NewSeverityId = model.NewSeverityId,
+                    NewFrequencyId = model.NewFrequencyId,
+                    NewExposureId = model.NewExposureId,
+
+                    NewEngControlId = model.NewEngControlId,
+                    NewAdminControlId = model.NewAdminControlId,
+                    NewManagementSuperId = model.NewManagementSuperId,
+                    NewPpeControlId = model.NewPPEControlId,
+                    NewConformLegalReqId = model.NewConformLegalReqId,
+
+                    RecEngControls = model.RecEngControls,
+                    RecAdminControls = model.RecAdminControls,
+                    RecSuperControls = model.RecManagementSuperControls,
+                    RecPpeControls = model.RecPPEControls,
+                    RecLegalReqControls = model.RecConformLegalReqControls,
+                };
+
+                await custReEvalVerifyRepository.AddAsync(holdingCompany.SchemaName, custReEvalVerify);
+            }
+            else // UPDATE
+            {
+                existingReEvalVerify.NewHazard = model.NewHazard;
+                existingReEvalVerify.NewRisk = model.NewRisk;
+
+                existingReEvalVerify.NewSeverityId = model.NewSeverityId;
+                existingReEvalVerify.NewFrequencyId = model.NewFrequencyId;
+                existingReEvalVerify.NewExposureId = model.NewExposureId;
+
+                existingReEvalVerify.NewEngControlId = model.NewEngControlId;
+                existingReEvalVerify.NewAdminControlId = model.NewAdminControlId;
+                existingReEvalVerify.NewManagementSuperId = model.NewManagementSuperId;
+                existingReEvalVerify.NewPpeControlId = model.NewPPEControlId;
+                existingReEvalVerify.NewConformLegalReqId = model.NewConformLegalReqId;
+
+                existingReEvalVerify.RecEngControls = model.RecEngControls;
+                existingReEvalVerify.RecAdminControls = model.RecAdminControls;
+                existingReEvalVerify.RecSuperControls = model.RecManagementSuperControls;
+                existingReEvalVerify.RecPpeControls = model.RecPPEControls;
+                existingReEvalVerify.RecLegalReqControls = model.RecConformLegalReqControls;
+
+                await custReEvalVerifyRepository.UpdateAsync(holdingCompany.SchemaName, existingReEvalVerify);
+            }
+
+            reEval.ReEvalStatusId = model.ReEvalStatusId;
+            await custReEvalRepository.UpdateAsync(holdingCompany.SchemaName, reEval);
+
+            return RedirectToAction("Assessments", new
+            {
                 holdingCompanyUid = model.HoldingCompanyUid,
                 assessmentSiteUid = model.AssessmentSiteUid,
                 divisionUid = model.DivisionUid

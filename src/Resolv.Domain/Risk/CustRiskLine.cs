@@ -17,17 +17,17 @@ public class CustRiskLine
     public string? Hazard { get; set; }
     public string? Risk { get; set; }
     public int? PictureId { get; set; }
-    public int? SeverityId { get; set; }
-    public int? FrequencyId { get; set; }
-    public int? ExposureId { get; set; }
-    public int? EngControlId { get; set; }
-    public int? AdminControlId { get; set; }
-    public int? PpeControlId { get; set; }
+    public int SeverityId { get; set; }
+    public int FrequencyId { get; set; }
+    public int ExposureId { get; set; }
+    public int EngControlId { get; set; }
+    public int AdminControlId { get; set; }
+    public int PpeControlId { get; set; }
     public string? CurrentEngControls { get; set; }
     public string? RecEngControls { get; set; }
     public int? PercentageCompleteId { get; set; }
-    public int? ManagementSuperId { get; set; }
-    public int? ConformLegalReqId { get; set; }
+    public int ManagementSuperId { get; set; }
+    public int ConformLegalReqId { get; set; }
     public string? CurrentAdminControls { get; set; }
     public string? CurrentManagementSuperControls { get; set; }
     public string? CurrentConformLegalReqControls { get; set; }
