@@ -12,9 +12,15 @@ public class RiskLineRepository(SqlConnectionFactory factory) : IRiskLineReposit
             $@"
 INSERT INTO 
 {schema}.risk_line(
-risk_id, insert_date, dept_division, reference_no, hazard_date, step_in_operation_id, classification_id, hazard, risk, picture_id, severity_id, frequency_id, exposure_id, eng_control_id, admin_control_id, ppe_control_id, current_eng_controls, rec_eng_controls, assigned_date, corrective_action_date, percentage_complete_id, management_super_id, conform_legal_req_id, current_admin_controls, current_management_super_controls, current_conform_legal_req_controls, current_ppe_controls, rec_admin_controls, rec_management_super_controls, rec_conform_legal_req_controls, rec_ppe_controls, assigned_to_composite_id, added_by_user_id, raw_risk, residual_risk, eliminate_id, eliminate_rec, updated, can_edit, updated_by, data_upload, assigned_to_user_id, created_user_id, updated_user_id, prev_risk_id, new_residual_risk, status_id, observation)
+risk_id, insert_date, dept_division, reference_no, hazard_date, step_in_operation_id, classification_id, hazard, risk, picture_id, severity_id, frequency_id, exposure_id, eng_control_id, 
+admin_control_id, ppe_control_id, current_eng_controls, rec_eng_controls, assigned_date, corrective_action_date, percentage_complete_id, management_super_id, conform_legal_req_id, 
+current_admin_controls, current_management_super_controls, current_conform_legal_req_controls, current_ppe_controls, rec_admin_controls, rec_management_super_controls, rec_conform_legal_req_controls, rec_ppe_controls, assigned_to_composite_id, added_by_user_id, raw_risk, residual_risk, eliminate_id, 
+eliminate_rec, updated, can_edit, updated_by, data_upload, assigned_to_user_id, created_user_id, updated_user_id, prev_risk_id, new_residual_risk, status_id, observation)
 VALUES 
-(@RiskId, @InsertDate, @DeptDivision, @ReferenceNo, @HazardDate, @StepInOperationId, @ClassificationId, @Hazard, @Risk, @PictureId, @SeverityId, @FrequencyId, @ExposureId, @EngControlId, @AdminControlId, @PpeControlId, @CurrentEngControls, @RecEngControls, @AssignedDate, @CorrectiveActionDate, @PercentageCompleteId, @ManagementSuperId, @ConformLegalReqId, @CurrentAdminControls, @CurrentManagementSuperControls, @CurrentConformLegalReqControls, @CurrentPpeControls, @RecAdminControls, @RecManagementSuperControls, @RecConformLegalReqControls, @RecPpeControls, @AssignedToCompositeId, @AddedByUserId, @RawRisk, @ResidualRisk, @EliminateId, @EliminateRec, @Updated, @CanEdit, @UpdatedBy, @DataUpload, @AssignedToUserId, @CreatedUserId, @UpdatedUserId, @PrevRiskId, @NewResidualRisk, @StatusId, @Observation)
+(@RiskId, @InsertDate, @DeptDivision, @ReferenceNo, @HazardDate, @StepInOperationId, @ClassificationId, @Hazard, @Risk, @PictureId, @SeverityId, @FrequencyId, @ExposureId, @EngControlId, 
+@AdminControlId, @PpeControlId, @CurrentEngControls, @RecEngControls, @AssignedDate, @CorrectiveActionDate, @PercentageCompleteId, @ManagementSuperId, @ConformLegalReqId, @CurrentAdminControls, @CurrentManagementSuperControls, @CurrentConformLegalReqControls, 
+@CurrentPpeControls, @RecAdminControls, @RecManagementSuperControls, @RecConformLegalReqControls, @RecPpeControls, @AssignedToCompositeId, @AddedByUserId, @RawRisk, @ResidualRisk, @EliminateId,
+@EliminateRec, @Updated, @CanEdit, @UpdatedBy, @DataUpload, @AssignedToUserId, @CreatedUserId, @UpdatedUserId, @PrevRiskId, @NewResidualRisk, @StatusId, @Observation)
 RETURNING id, uid";
 
         riskline.InsertDate = DateTime.UtcNow;
@@ -115,7 +121,9 @@ SET
     assigned_date = @AssignedDate,
     corrective_action_date = @CorrectiveActionDate,
     updated = @Updated,
-    updated_by = @UpdatedBy
+    updated_by = @UpdatedBy,
+    raw_risk = @RawRisk,
+    residual_risk = @ResidualRisk
 WHERE uid = @Uid;";
 
         riskLine.Updated = DateTime.UtcNow;

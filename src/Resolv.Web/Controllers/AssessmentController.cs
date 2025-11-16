@@ -336,6 +336,8 @@ namespace Resolv.Web.Controllers
 
             var viewModel = new StepTwoViewModel
             {
+                RawRisk = riskLine.RawRisk,
+
                 RiskUid = riskId,
                 RiskLineUid = riskLine.Uid,
                 HoldingCompanyId = holdingCompanyId,
@@ -419,6 +421,7 @@ namespace Resolv.Web.Controllers
             }
 
             // Update the risk line with StepTwo form data
+            existingRiskLine.RawRisk = model.RawRisk;
             existingRiskLine.SeverityId = model.SeverityId;
             existingRiskLine.FrequencyId = model.FrequencyId;
             existingRiskLine.ExposureId = model.ExposureId;

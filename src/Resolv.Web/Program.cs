@@ -6,6 +6,7 @@ using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Onboarding;
 using Resolv.Domain.Risk;
+using Resolv.Domain.Risk.Calculators;
 using Resolv.Domain.RiskControl;
 using Resolv.Domain.Services;
 using Resolv.Domain.Users;
@@ -87,6 +88,8 @@ builder.Services.AddScoped<IManagementSuperControlRepository, ManagementSuperCon
 builder.Services.AddScoped<IPPEControlRepository, PPEControlRepository>();
 
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
+builder.Services.AddScoped<IExposureCalculator, ExposureCalculator>();
+builder.Services.AddScoped<IRawRiskCalculator, RawRiskCalculator>();
 builder.Services.AddScoped<ISetSelectList, SetSelectList>();
 
 var app = builder.Build();

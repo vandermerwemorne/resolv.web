@@ -29,15 +29,17 @@
             @Html.HiddenFor(m => m.RiskUid)
             @Html.HiddenFor(m => m.RiskLineUid)
             @Html.HiddenFor(m => m.HoldingCompanyId)
+            @Html.HiddenFor(m => m.RawRisk)
 
             <div class="row">
                 <div class="col-md-3">
                     <div class="form-group mb-3">
                         <label asp-for="SeverityId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="SeverityId" asp-items="Model.Severities" class="form-select">
+                        <select asp-for="SeverityId" asp-items="Model.Severities" class="form-select"
+                            onchange="CalculateRisk(); SeverityHelperCheck(this);">
                         </select>
-                        <span asp-validation-for="SeverityId" class="text-danger"></span>
+                        <span class="helper-text" id="SeverityHelper"></span>
                     </div>
                 </div>
 
@@ -45,9 +47,10 @@
                     <div class="form-group mb-3">
                         <label asp-for="FrequencyId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="FrequencyId" asp-items="Model.Frequencies" class="form-select">
+                        <select asp-for="FrequencyId" asp-items="Model.Frequencies" class="form-select"
+                            onchange="CalculateRisk(); FrequencyHelperCheck(this);">
                         </select>
-                        <span asp-validation-for="FrequencyId" class="text-danger"></span>
+                        <span class="helper-text" id="FrequencyHelper"></span>
                     </div>
                 </div>
 
@@ -55,16 +58,16 @@
                     <div class="form-group mb-3">
                         <label asp-for="ExposureId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="ExposureId" asp-items="Model.Exposures" class="form-select">
+                        <select asp-for="ExposureId" asp-items="Model.Exposures" class="form-select"
+                            onchange="CalculateRisk(); ExposureHelperCheck(this);">
                         </select>
-                        <span asp-validation-for="ExposureId" class="text-danger"></span>
+                        <span class="helper-text" id="ExposureHelper"></span>
                     </div>
                 </div>
 
                 <div class="col-md-3">
                     <div class="form-group mb-3">
-                        <label asp-for="RawRisk"
-                            class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <label asp-for="RawRisk" class="form-label fw-bold text-uppercase small custom-label"></label>
                         <div class="d-flex align-items-center">
                             @{
                                 string buttonClassRawRisk = "btn-danger"; // Default for 0-50 (RED)
@@ -77,7 +80,8 @@
                                     buttonClassRawRisk = "btn-success"; // GREEN for 99+
                                 }
                             }
-                            <button type="button" class="btn @buttonClassRawRisk" style="min-width: 80px;">
+                            <button type="button" class="btn @buttonClassRawRisk" style="min-width: 80px;"
+                                id="RawRiskDisplay">
                                 @Model.RawRisk
                             </button>
                         </div>
@@ -284,8 +288,7 @@
 
                 <div class="col-md-2">
                     <div class="form-group mb-3">
-                        <label asp-for="Priority"
-                            class="form-label fw-bold text-uppercase small custom-label"></label>
+                        <label asp-for="Priority" class="form-label fw-bold text-uppercase small custom-label"></label>
                         <div class="d-flex align-items-center">
                             @{
                                 string buttonClassPriority = "btn-danger"; // Default 1
@@ -349,11 +352,77 @@
 </div>
 
 @section Scripts {
-    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function CalculateRisk() {
+            var severity = parseInt($("#SeverityId").val()) || 0;
+            var frequency = parseInt($("#FrequencyId").val()) || 0;
+            var exposure = parseInt($("#ExposureId").val()) || 0;
+
+            $.ajax({
+                url: '@Url.Action("RawRisk", "Calculator")',
+                type: 'GET',
+                data: {
+                    severityId: severity,
+                    frequencyId: frequency,
+                    exposureId: exposure
+                },
+                success: function (result) {
+                    $("#RawRisk").val(result.rawRisk);
+
+                    // Update the raw risk display
+                    var $rawRiskButton = $('#RawRiskDisplay');
+                    $rawRiskButton.text(result.rawRisk);
+
+                    // Update button color based on risk value
+                    $rawRiskButton.removeClass('btn-danger btn-warning btn-success');
+                    $rawRiskButton.addClass(result.displayColour);
+                }
+            });
+        }
+        function SeverityHelperCheck(element) {
+            $.ajax({
+                url: '@Url.Action("SeverityChange", "HelperText")',
+                type: 'GET',
+                data: {
+                    severityId: $(element).val()
+                },
+                success: function (result) {
+                    $('#SeverityHelper').text(result);
+                }
+            });
+        }
+        function ExposureHelperCheck(element) {
+            $.ajax({
+                url: '@Url.Action("ExposureChange", "HelperText")',
+                type: 'GET',
+                data: {
+                    exposureId: $(element).val()
+                },
+                success: function (result) {
+                    $('#ExposureHelper').text(result);
+                }
+            });
+        }
+        function FrequencyHelperCheck(element) {
+            $.ajax({
+                url: '@Url.Action("FrequencyChange", "HelperText")',
+                type: 'GET',
+                data: {
+                    frequencyId: $(element).val()
+                },
+                success: function (result) {
+                    $('#FrequencyHelper').text(result);
+                }
+            });
+        }
+    </script>
 }
 
 <style>
     .custom-label {
         color: #9b9494;
+    }
+    .helper-text {
+        font-size: 10px !important;
     }
 </style>
