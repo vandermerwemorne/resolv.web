@@ -14,3 +14,7 @@ Old [UAT framework 4.8 instance](https://resolveuatappservice-fzgkadgecrdffme9.s
 ## Deployment
 - [UAT Github Action](https://github.com/vandermerwemorne/resolv.web/actions/workflows/uat-deploy-app.yaml)
   - Service principle us `github-resolv-uat`
+
+## Domain Logic
+
+- [Risk Calculator](./docs/risk-calculator.md)

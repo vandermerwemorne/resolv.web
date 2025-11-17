@@ -6,6 +6,7 @@ using Resolv.Domain.Division;
 using Resolv.Domain.HazardCategory;
 using Resolv.Domain.HoldingCompany;
 using Resolv.Domain.Risk;
+using Resolv.Domain.Risk.Calculators;
 using Resolv.Domain.RiskControl;
 using Resolv.Domain.Users;
 using Resolv.Web.Infrastructure;
@@ -21,10 +22,9 @@ namespace Resolv.Web.Controllers
         IRiskLineRepository riskLineRepository,
         IHazardCategoryRepository hazardCategoryRepository,
         IClassificationRepository classificationRepository,
-
-        IEliminateControlRepository eliminateControlRepository,        
-        
-        
+        IEliminateControlRepository eliminateControlRepository,
+        IColourCalculator colourCalculator,
+        IPriorityCalculator priorityCalculator,
         ISetSelectList setSelectList) : Controller
     {
         public async Task<IActionResult> Index()
@@ -334,9 +334,15 @@ namespace Resolv.Web.Controllers
                 return NotFound("Risk line not found");
             }
 
+            var priority = priorityCalculator.GetPriority(riskLine.ResidualRisk);
             var viewModel = new StepTwoViewModel
             {
                 RawRisk = riskLine.RawRisk,
+                ResidualRisk = riskLine.ResidualRisk,
+
+                RawRiskColour = colourCalculator.GetRawRiskColour(riskLine.RawRisk),
+                ResidualRiskColour = colourCalculator.GetResidualRiskColour(priority),
+                Priority = priority,
 
                 RiskUid = riskId,
                 RiskLineUid = riskLine.Uid,
@@ -422,6 +428,7 @@ namespace Resolv.Web.Controllers
 
             // Update the risk line with StepTwo form data
             existingRiskLine.RawRisk = model.RawRisk;
+            existingRiskLine.ResidualRisk = model.ResidualRisk;
             existingRiskLine.SeverityId = model.SeverityId;
             existingRiskLine.FrequencyId = model.FrequencyId;
             existingRiskLine.ExposureId = model.ExposureId;

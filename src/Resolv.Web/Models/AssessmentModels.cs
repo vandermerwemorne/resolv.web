@@ -136,7 +136,10 @@ public class StepTwoViewModel
     public int ResidualRisk { get; set; } = 125;
 
     [Display(Name = "Priority")]
-    public int Priority { get; set; } = 1;
+    public string Priority { get; set; } = "";
+
+    public string RawRiskColour { get; set; } = "";
+    public string ResidualRiskColour { get; set; } = "";
 
 
     // Dropdown lists for the select options

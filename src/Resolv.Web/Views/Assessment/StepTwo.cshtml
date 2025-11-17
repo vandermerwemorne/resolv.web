@@ -30,6 +30,7 @@
             @Html.HiddenFor(m => m.RiskLineUid)
             @Html.HiddenFor(m => m.HoldingCompanyId)
             @Html.HiddenFor(m => m.RawRisk)
+            @Html.HiddenFor(m => m.ResidualRisk)
 
             <div class="row">
                 <div class="col-md-3">
@@ -69,18 +70,7 @@
                     <div class="form-group mb-3">
                         <label asp-for="RawRisk" class="form-label fw-bold text-uppercase small custom-label"></label>
                         <div class="d-flex align-items-center">
-                            @{
-                                string buttonClassRawRisk = "btn-danger"; // Default for 0-50 (RED)
-                                if (Model.RawRisk >= 51 && Model.RawRisk <= 99)
-                                {
-                                    buttonClassRawRisk = "btn-warning"; // ORANGE for 51-99
-                                }
-                                else if (Model.RawRisk > 99)
-                                {
-                                    buttonClassRawRisk = "btn-success"; // GREEN for 99+
-                                }
-                            }
-                            <button type="button" class="btn @buttonClassRawRisk" style="min-width: 80px;"
+                            <button type="button" class="btn @Model.RawRiskColour" style="min-width: 80px;"
                                 id="RawRiskDisplay">
                                 @Model.RawRisk
                             </button>
@@ -125,9 +115,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="EngControlId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="EngControlId" asp-items="Model.EngControls" class="form-select">
+                        <select asp-for="EngControlId" asp-items="Model.EngControls" class="form-select" 
+                            onchange="CalculateResidualAndPriority();">
                         </select>
-                        <span asp-validation-for="EngControlId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -153,9 +143,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="AdminControlId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="AdminControlId" asp-items="Model.AdminControls" class="form-select">
+                        <select asp-for="AdminControlId" asp-items="Model.AdminControls" class="form-select"
+                                onchange="CalculateResidualAndPriority();">
                         </select>
-                        <span asp-validation-for="AdminControlId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -181,9 +171,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="ManagementSuperId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="ManagementSuperId" asp-items="Model.ManagementSupers" class="form-select">
+                        <select asp-for="ManagementSuperId" asp-items="Model.ManagementSupers" class="form-select" 
+                            onchange="CalculateResidualAndPriority();">
                         </select>
-                        <span asp-validation-for="ManagementSuperId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -210,9 +200,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="PPEControlId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="PPEControlId" asp-items="Model.PPEControls" class="form-select">
+                        <select asp-for="PPEControlId" asp-items="Model.PPEControls" class="form-select" 
+                            onchange="CalculateResidualAndPriority();">
                         </select>
-                        <span asp-validation-for="PPEControlId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -239,9 +229,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="ConformLegalReqId"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
-                        <select asp-for="ConformLegalReqId" asp-items="Model.ConformLegalReqs" class="form-select">
+                        <select asp-for="ConformLegalReqId" asp-items="Model.ConformLegalReqs" class="form-select" 
+                            onchange="CalculateResidualAndPriority();">
                         </select>
-                        <span asp-validation-for="ConformLegalReqId" class="text-danger"></span>
                     </div>
                 </div>
                 <div class="col-md-4">
@@ -268,18 +258,8 @@
                         <label asp-for="ResidualRisk"
                             class="form-label fw-bold text-uppercase small custom-label"></label>
                         <div class="d-flex align-items-center">
-                            @{
-                                string buttonClassResidualRisk = "btn-danger"; // Default for 0-50 (RED)
-                                if (Model.ResidualRisk >= 51 && Model.ResidualRisk <= 99)
-                                {
-                                    buttonClassResidualRisk = "btn-warning"; // ORANGE for 51-99
-                                }
-                                else if (Model.ResidualRisk > 99)
-                                {
-                                    buttonClassResidualRisk = "btn-success"; // GREEN for 99+
-                                }
-                            }
-                            <button type="button" class="btn @buttonClassResidualRisk" style="min-width: 80px;">
+                            <button type="button" class="btn @Model.ResidualRiskColour" style="min-width: 80px;"
+                                    id="ResidualRiskDisplay">
                                 @Model.ResidualRisk
                             </button>
                         </div>
@@ -290,19 +270,9 @@
                     <div class="form-group mb-3">
                         <label asp-for="Priority" class="form-label fw-bold text-uppercase small custom-label"></label>
                         <div class="d-flex align-items-center">
-                            @{
-                                string buttonClassPriority = "btn-danger"; // Default 1
-                                if (Model.Priority == 2 || Model.Priority == 3)
-                                {
-                                    buttonClassPriority = "btn-warning"; // ORANGE for 2-3
-                                }
-                                else if (Model.Priority >= 4)
-                                {
-                                    buttonClassPriority = "btn-success"; // GREEN for 4+
-                                }
-                            }
-                            <button type="button" class="btn @buttonClassPriority" style="min-width: 80px;">
-                                P @Model.Priority
+                            <button type="button" class="btn @Model.ResidualRiskColour" style="min-width: 80px;"
+                                id="PriorityDisplay">
+                                @Model.Priority
                             </button>
                         </div>
                     </div>
@@ -353,6 +323,46 @@
 
 @section Scripts {
     <script>
+        function CalculateResidualAndPriority() {
+            var rawRisk = parseInt($("#RawRisk").val()) || 0;
+            var engControl = parseInt($("#EngControlId").val()) || 0;
+            var adminControl = parseInt($("#AdminControlId").val()) || 0;
+            var managementSuperControl = parseInt($("#ManagementSuperId").val()) || 0;
+            var ppeControl = parseInt($("#PPEControlId").val()) || 0;
+            var conformLegalReqControl = parseInt($("#ConformLegalReqId").val()) || 0;
+
+            $.ajax({
+                url: '@Url.Action("ResidualAndPriority", "Calculator")',
+                type: 'GET',
+                data: {
+                    rawRisk: rawRisk,
+                    engControl: engControl,
+                    adminControl: adminControl,
+                    managementSuperControl: managementSuperControl,
+                    ppeControl: ppeControl,
+                    conformLegalReqControl: conformLegalReqControl
+                },
+                success: function (result) {
+                    $("#ResidualRisk").val(result.residualRisk);
+
+                    // Update the raw risk display
+                    var $residualRiskDisplay = $('#ResidualRiskDisplay');
+                    $residualRiskDisplay.text(result.residualRisk);
+
+                    // Update ResidualRiskDisplay color based on risk value
+                    $residualRiskDisplay.removeClass('btn-danger btn-warning btn-success');
+                    $residualRiskDisplay.addClass(result.displayColour);
+
+                    // Update the raw risk display
+                    var $priorityDisplay = $('#PriorityDisplay');
+                    $priorityDisplay.text(result.priority);
+
+                    // Update ResidualRiskDisplay color based on risk value
+                    $priorityDisplay.removeClass('btn-danger btn-warning btn-success');
+                    $priorityDisplay.addClass(result.displayColour);
+                }
+            });
+        }
         function CalculateRisk() {
             var severity = parseInt($("#SeverityId").val()) || 0;
             var frequency = parseInt($("#FrequencyId").val()) || 0;
@@ -370,12 +380,14 @@
                     $("#RawRisk").val(result.rawRisk);
 
                     // Update the raw risk display
-                    var $rawRiskButton = $('#RawRiskDisplay');
-                    $rawRiskButton.text(result.rawRisk);
+                    var $rawRiskDisplay = $('#RawRiskDisplay');
+                    $rawRiskDisplay.text(result.rawRisk);
 
-                    // Update button color based on risk value
-                    $rawRiskButton.removeClass('btn-danger btn-warning btn-success');
-                    $rawRiskButton.addClass(result.displayColour);
+                    // Update RawRiskDisplay color based on risk value
+                    $rawRiskDisplay.removeClass('btn-danger btn-warning btn-success');
+                    $rawRiskDisplay.addClass(result.displayColour);
+
+                    CalculateResidualAndPriority();
                 }
             });
         }

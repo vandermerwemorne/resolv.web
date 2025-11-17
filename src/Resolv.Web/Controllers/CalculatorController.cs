@@ -6,7 +6,10 @@ namespace Resolv.Web.Controllers;
 
 public class CalculatorController(
     IExposureCalculator exposureCalculator,
-    IRawRiskCalculator rawRiskCalculator) : Controller
+    IRawRiskCalculator rawRiskCalculator,
+    IResidualRiskCalculator residualRiskCalculator,
+    IPriorityCalculator priorityCalculator,
+    IColourCalculator colourCalculator) : Controller
 {
     public IActionResult RawRisk(int severityId, int frequencyId, int exposureId)
     {
@@ -18,7 +21,7 @@ public class CalculatorController(
             (Exposure)exposureId,
             exposurePoint);
 
-        var displayColour = GetRawRiskColour(rawRisk);
+        var displayColour = colourCalculator.GetRawRiskColour(rawRisk);
 
         return Json(new RawRiskModel() { 
             RawRisk = rawRisk,
@@ -26,21 +29,17 @@ public class CalculatorController(
         });
     }
 
-    private static string GetRawRiskColour(int rawRisk) 
+    public IActionResult ResidualAndPriority(int rawRisk, int engControl, int adminControl, int managementSuperControl, int ppeControl, int conformLegalReqControl)
     {
-        //0-50
-        if (rawRisk <= 50) 
-        {
-            return "btn-success";
-        }
+        var residualRisk = residualRiskCalculator.GetResidualRisk(rawRisk, engControl, adminControl, managementSuperControl, ppeControl, conformLegalReqControl);
+        var priority = priorityCalculator.GetPriority(residualRisk);
+        var displayColour = colourCalculator.GetResidualRiskColour(priority);
 
-        //51-99
-        if (rawRisk >= 51 && rawRisk <= 99)
+        return Json(new ResidualAndPriorityModel()
         {
-            return "btn-warning";
-        }
-
-        //100+
-        return "btn-danger";
+            ResidualRisk = residualRisk,
+            Priority = priority,
+            DisplayColour = displayColour,
+        });
     }
 }

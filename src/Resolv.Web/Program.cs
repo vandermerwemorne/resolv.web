@@ -90,6 +90,9 @@ builder.Services.AddScoped<IPPEControlRepository, PPEControlRepository>();
 builder.Services.AddScoped<IEncryptionService, EncryptionService>();
 builder.Services.AddScoped<IExposureCalculator, ExposureCalculator>();
 builder.Services.AddScoped<IRawRiskCalculator, RawRiskCalculator>();
+builder.Services.AddScoped<IResidualRiskCalculator, ResidualRiskCalculator>();
+builder.Services.AddScoped<IPriorityCalculator, PriorityCalculator>();
+builder.Services.AddScoped<IColourCalculator, ColourCalculator>();
 builder.Services.AddScoped<ISetSelectList, SetSelectList>();
 
 var app = builder.Build();
