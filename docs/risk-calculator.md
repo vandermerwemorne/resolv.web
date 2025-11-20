@@ -171,3 +171,46 @@ Exposure Point | Exposure     | Raw Risk
  2             |  Negligible  |   2
  1             |  Negligible  |   1
 ```
+
+## Residual Risk
+
+The `Residual Risk` is calculated as:
+
+1. Start with the `Raw Risk` value from the previous calculation.
+
+2. Apply risk control mitigation factors based on the number of implemented controls out of 5 possible control types:
+   - Engineering Control
+   - Administrative Control 
+   - Management Supervision Control
+   - PPE (Personal Protective Equipment) Control
+   - Legal Requirements Compliance Control
+
+3. Each control can have a value from 0-100 (percentage effectiveness) or -1 (N/A - not applicable).
+
+4. The mitigation factor is calculated based on how many controls are NOT applicable (N/A):
+
+```
+N/A Controls | Mitigation Factor
+-------------|------------------
+5 (all N/A)  | 100% (no controls applied - returns raw risk)
+4            | 100% 
+3            | 50%
+2            | 33.33%
+1            | 25%
+0            | 20%
+```
+
+5. For each applicable control, calculate the compliance reduction:
+   - `mitigationFactor = rawRisk × (mitigationFactor% ÷ 100)`
+   - `controlCompliance = mitigationFactor × (controlValue% ÷ 100)`
+   - `controlReduction = mitigationFactor - controlCompliance`
+
+6. Sum all control reductions and ensure the result is at least 1.
+
+Example: If `rawRisk=100`, with 2 controls at 80% effectiveness each (3 N/A):
+- Mitigation factor: 100 × 50% = 50
+- Control 1 reduction: 50 - (50 × 0.8) = 10  
+- Control 2 reduction: 50 - (50 × 0.8) = 10
+- Total residual risk: 10 + 10 = 20
+
+The residual risk represents the remaining risk after applying all relevant control measures.
