@@ -9,7 +9,7 @@ public class CustRisk
     public int RiskStatusId { get; set; }
     public int EvaluationTypeId { get; set; }
     public int? RiskIdReEvaluation { get; set; }
-    public int ClientId { get; set; }
+    public int AssessmentSiteId { get; set; }
     public int UserId { get; set; }
     public int SectorId { get; set; }
     public int SubSectorId { get; set; }

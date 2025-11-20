@@ -3,8 +3,6 @@ using Resolv.Domain.AssessmentSite;
 
 namespace Resolv.Infrastructure.AssessmentSite;
 
-// TODO we need to rename dbo.client to be dbo.assessment_site
-
 public class AssessmentSiteRepository(SqlConnectionFactory factory) : IAssessmentSiteRepository
 {
     public async Task<(int, Guid)> AddAsync(CustAssessmentSite obj, string schema)
@@ -12,7 +10,7 @@ public class AssessmentSiteRepository(SqlConnectionFactory factory) : IAssessmen
         using var connection = factory.CreateNpgsqlConnection();
         var uid = Guid.NewGuid();
         var sql = $@"
-INSERT INTO {schema}.client 
+INSERT INTO {schema}.assessment_site 
 (added_by_user_id, site_name, ref_code, province_id, address, 
 town_id, identity_code, division_id)
 VALUES 
@@ -39,7 +37,7 @@ RETURNING id, uid;";
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 SELECT *
-FROM {schema}.client
+FROM {schema}.assessment_site
 ORDER BY site_name;";
 
         var result = await connection.QueryAsync<CustAssessmentSite>(sql);
@@ -51,7 +49,7 @@ ORDER BY site_name;";
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 SELECT *
-FROM {schema}.client
+FROM {schema}.assessment_site
 WHERE division_id = @DivisionId
 ORDER BY site_name;";
 
@@ -67,7 +65,7 @@ ORDER BY site_name;";
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 SELECT *
-FROM {schema}.client
+FROM {schema}.assessment_site
 WHERE uid = @Uid;";
         var result = await connection.QuerySingleOrDefaultAsync<CustAssessmentSite>(sql, new { Uid = uid });
         return result ?? new CustAssessmentSite { Id = 0 };
@@ -77,7 +75,7 @@ WHERE uid = @Uid;";
     {
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
-UPDATE {schema}.client
+UPDATE {schema}.assessment_site
 SET site_name = @SiteName,
     ref_code = @RefCode,
     province_id = @ProvinceId,

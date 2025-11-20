@@ -10,9 +10,9 @@ public class RiskRepository(SqlConnectionFactory factory) : IRiskRepository
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
 INSERT INTO {schema}.risk 
-(insert_date, reevaluation_date, risk_status_id, evaluation_type_id, risk_id_re_evaluation, client_id, user_id, sector_id, sub_sector_id, added_by_user_id, annual_status, uid)
+(insert_date, reevaluation_date, risk_status_id, evaluation_type_id, risk_id_re_evaluation, assessment_site, user_id, sector_id, sub_sector_id, added_by_user_id, annual_status, uid)
 VALUES
-(@InsertDate, @ReevaluationDate, @RiskStatusId, @EvaluationTypeId, @RiskIdReEvaluation, @ClientId, @UserId, @SectorId, @SubSectorId, @AddedByUserId, @AnnualStatus, @Uid)
+(@InsertDate, @ReevaluationDate, @RiskStatusId, @EvaluationTypeId, @RiskIdReEvaluation, @AssessmentSiteId, @UserId, @SectorId, @SubSectorId, @AddedByUserId, @AnnualStatus, @Uid)
 RETURNING id, uid";
 
         risk.Uid = Guid.NewGuid();
@@ -40,7 +40,7 @@ WHERE uid = @Uid;";
         var sql = $@"
 SELECT *
 FROM {schema}.risk
-WHERE client_id = @assessmentSiteId
+WHERE assessment_site = @assessmentSiteId
 ORDER BY insert_date ASC;";
 
         var result = await connection.QueryAsync<CustRisk>(sql, new { assessmentSiteId });

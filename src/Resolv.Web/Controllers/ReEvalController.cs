@@ -121,9 +121,9 @@ namespace Resolv.Web.Controllers
                 // Found the risk, now get the risk lines
                 var riskLines = await riskLineRepository.GetByRiskIdAsync(holdingCompany.SchemaName, risk.Id);
 
-                // Get breadcrumb information - we need to find the assessment site from the risk's client ID
+                // Get breadcrumb information - we need to find the assessment site from the risk's assessment site ID
                 var assessmentSites = await assessmentSiteRepository.GetAsync(holdingCompany.SchemaName);
-                var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.ClientId);
+                var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.AssessmentSiteId);
 
                 string divisionName = string.Empty;
                 string assessmentSiteName = assessmentSite?.SiteName ?? "Unknown Site";

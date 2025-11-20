@@ -3,8 +3,6 @@
 /// <summary>
 /// Customer.AssessmentSite
 /// Where Customer is the pgsql schema prefix, eg: Hulamin
-/// 
-/// This was previously called "Client" in risk master
 /// </summary>
 public class CustAssessmentSite
 {

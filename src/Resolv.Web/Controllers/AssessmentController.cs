@@ -127,9 +127,9 @@ namespace Resolv.Web.Controllers
                 // Found the risk, now get the risk lines
                 var riskLines = await riskLineRepository.GetByRiskIdAsync(holdingCompany.SchemaName, risk.Id);
 
-                // Get breadcrumb information - we need to find the assessment site from the risk's client ID
+                // Get breadcrumb information - we need to find the assessment site from the risk's assessment site ID
                 var assessmentSites = await assessmentSiteRepository.GetAsync(holdingCompany.SchemaName);
-                var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.ClientId);
+                var assessmentSite = assessmentSites.FirstOrDefault(site => site.Id == risk.AssessmentSiteId);
 
                 string divisionName = string.Empty;
                 string assessmentSiteName = assessmentSite?.SiteName ?? "Unknown Site";
@@ -198,7 +198,7 @@ namespace Resolv.Web.Controllers
                         ReevaluationDate = DateTime.UtcNow.AddYears(2),
                         RiskStatusId = 0, // TODO do we need this?
                         EvaluationTypeId = 1, // Default evaluation type
-                        ClientId = model.SelectedAssessmentSiteId.Value,
+                        AssessmentSiteId = model.SelectedAssessmentSiteId.Value,
                         UserId = 1, // TODO: Get current user ID
                         SectorId = 1, // TODO: Set appropriate sector
                         SubSectorId = 1, // TODO: Set appropriate sub-sector

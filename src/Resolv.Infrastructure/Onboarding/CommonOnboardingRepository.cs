@@ -22,7 +22,7 @@ public class CommonOnboardingRepository(SqlConnectionFactory factory) : ICommonO
     {
         using var connection = factory.CreateNpgsqlConnection();
         var sql = $@"
-CREATE TABLE IF NOT EXISTS {schema}.client 
+CREATE TABLE IF NOT EXISTS {schema}.assessment_site 
 (
 id SERIAL PRIMARY KEY,
 uid UUID DEFAULT gen_random_uuid(),
@@ -41,7 +41,7 @@ division_id INTEGER,
 status BOOLEAN
 );
 
-ALTER TABLE IF EXISTS {schema}.client
+ALTER TABLE IF EXISTS {schema}.assessment_site
 OWNER to {_owner}";
         await connection.ExecuteAsync(sql);
     }
@@ -101,7 +101,7 @@ reevaluation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 risk_status_id INTEGER,
 evaluation_type_id INTEGER,
 risk_id_re_evaluation INTEGER,
-client_id INTEGER,
+assessment_site INTEGER,
 user_id INTEGER,
 sector_id INTEGER,
 sub_sector_id INTEGER,
